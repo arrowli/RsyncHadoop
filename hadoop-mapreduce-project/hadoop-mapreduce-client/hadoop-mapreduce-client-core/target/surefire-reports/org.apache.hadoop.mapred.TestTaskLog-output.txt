@@ -1,0 +1,21 @@
+2013-12-22 14:24:38,245 WARN  [Thread-0] util.NativeCodeLoader (NativeCodeLoader.java:<clinit>(62)) - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2013-12-22 14:24:39,843 ERROR [Thread-0] util.Shell (Shell.java:getWinUtilsPath(303)) - Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable D:\ryneli\eclipse\git\RsyncHadoop\hadoop-common-project\hadoop-common\target\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:278)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:300)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:293)
+	at org.apache.hadoop.fs.RawLocalFileSystem.setPermission(RawLocalFileSystem.java:639)
+	at org.apache.hadoop.io.SecureIOUtils.insecureCreateForWrite(SecureIOUtils.java:240)
+	at org.apache.hadoop.io.SecureIOUtils.createForWrite(SecureIOUtils.java:262)
+	at org.apache.hadoop.mapred.TaskLog.writeToIndexFile(TaskLog.java:195)
+	at org.apache.hadoop.mapred.TaskLog.syncLogs(TaskLog.java:263)
+	at org.apache.hadoop.mapred.TestTaskLog.testTaskLog(TestTaskLog.java:70)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:45)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:42)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:62)

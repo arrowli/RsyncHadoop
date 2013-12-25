@@ -1,0 +1,28 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.hadoop.mapred.TestTaskLog
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 4.882 sec <<< FAILURE!
+testTaskLog(org.apache.hadoop.mapred.TestTaskLog)  Time elapsed: 4480 sec  <<< ERROR!
+java.lang.NullPointerException
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:1010)
+	at org.apache.hadoop.util.Shell.runCommand(Shell.java:404)
+	at org.apache.hadoop.util.Shell.run(Shell.java:379)
+	at org.apache.hadoop.util.Shell$ShellCommandExecutor.execute(Shell.java:589)
+	at org.apache.hadoop.util.Shell.execCommand(Shell.java:678)
+	at org.apache.hadoop.util.Shell.execCommand(Shell.java:661)
+	at org.apache.hadoop.fs.RawLocalFileSystem.setPermission(RawLocalFileSystem.java:639)
+	at org.apache.hadoop.io.SecureIOUtils.insecureCreateForWrite(SecureIOUtils.java:240)
+	at org.apache.hadoop.io.SecureIOUtils.createForWrite(SecureIOUtils.java:262)
+	at org.apache.hadoop.mapred.TaskLog.writeToIndexFile(TaskLog.java:195)
+	at org.apache.hadoop.mapred.TaskLog.syncLogs(TaskLog.java:263)
+	at org.apache.hadoop.mapred.TestTaskLog.testTaskLog(TestTaskLog.java:70)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:45)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:42)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:62)
+

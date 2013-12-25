@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.apache.hadoop.mapreduce.task.reduce.TestEventFetcher
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.461 sec

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
   <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
-  <classpathentry kind="src" path="/home/hadoop/RsyncHadoop/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/conf" output="target/test-classes" including="capacity-scheduler.xml" excluding="**/*.java"/>
+  <classpathentry kind="src" path="D:/ryneli/eclipse/git/RsyncHadoop/hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager/conf" output="target/test-classes" including="capacity-scheduler.xml" excluding="**/*.java"/>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="var" path="M2_REPO/javax/inject/javax.inject/1/javax.inject-1.jar"/>
@@ -12,7 +12,7 @@
   <classpathentry kind="var" path="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="src" path="/hadoop-annotations"/>
-  <classpathentry kind="lib" path="/usr/lib/jvm/java-6-openjdk-amd64/lib/tools.jar"/>
+  <classpathentry kind="lib" path="C:/Program Files/Java/jdk1.7.0_10/lib/tools.jar"/>
   <classpathentry kind="src" path="/hadoop-mapreduce-client-app"/>
   <classpathentry kind="src" path="/hadoop-mapreduce-client-common"/>
   <classpathentry kind="src" path="/hadoop-yarn-common"/>

@@ -4,7 +4,7 @@
   <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/javax/inject/javax.inject/1/javax.inject-1.jar" sourcepath="M2_REPO/javax/inject/javax.inject/1/javax.inject-1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/inject/javax.inject/1/javax.inject-1.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar" sourcepath="M2_REPO/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.2.2/jaxb-api-2.2.2.jar" sourcepath="M2_REPO/javax/xml/bind/jaxb-api/2.2.2/jaxb-api-2.2.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar" sourcepath="M2_REPO/javax/activation/activation/1.1/activation-1.1-sources.jar"/>
@@ -12,7 +12,7 @@
   <classpathentry kind="var" path="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar" sourcepath="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1-sources.jar"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="src" path="/hadoop-annotations"/>
-  <classpathentry kind="lib" path="/usr/lib/jvm/java-6-openjdk-amd64/lib/tools.jar"/>
+  <classpathentry kind="lib" path="C:/Program Files/Java/jdk1.7.0_10/lib/tools.jar"/>
   <classpathentry kind="src" path="/hadoop-mapreduce-client-hs"/>
   <classpathentry kind="src" path="/hadoop-mapreduce-client-common"/>
   <classpathentry kind="src" path="/hadoop-yarn-common"/>
@@ -20,10 +20,10 @@
   <classpathentry kind="src" path="/hadoop-yarn-api"/>
   <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar" sourcepath="M2_REPO/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-log4j12/1.7.5/slf4j-log4j12-1.7.5.jar" sourcepath="M2_REPO/org/slf4j/slf4j-log4j12/1.7.5/slf4j-log4j12-1.7.5-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/com/google/inject/extensions/guice-servlet/3.0/guice-servlet-3.0.jar" sourcepath="M2_REPO/com/google/inject/extensions/guice-servlet/3.0/guice-servlet-3.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/com/google/inject/guice/3.0/guice-3.0.jar" sourcepath="M2_REPO/com/google/inject/guice/3.0/guice-3.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" sourcepath="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/io/netty/netty/3.6.2.Final/netty-3.6.2.Final.jar" sourcepath="M2_REPO/io/netty/netty/3.6.2.Final/netty-3.6.2.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/inject/extensions/guice-servlet/3.0/guice-servlet-3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/inject/guice/3.0/guice-3.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/aopalliance/aopalliance/1.0/aopalliance-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty/3.6.2.Final/netty-3.6.2.Final.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar" sourcepath="M2_REPO/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/commons-io/commons-io/2.1/commons-io-2.1.jar" sourcepath="M2_REPO/commons-io/commons-io/2.1/commons-io-2.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-test-framework/jersey-test-framework-grizzly2/1.9/jersey-test-framework-grizzly2-1.9.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-test-framework/jersey-test-framework-grizzly2/1.9/jersey-test-framework-grizzly2-1.9-sources.jar"/>
@@ -39,10 +39,10 @@
   <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-framework/2.1.2/grizzly-framework-2.1.2.jar" sourcepath="M2_REPO/org/glassfish/grizzly/grizzly-framework/2.1.2/grizzly-framework-2.1.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/glassfish/gmbal/gmbal-api-only/3.0.0-b023/gmbal-api-only-3.0.0-b023.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/glassfish/external/management-api/3.0.0-b012/management-api-3.0.0-b012.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-http-server/2.1.2/grizzly-http-server-2.1.2.jar" sourcepath="M2_REPO/org/glassfish/grizzly/grizzly-http-server/2.1.2/grizzly-http-server-2.1.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-rcm/2.1.2/grizzly-rcm-2.1.2.jar" sourcepath="M2_REPO/org/glassfish/grizzly/grizzly-rcm/2.1.2/grizzly-rcm-2.1.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-http-servlet/2.1.2/grizzly-http-servlet-2.1.2.jar" sourcepath="M2_REPO/org/glassfish/grizzly/grizzly-http-servlet/2.1.2/grizzly-http-servlet-2.1.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/glassfish/javax.servlet/3.1/javax.servlet-3.1.jar" sourcepath="M2_REPO/org/glassfish/javax.servlet/3.1/javax.servlet-3.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-http-server/2.1.2/grizzly-http-server-2.1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-rcm/2.1.2/grizzly-rcm-2.1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/glassfish/grizzly/grizzly-http-servlet/2.1.2/grizzly-http-servlet-2.1.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/glassfish/javax.servlet/3.1/javax.servlet-3.1.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-json/1.9/jersey-json-1.9.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-json/1.9/jersey-json-1.9-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar" sourcepath="M2_REPO/org/codehaus/jettison/jettison/1.1/jettison-1.1-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
@@ -51,7 +51,7 @@
   <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-mapper-asl/1.8.8/jackson-mapper-asl-1.8.8.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-mapper-asl/1.8.8/jackson-mapper-asl-1.8.8-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-jaxrs/1.8.8/jackson-jaxrs-1.8.8.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-jaxrs/1.8.8/jackson-jaxrs-1.8.8-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-xc/1.8.8/jackson-xc-1.8.8.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-xc/1.8.8/jackson-xc-1.8.8-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/contribs/jersey-guice/1.9/jersey-guice-1.9.jar" sourcepath="M2_REPO/com/sun/jersey/contribs/jersey-guice/1.9/jersey-guice-1.9-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/contribs/jersey-guice/1.9/jersey-guice-1.9.jar"/>
   <classpathentry kind="src" path="/hadoop-yarn-client"/>
   <classpathentry kind="src" path="/hadoop-mapreduce-client-core"/>
   <classpathentry kind="var" path="M2_REPO/org/apache/avro/avro/1.7.4/avro-1.7.4.jar" sourcepath="M2_REPO/org/apache/avro/avro/1.7.4/avro-1.7.4-sources.jar"/>

@@ -1,0 +1,56 @@
+2013-12-22 14:25:01,284 WARN  [main] util.NativeCodeLoader (NativeCodeLoader.java:<clinit>(62)) - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2013-12-22 14:25:02,826 ERROR [main] util.Shell (Shell.java:getWinUtilsPath(303)) - Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable D:\ryneli\eclipse\git\RsyncHadoop\hadoop-common-project\hadoop-common\target\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:278)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:300)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:293)
+	at org.apache.hadoop.fs.RawLocalFileSystem.setPermission(RawLocalFileSystem.java:639)
+	at org.apache.hadoop.fs.FilterFileSystem.setPermission(FilterFileSystem.java:468)
+	at org.apache.hadoop.fs.ChecksumFileSystem.create(ChecksumFileSystem.java:456)
+	at org.apache.hadoop.fs.ChecksumFileSystem.create(ChecksumFileSystem.java:424)
+	at org.apache.hadoop.fs.FileSystem.create(FileSystem.java:905)
+	at org.apache.hadoop.fs.FileSystem.create(FileSystem.java:886)
+	at org.apache.hadoop.fs.FileSystem.create(FileSystem.java:783)
+	at org.apache.hadoop.mapreduce.lib.output.TextOutputFormat.getRecordWriter(TextOutputFormat.java:132)
+	at org.apache.hadoop.mapreduce.lib.output.TestFileOutputCommitter.testRecovery(TestFileOutputCommitter.java:128)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at junit.framework.TestCase.runTest(TestCase.java:168)
+	at junit.framework.TestCase.runBare(TestCase.java:134)
+	at junit.framework.TestResult$1.protect(TestResult.java:110)
+	at junit.framework.TestResult.runProtected(TestResult.java:128)
+	at junit.framework.TestResult.run(TestResult.java:113)
+	at junit.framework.TestCase.run(TestCase.java:124)
+	at junit.framework.TestSuite.runTest(TestSuite.java:243)
+	at junit.framework.TestSuite.run(TestSuite.java:238)
+	at org.junit.internal.runners.JUnit38ClassRunner.run(JUnit38ClassRunner.java:83)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+2013-12-22 14:25:03,084 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\1\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:03,086 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\1\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:03,375 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\1\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:03,377 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\1\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:04,076 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:04,078 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:04,294 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:04,296 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:04,528 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:04,530 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:04,652 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:04,654 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:04,926 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:04,927 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.
+2013-12-22 14:25:05,040 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\.part-m-00000.crc]: it still exists.
+2013-12-22 14:25:05,041 WARN  [main] fs.FileUtil (FileUtil.java:deleteImpl(187)) - Failed to delete file or dir [D:\ryneli\eclipse\git\RsyncHadoop\hadoop-mapreduce-project\hadoop-mapreduce-client\hadoop-mapreduce-client-core\target\test-dir\output\_temporary\0\_temporary\attempt_200707121733_0001_m_000000_0\part-m-00000]: it still exists.

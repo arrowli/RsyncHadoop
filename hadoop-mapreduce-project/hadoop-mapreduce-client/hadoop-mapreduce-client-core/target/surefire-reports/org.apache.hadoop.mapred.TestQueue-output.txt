@@ -1,0 +1,33 @@
+2013-12-22 14:24:25,597 WARN  [Thread-0] util.NativeCodeLoader (NativeCodeLoader.java:<clinit>(62)) - Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+2013-12-22 14:24:26,204 INFO  [Thread-0] mapred.QueueManager (QueueManager.java:initialize(205)) - AllQueues : {second=second, first=first}; LeafQueues : {second=second, first=first}
+2013-12-22 14:24:27,930 WARN  [Thread-0] mapred.DeprecatedQueueConfigurationParser (DeprecatedQueueConfigurationParser.java:deprecatedConf(97)) - Configuring "mapred.queue.names" in mapred-site.xml or hadoop-site.xml is deprecated and will overshadow mapred-queues.xml. Remove this property and configure queue hierarchy in mapred-queues.xml
+2013-12-22 14:24:27,951 ERROR [Thread-0] util.Shell (Shell.java:getWinUtilsPath(303)) - Failed to locate the winutils binary in the hadoop binary path
+java.io.IOException: Could not locate executable D:\ryneli\eclipse\git\RsyncHadoop\hadoop-common-project\hadoop-common\target\bin\winutils.exe in the Hadoop binaries.
+	at org.apache.hadoop.util.Shell.getQualifiedBinPath(Shell.java:278)
+	at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:300)
+	at org.apache.hadoop.util.Shell.<clinit>(Shell.java:293)
+	at org.apache.hadoop.util.StringUtils.<clinit>(StringUtils.java:76)
+	at org.apache.hadoop.conf.Configuration.getStrings(Configuration.java:1496)
+	at org.apache.hadoop.mapred.DeprecatedQueueConfigurationParser.deprecatedConf(DeprecatedQueueConfigurationParser.java:105)
+	at org.apache.hadoop.mapred.DeprecatedQueueConfigurationParser.<init>(DeprecatedQueueConfigurationParser.java:46)
+	at org.apache.hadoop.mapred.QueueManager.getQueueConfigurationParser(QueueManager.java:124)
+	at org.apache.hadoop.mapred.QueueManager.refreshQueues(QueueManager.java:342)
+	at org.apache.hadoop.mapred.TestQueue.testQueue(TestQueue.java:110)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:601)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:45)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:42)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.internal.runners.statements.FailOnTimeout$StatementThread.run(FailOnTimeout.java:62)
+2013-12-22 14:24:27,961 WARN  [Thread-0] mapred.DeprecatedQueueConfigurationParser (DeprecatedQueueConfigurationParser.java:deprecatedConf(115)) - Configuring queue ACLs in mapred-site.xml or hadoop-site.xml is deprecated. Configure queue ACLs in mapred-queues.xml
+2013-12-22 14:24:27,964 INFO  [Thread-0] mapred.QueueManager (QueueManager.java:initialize(205)) - AllQueues : {second=second, first=first}; LeafQueues : {second=second, first=first}
+2013-12-22 14:24:27,964 INFO  [Thread-0] mapred.QueueManager (QueueManager.java:refreshQueues(389)) - Queue configuration is refreshed successfully.
+2013-12-22 14:24:28,461 WARN  [Thread-0] mapred.QueueConfigurationParser (QueueConfigurationParser.java:parseResource(196)) - Configuring aclsEnabled flag in mapred-queues.xml is not valid. This tag is ignored. Configure mapreduce.cluster.acls.enabled in mapred-site.xml. See the  documentation of mapreduce.cluster.acls.enabled, which is used for enabling job level authorization and  queue level authorization.
+2013-12-22 14:24:28,884 WARN  [Thread-2] mapred.DeprecatedQueueConfigurationParser (DeprecatedQueueConfigurationParser.java:deprecatedConf(97)) - Configuring "mapred.queue.names" in mapred-site.xml or hadoop-site.xml is deprecated and will overshadow mapred-queues.xml. Remove this property and configure queue hierarchy in mapred-queues.xml
+2013-12-22 14:24:28,885 WARN  [Thread-2] mapred.DeprecatedQueueConfigurationParser (DeprecatedQueueConfigurationParser.java:deprecatedConf(115)) - Configuring queue ACLs in mapred-site.xml or hadoop-site.xml is deprecated. Configure queue ACLs in mapred-queues.xml
+2013-12-22 14:24:28,887 INFO  [Thread-2] mapred.QueueManager (QueueManager.java:initialize(205)) - AllQueues : {second=second, first=first}; LeafQueues : {second=second, first=first}
+2013-12-22 14:24:28,901 WARN  [Thread-3] mapred.QueueConfigurationParser (QueueConfigurationParser.java:parseResource(196)) - Configuring aclsEnabled flag in mapred-queues.xml is not valid. This tag is ignored. Configure mapreduce.cluster.acls.enabled in mapred-site.xml. See the  documentation of mapreduce.cluster.acls.enabled, which is used for enabling job level authorization and  queue level authorization.
+2013-12-22 14:24:28,904 INFO  [Thread-3] mapred.QueueManager (QueueManager.java:initialize(205)) - AllQueues : {default=default, q1=q1, q1:q2=q1:q2}; LeafQueues : {default=default, q1:q2=q1:q2}

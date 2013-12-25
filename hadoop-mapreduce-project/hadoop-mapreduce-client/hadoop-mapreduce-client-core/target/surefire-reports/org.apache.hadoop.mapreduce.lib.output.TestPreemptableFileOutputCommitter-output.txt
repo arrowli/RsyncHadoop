@@ -1,0 +1,1 @@
+2013-12-22 14:25:15,969 INFO  [main] output.PartialFileOutputCommitter (PartialFileOutputCommitter.java:cleanUpPartialOutputForTask(89)) - cleanUpPartialOutputForTask: removing everything belonging to task_1363718006656_0001_r_000014 in: hdfs://user/hadoop/out/_temporary/1

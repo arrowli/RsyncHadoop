@@ -1,0 +1,4 @@
+Error: Invalid task-type: JOB_SETUP
+Usage: CLI [-list-attempt-ids <job-id> <task-type> <task-state>]. Valid values for <task-type> are REDUCE MAP. Valid values for <task-state> are running, completed
+Error: Invalid task-type: JOB_CLEANUP
+Usage: CLI [-list-attempt-ids <job-id> <task-type> <task-state>]. Valid values for <task-type> are REDUCE MAP. Valid values for <task-state> are running, completed

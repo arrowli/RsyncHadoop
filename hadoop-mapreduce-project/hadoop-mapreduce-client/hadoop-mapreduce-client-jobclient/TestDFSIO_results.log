@@ -1,0 +1,108 @@
+----- TestDFSIO ----- : write
+           Date & time: Mon Dec 16 03:25:19 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 2.8257016782407408E-5
+Average IO rate mb/sec: 2.8297154130996205E-5
+ IO rate std deviation: 1.042839708861914E-6
+    Test exec time sec: 2.784
+
+----- TestDFSIO ----- : read
+           Date & time: Mon Dec 16 03:25:21 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 5.449567522321429E-4
+Average IO rate mb/sec: 6.755192880518734E-4
+ IO rate std deviation: 2.8377487145505876E-4
+    Test exec time sec: 1.715
+
+----- TestDFSIO ----- : random read
+           Date & time: Mon Dec 16 03:25:24 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 4.76837158203125E-4
+Average IO rate mb/sec: 6.357828387990594E-4
+ IO rate std deviation: 3.1789152634639095E-4
+    Test exec time sec: 2.761
+
+----- TestDFSIO ----- : backward read
+           Date & time: Mon Dec 16 03:25:25 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 4.76837158203125E-4
+Average IO rate mb/sec: 5.563100567087531E-4
+ IO rate std deviation: 2.3841849517903258E-4
+    Test exec time sec: 1.633
+
+----- TestDFSIO ----- : skip read
+           Date & time: Mon Dec 16 03:25:27 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 5.449567522321429E-4
+Average IO rate mb/sec: 5.960464477539062E-4
+ IO rate std deviation: 2.0647654623614278E-4
+    Test exec time sec: 1.794
+
+----- TestDFSIO ----- : append
+           Date & time: Mon Dec 16 03:25:30 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 3.173625012999168E-6
+Average IO rate mb/sec: 3.2076286515803076E-6
+ IO rate std deviation: 3.13691486191123E-7
+    Test exec time sec: 2.738
+
+----- TestDFSIO ----- : write
+           Date & time: Mon Dec 16 23:26:24 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 2.8899221709280304E-5
+Average IO rate mb/sec: 2.9502127290470526E-5
+ IO rate std deviation: 4.041235203946311E-6
+    Test exec time sec: 2.971
+
+----- TestDFSIO ----- : read
+           Date & time: Mon Dec 16 23:26:26 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 4.76837158203125E-4
+Average IO rate mb/sec: 5.563100567087531E-4
+ IO rate std deviation: 2.3841849517903258E-4
+    Test exec time sec: 1.725
+
+----- TestDFSIO ----- : random read
+           Date & time: Mon Dec 16 23:26:28 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 2.1192762586805556E-4
+Average IO rate mb/sec: 4.951770533807576E-4
+ IO rate std deviation: 3.117781221145985E-4
+    Test exec time sec: 1.853
+
+----- TestDFSIO ----- : backward read
+           Date & time: Mon Dec 16 23:26:29 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 1.5894571940104166E-4
+Average IO rate mb/sec: 2.0662944007199258E-4
+ IO rate std deviation: 8.632962052858401E-5
+    Test exec time sec: 1.699
+
+----- TestDFSIO ----- : skip read
+           Date & time: Mon Dec 16 23:26:31 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 5.449567522321429E-4
+Average IO rate mb/sec: 5.960464477539062E-4
+ IO rate std deviation: 2.0647654623614278E-4
+    Test exec time sec: 1.717
+
+----- TestDFSIO ----- : append
+           Date & time: Mon Dec 16 23:26:34 EST 2013
+       Number of files: 4
+Total MBytes processed: 3.8146973E-6
+     Throughput mb/sec: 3.4120726883944543E-6
+Average IO rate mb/sec: 3.42609951076156E-6
+ IO rate std deviation: 2.172485960173593E-7
+    Test exec time sec: 2.693
+

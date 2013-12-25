@@ -68,7 +68,7 @@ import com.google.common.annotations.VisibleForTesting;
  * </ul>
  * </p>
  */
-class LeaseRenewer {
+public class LeaseRenewer {
   static final Log LOG = LogFactory.getLog(LeaseRenewer.class);
 
   static final long LEASE_RENEWER_GRACE_DEFAULT = 60*1000L;

@@ -15,67 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hdfs.tools;
+package org.apache.hadoop.tools;
 
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.*;
 
 import javax.net.SocketFactory;
-import javax.security.auth.login.LoginException;
-
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DFSUtil;
-import org.apache.hadoop.hdfs.LeaseRenewal;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
-import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.hdfs.protocol.ClientProtocol;
-import org.apache.hadoop.hdfs.protocol.BlockChecksumListHeader;
-import org.apache.hadoop.hdfs.protocol.DataTransferProtocol;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
-import org.apache.hadoop.hdfs.protocol.FSConstants;
+import org.apache.hadoop.hdfs.protocol.ExtendedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
-import org.apache.hadoop.hdfs.protocol.LocatedBlocksWithMetaInfo;
-import org.apache.hadoop.hdfs.protocol.ProtocolCompatible;
-import org.apache.hadoop.hdfs.server.common.HdfsConstants;
-import org.apache.hadoop.hdfs.server.datanode.DataNode;
+import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
-import org.apache.hadoop.io.DataOutputBuffer;
-import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.retry.RetryPolicies;
 import org.apache.hadoop.io.retry.RetryPolicy;
 import org.apache.hadoop.io.retry.RetryProxy;
 import org.apache.hadoop.ipc.ProtocolProxy;
-import org.apache.hadoop.ipc.RPC;
 import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.AccessControlException;
 import org.apache.hadoop.security.UserGroupInformation;
-import org.apache.hadoop.util.Daemon;
-import org.apache.hadoop.util.StringUtils;
-
 /* new added */
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferProtocol;
 
 /**
  * There is a need to perform fast file copy on HDFS (primarily for the purpose
@@ -108,7 +86,6 @@ public class RsyncCopy {
 	public ProtocolProxy<ClientProtocol> namenodeProtocolProxy = null;
 	static Random r = new Random();
 	final String clientName;
-	final LeaseChecker leasechecker;
 	Configuration conf;
 	SocketFactory socketFactory;
 	final FileSystem.Statistics stats;
@@ -120,7 +97,7 @@ public class RsyncCopy {
 	final InetAddress localHost;
 	InetSocketAddress nameNodeAddr;
 
-	int ipTosValue = NetUtils.NOT_SET_IP_TOS;
+	//int ipTosValue = NetUtils.NOT_SET_IP_TOS;
 
 	volatile boolean clientRunning = true;
 	private ClientProtocol rpcNamenode;
@@ -130,6 +107,10 @@ public class RsyncCopy {
 	public Object namenodeProxySyncObj = new Object();
 	private final Path testPath = new Path("/test");
 	private final DistributedFileSystem dfs;
+	
+	final UserGroupInformation ugi;
+	volatile long lastLeaseRenewal;
+	private final String authority;
 
 	/**
 	 * Create a new DFSClient connected to the given nameNodeAddr or
@@ -143,7 +124,7 @@ public class RsyncCopy {
 		this.socketFactory = NetUtils.getSocketFactory(conf,
 				ClientProtocol.class);
 		this.localHost = InetAddress.getLocalHost();
-		this.dfs=DFSUtil.convertToDFS(testPath.getFileSystem(conf));
+		this.dfs=(DistributedFileSystem)testPath.getFileSystem(conf);
 		String taskId = conf.get("mapred.task.id");
 		if (taskId != null) {
 			this.clientName = "RsyncCopy_" + taskId + "_" + r.nextInt() + "_"
@@ -163,12 +144,14 @@ public class RsyncCopy {
 							+ rpcNamenode);
 		}
 
-		this.leasechecker = new LeaseChecker(this.clientName, this.conf);
+		this.ugi = UserGroupInformation.getCurrentUser();
+	    
+		URI nameNodeUri = NameNode.getUri(NameNode.getAddress(conf));
+	    this.authority = nameNodeUri == null? "null": nameNodeUri.getAuthority();
 
 		this.socketTimeout = conf.getInt("dfs.socket.timeout",
-                HdfsConstants.READ_TIMEOUT);
-		this.namenodeRPCSocketTimeout = conf.getInt(
-				org.apache.hadoop.hdfs.protocol.FSConstants.DFS_CLIENT_NAMENODE_SOCKET_TIMEOUT, 0);
+				HdfsServerConstants.READ_TIMEOUT);
+		this.namenodeRPCSocketTimeout = 60*1000;
 	}
 
 	/**
@@ -205,80 +188,19 @@ public class RsyncCopy {
 							+ src);
 		}
 		int namespaceId = 0;
-		if (locatedBlocks instanceof LocatedBlocksWithMetaInfo) {
-			LocatedBlocksWithMetaInfo lBlocks = (LocatedBlocksWithMetaInfo) locatedBlocks;
-			dataTransferVersion = lBlocks.getDataProtocolVersion();
-			namespaceId = lBlocks.getNamespaceID();
-		} else if (dataTransferVersion == -1) {
-			dataTransferVersion = namenode.getDataTransferProtocolVersion();
-		}
+
+		dataTransferVersion = DataTransferProtocol.DATA_TRANSFER_VERSION;
+			
 		final List<LocatedBlock> locatedblocks = locatedBlocks
 				.getLocatedBlocks();
 
 		// get block checksum for each block
 		for (int i = 0; i < locatedblocks.size(); i++) {
 			LocatedBlock lb = locatedblocks.get(i);
-			final Block block = lb.getBlock();
+			final ExtendedBlock block = lb.getBlock();
 			final DatanodeInfo[] datanodes = lb.getLocations();
 
-			// try each datanode location of the block
-			final int timeout = (socketTimeout > 0) ? (socketTimeout + HdfsConstants.READ_TIMEOUT_EXTENSION
-					* datanodes.length)
-					: 0;
-
-			boolean done = false;
-			for (int j = 0; !done && j < datanodes.length; j++) {
-				final Socket sock = socketFactory.createSocket();
-				DataOutputStream out = null;
-				DataInputStream in = null;
-
-				try {
-					// connect to a datanode
-					NetUtils.connect(sock,
-							NetUtils.createSocketAddr(datanodes[j].getName()),
-							timeout);
-					sock.setSoTimeout(timeout);
-
-					out = new DataOutputStream(new BufferedOutputStream(
-							NetUtils.getOutputStream(sock),
-							FSConstants.SMALL_BUFFER_SIZE));
-					in = new DataInputStream(NetUtils.getInputStream(sock));
-
-					// get block MD5
-					if (LOG.isDebugEnabled()) {
-						LOG.debug("write to " + datanodes[j].getName() + ": "
-								+ DataTransferProtocol.OP_BLOCK_CHECKSUM
-								+ ", block=" + block);
-					}
-
-					/* Write the header */
-					BlockChecksumListHeader blockChecksumListHeader = new BlockChecksumListHeader(
-							dataTransferVersion, namespaceId,
-							block.getBlockId(), block.getGenerationStamp());
-					blockChecksumListHeader.writeVersionAndOpCode(out);
-					blockChecksumListHeader.write(out);
-					out.flush();
-
-					final short reply = in.readShort();
-					if (reply != DataTransferProtocol.OP_STATUS_SUCCESS) {
-						throw new IOException("Bad response " + reply
-								+ " for block " + block + " from datanode "
-								+ datanodes[j].getName());
-					}
-
-					// read data
-					final long data = in.readLong();
-					LOG.info("Rsynccopy received " + data);
-
-				} catch (IOException ie) {
-					LOG.warn("src=" + src + ", datanodes[" + j + "].getName()="
-							+ datanodes[j].getName(), ie);
-				} finally {
-					IOUtils.closeStream(in);
-					IOUtils.closeStream(out);
-					IOUtils.closeSocket(sock);
-				}
-			}
+			
 		}
 	}
 
@@ -286,9 +208,6 @@ public class RsyncCopy {
 			String src, long start, long length, boolean supportMetaInfo)
 			throws IOException {
 		try {
-			if (supportMetaInfo) {
-				return namenode.openAndFetchMetaInfo(src, start, length);
-			}
 			return namenode.getBlockLocations(src, start, length);
 		} catch (RemoteException re) {
 			throw re.unwrapRemoteException(AccessControlException.class,
@@ -313,60 +232,15 @@ public class RsyncCopy {
 			// and the exception will likely to be resolved after a retry.
 			//
 			synchronized (namenodeProxySyncObj) {
-				this.namenode = dfs.getClient().getNameNodeRPC();
+				this.namenode = dfs.getClient().getNamenode();
 			}
 		}
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("Name node signature is refreshed. Fingerprint: "
-					+ namenodeProtocolProxy.getMethodsFingerprint());
-		}
-	}
-
-	/**
-	 * Create a NameNode proxy for the client if the client and NameNode are
-	 * compatible
-	 * 
-	 * @param nameNodeAddr
-	 *            NameNode address
-	 * @param conf
-	 *            configuration
-	 * @param ugi
-	 *            ticket
-	 * @return a NameNode proxy that's compatible with the client
-	 */
-	private void createRPCNamenodeIfCompatible(InetSocketAddress nameNodeAddr,
-			Configuration conf, UserGroupInformation ugi) throws IOException {
-		try {
-			this.namenodeProtocolProxy = createRPCNamenode(nameNodeAddr, conf,
-					ugi, namenodeRPCSocketTimeout);
-			this.rpcNamenode = namenodeProtocolProxy.getProxy();
-		} catch (RPC.VersionMismatch e) {
-			long clientVersion = e.getClientVersion();
-			namenodeVersion = e.getServerVersion();
-			if (clientVersion > namenodeVersion
-					&& !ProtocolCompatible.isCompatibleClientProtocol(
-							clientVersion, namenodeVersion)) {
-				throw new RPC.VersionIncompatible(
-						ClientProtocol.class.getName(), clientVersion,
-						namenodeVersion);
-			}
-			this.rpcNamenode = (ClientProtocol) e.getProxy();
-		}
-	}
-
-	public static ProtocolProxy<ClientProtocol> createRPCNamenode(
-			InetSocketAddress nameNodeAddr, Configuration conf,
-			UserGroupInformation ugi, int rpcTimeout) throws IOException {
-		return RPC.getProtocolProxy(ClientProtocol.class,
-				ClientProtocol.versionID, nameNodeAddr, ugi, conf,
-				NetUtils.getSocketFactory(conf, ClientProtocol.class),
-				rpcTimeout);
 	}
 
 	static ClientProtocol createNamenode(ClientProtocol rpcNamenode,
 			Configuration conf) throws IOException {
 		long sleepTime = conf.getLong("dfs.client.rpc.retry.sleep",
-				org.apache.hadoop.hdfs.protocol.FSConstants.LEASE_SOFTLIMIT_PERIOD);
+				org.apache.hadoop.hdfs.protocol.HdfsConstants.LEASE_SOFTLIMIT_PERIOD);
 		RetryPolicy createPolicy = RetryPolicies
 				.retryUpToMaximumCountWithFixedSleep(5, sleepTime,
 						TimeUnit.MILLISECONDS);
@@ -394,103 +268,6 @@ public class RsyncCopy {
 		formatter.printHelp("Usage : FastCopy [options] <srcs....> <dst>", null);
 	}
 
-	/** Lease management */
-	class LeaseChecker extends LeaseRenewal {
-		/**
-		 * A map from src -> DFSOutputStream of files that are currently being
-		 * written by this client.
-		 */
-		private final SortedMap<String, OutputStream> pendingCreates = new TreeMap<String, OutputStream>();
-
-		private Daemon daemon = null;
-
-		public LeaseChecker(String clientName, Configuration conf) {
-			super(clientName, conf);
-		}
-
-		synchronized void put(String src, OutputStream out) {
-			if (clientRunning) {
-				if (daemon == null) {
-					daemon = new Daemon(this);
-					daemon.start();
-				}
-				pendingCreates.put(src, out);
-			}
-		}
-
-		synchronized void remove(String src) {
-			pendingCreates.remove(src);
-		}
-
-		void interruptAndJoin() throws InterruptedException {
-			Daemon daemonCopy = null;
-			synchronized (this) {
-				if (daemon != null) {
-					daemon.interrupt();
-					daemonCopy = daemon;
-				}
-			}
-
-			if (daemonCopy != null) {
-				LOG.debug("Wait for lease checker to terminate");
-				daemonCopy.join();
-			}
-		}
-
-		synchronized void close() {
-			while (!pendingCreates.isEmpty()) {
-				String src = pendingCreates.firstKey();
-				OutputStream out = pendingCreates.remove(src);
-				if (out != null) {
-					try {
-						out.close();
-					} catch (IOException ie) {
-						LOG.error("Exception closing file " + src + " : " + ie,
-								ie);
-					}
-				}
-			}
-		}
-
-		/**
-		 * Abort all open files. Release resources held. Ignore all errors.
-		 */
-		@Override
-		protected synchronized void abort() {
-			super.closeRenewal();
-			clientRunning = false;
-			while (!pendingCreates.isEmpty()) {
-				String src = pendingCreates.firstKey();
-			}
-			RPC.stopProxy(rpcNamenode); // close connections to the namenode
-		}
-
-		@Override
-		protected void renew() throws IOException {
-			synchronized (this) {
-				if (pendingCreates.isEmpty()) {
-					return;
-				}
-			}
-			namenode.renewLease(clientName);
-		}
-
-		/** {@inheritDoc} */
-		@Override
-		public String toString() {
-			String s = getClass().getSimpleName();
-			if (LOG.isTraceEnabled()) {
-				return s
-						+ "@"
-						+ RsyncCopy.this
-						+ ": "
-						+ StringUtils.stringifyException(new Throwable(
-								"for testing"));
-			}
-			return s;
-		}
-	}
-
 	protected void checkOpen() throws IOException {
 		if (!clientRunning) {
 			IOException result = new IOException("Filesystem closed");
@@ -504,7 +281,7 @@ public class RsyncCopy {
 		}
 		Configuration conf = new Configuration();
 		InetSocketAddress nameNodeAddr = NameNode
-				.getClientProtocolAddress(conf);
+				.getAddress(conf);
 		ClientProtocol rpcNamenode = null;
 		FileSystem.Statistics stats = null;
 		long uniqueId = 0;
