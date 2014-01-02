@@ -29,7 +29,10 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 import javax.net.SocketFactory;
+
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
@@ -199,8 +202,8 @@ public class RsyncCopy {
 			LocatedBlock lb = locatedblocks.get(i);
 			final ExtendedBlock block = lb.getBlock();
 			final DatanodeInfo[] datanodes = lb.getLocations();
-
-			
+			LOG.debug(block.toString());
+			LOG.debug(datanodes[0].toString());
 		}
 	}
 
@@ -265,7 +268,8 @@ public class RsyncCopy {
 
 	private static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("Usage : FastCopy [options] <srcs....> <dst>", null);
+		Options options = new Options();
+		formatter.printHelp("Usage : RsyncCopy [options] <srcs....> <dst>", options);
 	}
 
 	protected void checkOpen() throws IOException {
