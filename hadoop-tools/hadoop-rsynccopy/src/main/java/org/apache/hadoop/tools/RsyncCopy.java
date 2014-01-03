@@ -17,10 +17,19 @@
  */
 package org.apache.hadoop.tools;
 
+import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_CLIENT_USE_DN_HOSTNAME;
+import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_CLIENT_USE_DN_HOSTNAME_DEFAULT;
+
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -35,17 +44,27 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FsServerDefaults;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DFSClient.Conf;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
 import org.apache.hadoop.hdfs.protocol.ClientProtocol;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.ExtendedBlock;
+import org.apache.hadoop.hdfs.protocol.HdfsConstants;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
+import org.apache.hadoop.hdfs.security.token.block.DataEncryptionKey;
+import org.apache.hadoop.hdfs.security.token.block.InvalidBlockTokenException;
 import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
+import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
+import org.apache.hadoop.io.DataOutputBuffer;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.MD5Hash;
 import org.apache.hadoop.io.retry.RetryPolicies;
 import org.apache.hadoop.io.retry.RetryPolicy;
 import org.apache.hadoop.io.retry.RetryProxy;
@@ -54,9 +73,20 @@ import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.AccessControlException;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.hadoop.util.DataChecksum;
+import org.apache.hadoop.util.Time;
+import org.apache.hadoop.util.DataChecksum.Type;
 /* new added */
 import org.apache.hadoop.hdfs.DistributedFileSystem;
+import org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferEncryptor;
 import org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferProtocol;
+import org.apache.hadoop.hdfs.protocol.datatransfer.IOStreamPair;
+import org.apache.hadoop.hdfs.protocol.datatransfer.Op;
+import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
+import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 
 /**
  * There is a need to perform fast file copy on HDFS (primarily for the purpose
@@ -82,7 +112,8 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferProtocol;
  **/
 
 public class RsyncCopy {
-
+	public static final long SERVER_DEFAULTS_VALIDITY_PERIOD = 60 * 60 * 1000L; // 1
+																				// hour
 	public static final Log LOG = LogFactory.getLog(RsyncCopy.class);
 	public ClientProtocol namenode;
 	// Namenode proxy that supports method-based compatibility
@@ -100,7 +131,7 @@ public class RsyncCopy {
 	final InetAddress localHost;
 	InetSocketAddress nameNodeAddr;
 
-	//int ipTosValue = NetUtils.NOT_SET_IP_TOS;
+	// int ipTosValue = NetUtils.NOT_SET_IP_TOS;
 
 	volatile boolean clientRunning = true;
 	private ClientProtocol rpcNamenode;
@@ -110,10 +141,16 @@ public class RsyncCopy {
 	public Object namenodeProxySyncObj = new Object();
 	private final Path testPath = new Path("/test");
 	private final DistributedFileSystem dfs;
-	
+
 	final UserGroupInformation ugi;
 	volatile long lastLeaseRenewal;
 	private final String authority;
+
+	private DataEncryptionKey encryptionKey;
+	private volatile FsServerDefaults serverDefaults;
+	private volatile long serverDefaultsLastUpdate;
+	private final Conf dfsClientConf;
+	private boolean connectToDnViaHostname;
 
 	/**
 	 * Create a new DFSClient connected to the given nameNodeAddr or
@@ -122,12 +159,15 @@ public class RsyncCopy {
 	RsyncCopy(InetSocketAddress nameNodeAddr, ClientProtocol rpcNamenode,
 			Configuration conf, FileSystem.Statistics stats, long uniqueId,
 			DistributedFileSystem dfs) throws IOException {
+		this.dfsClientConf = new Conf(conf);
 		this.conf = conf;
 		this.stats = stats;
+		this.connectToDnViaHostname = conf.getBoolean(
+				DFS_CLIENT_USE_DN_HOSTNAME, DFS_CLIENT_USE_DN_HOSTNAME_DEFAULT);
 		this.socketFactory = NetUtils.getSocketFactory(conf,
 				ClientProtocol.class);
 		this.localHost = InetAddress.getLocalHost();
-		this.dfs=(DistributedFileSystem)testPath.getFileSystem(conf);
+		this.dfs = (DistributedFileSystem) testPath.getFileSystem(conf);
 		String taskId = conf.get("mapred.task.id");
 		if (taskId != null) {
 			this.clientName = "RsyncCopy_" + taskId + "_" + r.nextInt() + "_"
@@ -148,13 +188,14 @@ public class RsyncCopy {
 		}
 
 		this.ugi = UserGroupInformation.getCurrentUser();
-	    
+
 		URI nameNodeUri = NameNode.getUri(NameNode.getAddress(conf));
-	    this.authority = nameNodeUri == null? "null": nameNodeUri.getAuthority();
+		this.authority = nameNodeUri == null ? "null" : nameNodeUri
+				.getAuthority();
 
 		this.socketTimeout = conf.getInt("dfs.socket.timeout",
 				HdfsServerConstants.READ_TIMEOUT);
-		this.namenodeRPCSocketTimeout = 60*1000;
+		this.namenodeRPCSocketTimeout = 60 * 1000;
 	}
 
 	/**
@@ -172,16 +213,94 @@ public class RsyncCopy {
 	}
 
 	/**
+	 * Get server default values for a number of configuration params.
+	 * 
+	 * @see ClientProtocol#getServerDefaults()
+	 */
+	public FsServerDefaults getServerDefaults() throws IOException {
+		long now = Time.now();
+		if (now - serverDefaultsLastUpdate > SERVER_DEFAULTS_VALIDITY_PERIOD) {
+			serverDefaults = namenode.getServerDefaults();
+			serverDefaultsLastUpdate = now;
+		}
+		return serverDefaults;
+	}
+
+	/**
+	 * @return true if data sent between this client and DNs should be
+	 *         encrypted, false otherwise.
+	 * @throws IOException
+	 *             in the event of error communicating with the NN
+	 */
+	boolean shouldEncryptData() throws IOException {
+		FsServerDefaults d = getServerDefaults();
+		return d == null ? false : d.getEncryptDataTransfer();
+	}
+
+	@InterfaceAudience.Private
+	public DataEncryptionKey getDataEncryptionKey() throws IOException {
+		if (shouldEncryptData()) {
+			synchronized (this) {
+				if (encryptionKey == null
+						|| encryptionKey.expiryDate < Time.now()) {
+					LOG.debug("Getting new encryption token from NN");
+					encryptionKey = namenode.getDataEncryptionKey();
+				}
+				return encryptionKey;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Connect to the given datanode's datantrasfer port, and return the
+	 * resulting IOStreamPair. This includes encryption wrapping, etc.
+	 */
+	private static IOStreamPair connectToDN(SocketFactory socketFactory,
+			boolean connectToDnViaHostname, DataEncryptionKey encryptionKey,
+			DatanodeInfo dn, int timeout) throws IOException {
+		boolean success = false;
+		Socket sock = null;
+		try {
+			sock = socketFactory.createSocket();
+			String dnAddr = dn.getXferAddr(connectToDnViaHostname);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Connecting to datanode " + dnAddr);
+			}
+			NetUtils.connect(sock, NetUtils.createSocketAddr(dnAddr), timeout);
+			sock.setSoTimeout(timeout);
+
+			OutputStream unbufOut = NetUtils.getOutputStream(sock);
+			InputStream unbufIn = NetUtils.getInputStream(sock);
+			IOStreamPair ret;
+			if (encryptionKey != null) {
+				ret = DataTransferEncryptor.getEncryptedStreams(unbufOut,
+						unbufIn, encryptionKey);
+			} else {
+				ret = new IOStreamPair(unbufIn, unbufOut);
+			}
+			success = true;
+			return ret;
+		} finally {
+			if (!success) {
+				IOUtils.closeSocket(sock);
+			}
+		}
+	}
+
+	/**
 	 * Get the checksum of a file.
 	 * 
 	 * @param src
 	 *            The file path
 	 * @return The checksum
 	 */
-	public static void getFileChecksum(int dataTransferVersion, String src,
+	public void getFileChecksum(int dataTransferVersion, String src,
 			ClientProtocol namenode,
 			ProtocolProxy<ClientProtocol> namenodeProxy,
 			SocketFactory socketFactory, int socketTimeout) throws IOException {
+		final DataOutputBuffer md5out = new DataOutputBuffer();
 		// get all block locations
 		final LocatedBlocks locatedBlocks = callGetBlockLocations(namenode,
 				src, 0, Long.MAX_VALUE, isMetaInfoSuppoted(namenodeProxy));
@@ -191,19 +310,199 @@ public class RsyncCopy {
 							+ src);
 		}
 		int namespaceId = 0;
-
+		boolean refetchBlocks = false;
+		int lastRetriedIndex = -1;
 		dataTransferVersion = DataTransferProtocol.DATA_TRANSFER_VERSION;
-			
+
 		final List<LocatedBlock> locatedblocks = locatedBlocks
 				.getLocatedBlocks();
+
+		int bytesPerCRC = -1;
+		DataChecksum.Type crcType = DataChecksum.Type.DEFAULT;
+		long crcPerBlock = 0;
 
 		// get block checksum for each block
 		for (int i = 0; i < locatedblocks.size(); i++) {
 			LocatedBlock lb = locatedblocks.get(i);
 			final ExtendedBlock block = lb.getBlock();
 			final DatanodeInfo[] datanodes = lb.getLocations();
-			LOG.warn(block.toString());
-			LOG.warn(datanodes[0].toString());
+
+			// try each datanode location of the block
+			final int timeout = 3000 * datanodes.length + socketTimeout;
+			boolean done = false;
+			for (int j = 0; !done && j < datanodes.length; j++) {
+				DataOutputStream out = null;
+				DataInputStream in = null;
+
+				try {
+					// connect to a datanode
+					IOStreamPair pair = connectToDN(socketFactory,
+							connectToDnViaHostname, getDataEncryptionKey(),
+							datanodes[j], timeout);
+					out = new DataOutputStream(new BufferedOutputStream(
+							pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+					in = new DataInputStream(pair.in);
+
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("write to " + datanodes[j] + ": "
+								+ Op.BLOCK_CHECKSUM + ", block=" + block);
+					}
+					// get block MD5
+					new Sender(out).blockChecksum(block, lb.getBlockToken());
+
+					final BlockOpResponseProto reply = BlockOpResponseProto
+							.parseFrom(PBHelper.vintPrefixed(in));
+
+					if (reply.getStatus() != Status.SUCCESS) {
+						if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {
+							throw new InvalidBlockTokenException();
+						} else {
+							throw new IOException("Bad response " + reply
+									+ " for block " + block + " from datanode "
+									+ datanodes[j]);
+						}
+					}
+
+					OpBlockChecksumResponseProto checksumData = reply
+							.getChecksumResponse();
+
+					// read byte-per-checksum
+					final int bpc = checksumData.getBytesPerCrc();
+					if (i == 0) { // first block
+						bytesPerCRC = bpc;
+					} else if (bpc != bytesPerCRC) {
+						throw new IOException(
+								"Byte-per-checksum not matched: bpc=" + bpc
+										+ " but bytesPerCRC=" + bytesPerCRC);
+					}
+
+					// read crc-per-block
+					final long cpb = checksumData.getCrcPerBlock();
+					if (locatedblocks.size() > 1 && i == 0) {
+						crcPerBlock = cpb;
+					}
+
+					// read md5
+					final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
+							.toByteArray());
+					md5.write(md5out);
+
+					// read crc-type
+					final DataChecksum.Type ct;
+					if (checksumData.hasCrcType()) {
+						ct = PBHelper.convert(checksumData.getCrcType());
+					} else {
+						LOG.debug("Retrieving checksum from an earlier-version DataNode: "
+								+ "inferring checksum by reading first byte");
+						ct = inferChecksumTypeByReading(clientName,
+								socketFactory, socketTimeout, lb, datanodes[j],
+								encryptionKey, connectToDnViaHostname);
+					}
+
+					if (i == 0) { // first block
+						crcType = ct;
+					} else if (crcType != DataChecksum.Type.MIXED
+							&& crcType != ct) {
+						// if crc types are mixed in a file
+						crcType = DataChecksum.Type.MIXED;
+					}
+
+					done = true;
+
+					if (LOG.isDebugEnabled()) {
+						if (i == 0) {
+							LOG.debug("set bytesPerCRC=" + bytesPerCRC
+									+ ", crcPerBlock=" + crcPerBlock);
+						}
+						LOG.debug("got reply from " + datanodes[j] + ": md5="
+								+ md5);
+					}
+				} catch (InvalidBlockTokenException ibte) {
+					if (i > lastRetriedIndex) {
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Got access token error in response to OP_BLOCK_CHECKSUM "
+									+ "for file "
+									+ src
+									+ " for block "
+									+ block
+									+ " from datanode "
+									+ datanodes[j]
+									+ ". Will retry the block once.");
+						}
+						lastRetriedIndex = i;
+						done = true; // actually it's not done; but we'll retry
+						i--; // repeat at i-th block
+						refetchBlocks = true;
+						break;
+					}
+				} catch (IOException ie) {
+					LOG.warn("src=" + src + ", datanodes[" + j + "]="
+							+ datanodes[j], ie);
+				} finally {
+					IOUtils.closeStream(in);
+					IOUtils.closeStream(out);
+				}
+			}
+
+			if (!done) {
+				throw new IOException("Fail to get block MD5 for " + block);
+			}
+		}
+	}
+
+	/**
+	 * Infer the checksum type for a replica by sending an OP_READ_BLOCK for the
+	 * first byte of that replica. This is used for compatibility with older
+	 * HDFS versions which did not include the checksum type in
+	 * OpBlockChecksumResponseProto.
+	 * 
+	 * @param in
+	 *            input stream from datanode
+	 * @param out
+	 *            output stream to datanode
+	 * @param lb
+	 *            the located block
+	 * @param clientName
+	 *            the name of the DFSClient requesting the checksum
+	 * @param dn
+	 *            the connected datanode
+	 * @return the inferred checksum type
+	 * @throws IOException
+	 *             if an error occurs
+	 */
+	private static Type inferChecksumTypeByReading(String clientName,
+			SocketFactory socketFactory, int socketTimeout, LocatedBlock lb,
+			DatanodeInfo dn, DataEncryptionKey encryptionKey,
+			boolean connectToDnViaHostname) throws IOException {
+		IOStreamPair pair = connectToDN(socketFactory, connectToDnViaHostname,
+				encryptionKey, dn, socketTimeout);
+
+		try {
+			DataOutputStream out = new DataOutputStream(
+					new BufferedOutputStream(pair.out,
+							HdfsConstants.SMALL_BUFFER_SIZE));
+			DataInputStream in = new DataInputStream(pair.in);
+
+			new Sender(out).readBlock(lb.getBlock(), lb.getBlockToken(),
+					clientName, 0, 1, true,
+					CachingStrategy.newDefaultStrategy());
+			final BlockOpResponseProto reply = BlockOpResponseProto
+					.parseFrom(PBHelper.vintPrefixed(in));
+
+			if (reply.getStatus() != Status.SUCCESS) {
+				if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {
+					throw new InvalidBlockTokenException();
+				} else {
+					throw new IOException("Bad response " + reply
+							+ " trying to read " + lb.getBlock()
+							+ " from datanode " + dn);
+				}
+			}
+
+			return PBHelper.convert(reply.getReadOpChecksumInfo().getChecksum()
+					.getType());
+		} finally {
+			IOUtils.cleanup(null, pair.in, pair.out);
 		}
 	}
 
@@ -242,8 +541,10 @@ public class RsyncCopy {
 
 	static ClientProtocol createNamenode(ClientProtocol rpcNamenode,
 			Configuration conf) throws IOException {
-		long sleepTime = conf.getLong("dfs.client.rpc.retry.sleep",
-				org.apache.hadoop.hdfs.protocol.HdfsConstants.LEASE_SOFTLIMIT_PERIOD);
+		long sleepTime = conf
+				.getLong(
+						"dfs.client.rpc.retry.sleep",
+						org.apache.hadoop.hdfs.protocol.HdfsConstants.LEASE_SOFTLIMIT_PERIOD);
 		RetryPolicy createPolicy = RetryPolicies
 				.retryUpToMaximumCountWithFixedSleep(5, sleepTime,
 						TimeUnit.MILLISECONDS);
@@ -269,7 +570,8 @@ public class RsyncCopy {
 	private static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();
 		Options options = new Options();
-		formatter.printHelp("Usage : RsyncCopy [options] <srcs....> <dst>", options);
+		formatter.printHelp("Usage : RsyncCopy [options] <srcs....> <dst>",
+				options);
 	}
 
 	protected void checkOpen() throws IOException {
@@ -278,14 +580,13 @@ public class RsyncCopy {
 			throw result;
 		}
 	}
-	
+
 	public static void main(String args[]) throws Exception {
-		if(args.length < 2){
+		if (args.length < 2) {
 			printUsage();
 		}
 		Configuration conf = new Configuration();
-		InetSocketAddress nameNodeAddr = NameNode
-				.getAddress(conf);
+		InetSocketAddress nameNodeAddr = NameNode.getAddress(conf);
 		ClientProtocol rpcNamenode = null;
 		FileSystem.Statistics stats = null;
 		long uniqueId = 0;
