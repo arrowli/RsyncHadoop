@@ -386,7 +386,7 @@ public class RsyncCopy {
 					final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
 							.toByteArray());
 					md5.write(md5out);
-
+					LOG.warn(md5);
 					// read crc-type
 					final DataChecksum.Type ct;
 					if (checksumData.hasCrcType()) {
