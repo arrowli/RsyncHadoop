@@ -202,8 +202,8 @@ public class RsyncCopy {
 			LocatedBlock lb = locatedblocks.get(i);
 			final ExtendedBlock block = lb.getBlock();
 			final DatanodeInfo[] datanodes = lb.getLocations();
-			LOG.debug(block.toString());
-			LOG.debug(datanodes[0].toString());
+			LOG.warn(block.toString());
+			LOG.warn(datanodes[0].toString());
 		}
 	}
 
