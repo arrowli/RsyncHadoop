@@ -168,7 +168,7 @@ public class RsyncCopy {
 				ClientProtocol.class);
 		this.localHost = InetAddress.getLocalHost();
 		this.dfs = (DistributedFileSystem) testPath.getFileSystem(conf);
-		String taskId = conf.get("mapred.task.id");
+		String taskId = conf.get("mapreduce.task.attempt.id");
 		if (taskId != null) {
 			this.clientName = "RsyncCopy_" + taskId + "_" + r.nextInt() + "_"
 					+ Thread.currentThread().getId();
@@ -193,7 +193,7 @@ public class RsyncCopy {
 		this.authority = nameNodeUri == null ? "null" : nameNodeUri
 				.getAuthority();
 
-		this.socketTimeout = conf.getInt("dfs.socket.timeout",
+		this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 				HdfsServerConstants.READ_TIMEOUT);
 		this.namenodeRPCSocketTimeout = 60 * 1000;
 	}
