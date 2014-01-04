@@ -58,6 +58,7 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientReadStatusProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ReadOpChecksumInfoProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
@@ -671,17 +672,17 @@ class DataXceiver extends Receiver implements Runnable {
       }
 
       //write reply
+      org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder builder = OpChunksChecksumResponseProto.newBuilder()             
+              .setBytesPerCrc(bytesPerCRC)
+              .setCrcPerBlock(crcPerBlock)
+              .setBytesPerChunk(bytesPerChunk)
+              .setChunksPerBlock(chunksPerBlock)
+              .setMd5(ByteString.copyFrom(md5.getDigest()))
+              .setCrcType(PBHelper.convert(checksum.getChecksumType()));
+      for(int i = 0 ; i < checksums.size() ; ++i) builder.setChecksums(i, checksums.get(i));
       BlockOpResponseProto.newBuilder()
         .setStatus(SUCCESS)
-        .setChunksChecksumResponse(OpChunksChecksumResponseProto.newBuilder()             
-          .setBytesPerCrc(bytesPerCRC)
-          .setCrcPerBlock(crcPerBlock)
-          .setBytesPerChunk(bytesPerChunk)
-          .setChunksPerBlock(chunksPerBlock)
-          .setChecksums(checksums)
-          .setMd5(ByteString.copyFrom(md5.getDigest()))
-          .setCrcType(PBHelper.convert(checksum.getChecksumType()))
-          )
+        .setChunksChecksumResponse(builder)
         .build()
         .writeDelimitedTo(out);
       out.flush();
