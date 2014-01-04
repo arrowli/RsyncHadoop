@@ -40,6 +40,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -659,7 +660,7 @@ class DataXceiver extends Receiver implements Runnable {
       final int bytesPerChunk = checksum.getChecksumSize();
       final long chunksPerBlock = (metadataIn.getLength()
               - BlockMetadataHeader.getHeaderSize())/checksum.getChecksumSize();
-      final List<Integer> checksums;
+      final List<Integer> checksums = new LinkedList<Integer>();
       int c;
       while((c = metadataIn.read()) != -1) checksums.add(c);
       
