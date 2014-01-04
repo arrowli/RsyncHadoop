@@ -186,9 +186,10 @@ message BlockOpResponseProto {
   optional string firstBadLink = 2;
   optional OpBlockChecksumResponseProto checksumResponse = 3;
   optional ReadOpChecksumInfoProto readOpChecksumInfo = 4;
+  optional OpChunksChecksumResponseProto chunksChecksumResponse = 5;
 
   /** explanatory text which may be useful to log on the client side */
-  optional string message = 5;
+  optional string message = 6;
 
   /** If the server chooses to agree to the request of a client for
    * short-circuit access, it will send a response message with the relevant
@@ -198,7 +199,8 @@ message BlockOpResponseProto {
    * specific version number of the block data that the client is about to
    * read.
    */
-  optional uint32 shortCircuitAccessVersion = 6;
+  optional uint32 shortCircuitAccessVersion = 7;
+  
 }
 
 /**

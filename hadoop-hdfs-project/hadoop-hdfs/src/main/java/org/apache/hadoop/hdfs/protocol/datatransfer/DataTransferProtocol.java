@@ -159,4 +159,14 @@ public interface DataTransferProtocol {
    */
   public void blockChecksum(final ExtendedBlock blk,
       final Token<BlockTokenIdentifier> blockToken) throws IOException;
+  
+  /**
+   * Get chunks checksum (MD5 of CRC32 and list of CRC32).
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @throws IOException
+   */
+  public void chunksChecksum(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken) throws IOException;
 }

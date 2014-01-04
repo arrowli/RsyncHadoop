@@ -40,6 +40,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.hdfs.net.Peer;
@@ -631,6 +632,67 @@ class DataXceiver extends Receiver implements Runnable {
     } finally {
       IOUtils.closeStream(out);
     }
+  }
+  
+  @Override
+  public void chunksChecksum(final ExtendedBlock block,
+      final Token<BlockTokenIdentifier> blockToken) throws IOException {
+    final DataOutputStream out = new DataOutputStream(
+        getOutputStream());
+    checkAccess(out, true, block, blockToken,
+        Op.RSYNC_CHUNKS_CHECKSUM, BlockTokenSecretManager.AccessMode.READ);
+    updateCurrentThreadName("Reading metadata for block " + block);
+    final LengthInputStream metadataIn = 
+      datanode.data.getMetaDataInputStream(block);
+    final DataInputStream checksumIn = new DataInputStream(new BufferedInputStream(
+        metadataIn, HdfsConstants.IO_FILE_BUFFER_SIZE));
+
+    updateCurrentThreadName("Getting checksums for block " + block);
+    try {
+      //read metadata file
+      final BlockMetadataHeader header = BlockMetadataHeader.readHeader(checksumIn);
+      final DataChecksum checksum = header.getChecksum(); 
+      final int bytesPerCRC = checksum.getBytesPerChecksum();
+      final long crcPerBlock = (metadataIn.getLength()
+          - BlockMetadataHeader.getHeaderSize())/checksum.getChecksumSize();
+      final int bytesPerChunk = checksum.getChecksumSize();
+      final long chunksPerBlock = (metadataIn.getLength()
+              - BlockMetadataHeader.getHeaderSize())/checksum.getChecksumSize();
+      final List<Integer> checksums;
+      int c;
+      while((c = metadataIn.read()) != -1) checksums.add(c);
+      
+      //compute block checksum
+      final MD5Hash md5 = MD5Hash.digest(checksumIn);
+
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("block=" + block + ", bytesPerCRC=" + bytesPerCRC
+            + ", crcPerBlock=" + crcPerBlock + ", md5=" + md5);
+      }
+
+      //write reply
+      BlockOpResponseProto.newBuilder()
+        .setStatus(SUCCESS)
+        .setChunksChecksumResponse(OpChunksChecksumResponseProto.newBuilder()             
+          .setBytesPerCrc(bytesPerCRC)
+          .setCrcPerBlock(crcPerBlock)
+          .setBytesPerChunk(bytesPerChunk)
+          .setChunksPerBlock(chunksPerBlock)
+          .setChecksums(checksums)
+          .setMd5(ByteString.copyFrom(md5.getDigest()))
+          .setCrcType(PBHelper.convert(checksum.getChecksumType()))
+          )
+        .build()
+        .writeDelimitedTo(out);
+      out.flush();
+    } finally {
+      IOUtils.closeStream(out);
+      IOUtils.closeStream(checksumIn);
+      IOUtils.closeStream(metadataIn);
+    }
+
+    //update metrics
+    datanode.metrics.addBlockChecksumOp(elapsed());
   }
   
   @Override
