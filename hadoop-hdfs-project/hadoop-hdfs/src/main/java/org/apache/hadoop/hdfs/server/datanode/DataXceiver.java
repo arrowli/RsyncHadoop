@@ -686,6 +686,7 @@ class DataXceiver extends Receiver implements Runnable {
 			byte[] buf = new byte[bytesPerChunk];
 			InputStream blockIn = datanode.data.getBlockInputStream(block, 0);
 			Adler32 cs = new Adler32();
+			
 			while(blockIn.read(buf) != -1){
 				cs.reset();
 				cs.update(buf);
@@ -701,6 +702,8 @@ class DataXceiver extends Receiver implements Runnable {
 						+ ", crcPerBlock=" + crcPerBlock + ", md5=" + md5);
 			}
 			
+			LOG.warn("total length "+metadataIn.getLength());
+			LOG.warn("header length "+BlockMetadataHeader.getHeaderSize());
 			LOG.warn("chunkPerBlock "+chunksPerBlock);
 			LOG.warn("bytesPerChunk "+bytesPerChunk);
 			
