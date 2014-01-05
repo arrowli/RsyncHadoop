@@ -694,16 +694,17 @@ class DataXceiver extends Receiver implements Runnable {
 			}
 
 			// write reply
-			org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder builder = OpChunksChecksumResponseProto
-					.newBuilder().setBytesPerCrc(bytesPerCRC)
-					.setCrcPerBlock(crcPerBlock)
-					.setBytesPerChunk(bytesPerChunk)
-					.setChunksPerBlock(chunksPerBlock)
-					.addAllChecksums(checksums)
-					.setMd5(ByteString.copyFrom(md5.getDigest()))
-					.setCrcType(PBHelper.convert(checksum.getChecksumType()));
 			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
-					.setChunksChecksumResponse(builder).build()
+					.setChunksChecksumResponse(OpChunksChecksumResponseProto
+							.newBuilder().setBytesPerCrc(bytesPerCRC)
+							.setCrcPerBlock(crcPerBlock)
+							.setBytesPerChunk(bytesPerChunk)
+							.setChunksPerBlock(chunksPerBlock)
+							.addAllChecksums(checksums)
+							.setMd5(ByteString.copyFrom(md5.getDigest()))
+							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
+							)
+					.build()
 					.writeDelimitedTo(out);
 			out.flush();
 		} finally {
