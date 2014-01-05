@@ -60,6 +60,7 @@ import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
 import org.apache.hadoop.hdfs.security.token.block.DataEncryptionKey;
 import org.apache.hadoop.hdfs.security.token.block.InvalidBlockTokenException;
 import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
+import org.apache.hadoop.hdfs.server.datanode.BlockMetadataHeader;
 import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.io.DataOutputBuffer;
@@ -344,6 +345,8 @@ public class RsyncCopy {
 							pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
 					in = new DataInputStream(pair.in);
 
+					LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
+					
 					if (LOG.isDebugEnabled()) {
 						LOG.debug("write to " + datanodes[j] + ": "
 								+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
