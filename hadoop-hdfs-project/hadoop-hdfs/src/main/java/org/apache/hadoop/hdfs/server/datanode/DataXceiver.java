@@ -677,7 +677,7 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = 2^20;
+			final int bytesPerChunk = 10*1024*1024;
 			final long chunksPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			final List<Integer> checksums = new LinkedList<Integer>();
