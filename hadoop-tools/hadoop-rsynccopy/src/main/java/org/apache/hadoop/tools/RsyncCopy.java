@@ -351,7 +351,8 @@ public class RsyncCopy {
 					// get block MD5
 					new Sender(out).chunksChecksum(block, lb.getBlockToken());
 
-					final BlockOpResponseProto reply = BlockOpResponseProto.parseDelimitedFrom(in);
+					final BlockOpResponseProto reply = BlockOpResponseProto
+							.parseFrom(PBHelper.vintPrefixed(in));
 
 					if (reply.getStatus() != Status.SUCCESS) {
 						if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {

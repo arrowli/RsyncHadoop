@@ -700,7 +700,7 @@ class DataXceiver extends Receiver implements Runnable {
 							.setCrcPerBlock(crcPerBlock)
 							.setBytesPerChunk(bytesPerChunk)
 							.setChunksPerBlock(chunksPerBlock)
-							.addAllChecksums(checksums)
+							//.addAllChecksums(checksums)
 							.setMd5(ByteString.copyFrom(md5.getDigest()))
 							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
 							)
