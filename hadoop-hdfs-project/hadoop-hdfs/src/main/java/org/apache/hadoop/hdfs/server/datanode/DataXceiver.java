@@ -83,7 +83,7 @@ import com.google.protobuf.ByteString;
  * Thread for processing incoming/outgoing data stream.
  */
 class DataXceiver extends Receiver implements Runnable {
-	public static final com.sun.tools.javac.util.Log LOG = DataNode.LOG;
+	public static final Log LOG = DataNode.LOG;
 	static final Log ClientTraceLog = DataNode.ClientTraceLog;
 
 	private final Peer peer;
@@ -693,9 +693,9 @@ class DataXceiver extends Receiver implements Runnable {
 						+ ", crcPerBlock=" + crcPerBlock + ", md5=" + md5);
 			}
 			
-			LOG.printNoteLines("chunkPerBlock %d", chunksPerBlock);
-			LOG.printNoteLines("bytesPerChunk %d", bytesPerChunk);
-			LOG.printNoteLines("checksums[0] %x", checksums.get(0));
+			LOG.warn("chunkPerBlock %d"+chunksPerBlock);
+			LOG.warn("bytesPerChunk %d"+bytesPerChunk);
+			LOG.warn("checksums[0] %x"+checksums.get(0));
 			
 			// write reply
 			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
