@@ -85,6 +85,7 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Op;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 
@@ -345,10 +346,10 @@ public class RsyncCopy {
 
 					if (LOG.isDebugEnabled()) {
 						LOG.debug("write to " + datanodes[j] + ": "
-								+ Op.BLOCK_CHECKSUM + ", block=" + block);
+								+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
 					}
 					// get block MD5
-					new Sender(out).blockChecksum(block, lb.getBlockToken());
+					new Sender(out).chunksChecksum(block, lb.getBlockToken());
 
 					final BlockOpResponseProto reply = BlockOpResponseProto
 							.parseFrom(PBHelper.vintPrefixed(in));
@@ -363,8 +364,8 @@ public class RsyncCopy {
 						}
 					}
 
-					OpBlockChecksumResponseProto checksumData = reply
-							.getChecksumResponse();
+					OpChunksChecksumResponseProto checksumData = reply
+							.getChunksChecksumResponse();
 
 					// read byte-per-checksum
 					final int bpc = checksumData.getBytesPerCrc();
@@ -382,6 +383,15 @@ public class RsyncCopy {
 						crcPerBlock = cpb;
 					}
 
+					final List<Integer> checksums = checksumData.getChecksumsList();
+					
+					LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
+					LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
+					LOG.warn("checksum list:");
+					for(int cs : checksums){
+						LOG.warn(cs);
+					}
+					
 					// read md5
 					final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
 							.toByteArray());

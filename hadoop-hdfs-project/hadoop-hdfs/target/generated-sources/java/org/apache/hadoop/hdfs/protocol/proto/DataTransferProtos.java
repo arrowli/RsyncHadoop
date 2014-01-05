@@ -13010,9 +13010,23 @@ public final class DataTransferProtos {
      */
     org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ReadOpChecksumInfoProtoOrBuilder getReadOpChecksumInfoOrBuilder();
 
-    // optional string message = 5;
+    // optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    boolean hasChunksChecksumResponse();
+    /**
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto getChunksChecksumResponse();
+    /**
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder getChunksChecksumResponseOrBuilder();
+
+    // optional string message = 6;
+    /**
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
@@ -13020,7 +13034,7 @@ public final class DataTransferProtos {
      */
     boolean hasMessage();
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
@@ -13028,7 +13042,7 @@ public final class DataTransferProtos {
      */
     java.lang.String getMessage();
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
@@ -13037,9 +13051,9 @@ public final class DataTransferProtos {
     com.google.protobuf.ByteString
         getMessageBytes();
 
-    // optional uint32 shortCircuitAccessVersion = 6;
+    // optional uint32 shortCircuitAccessVersion = 7;
     /**
-     * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+     * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
      *
      * <pre>
      ** If the server chooses to agree to the request of a client for
@@ -13053,7 +13067,7 @@ public final class DataTransferProtos {
      */
     boolean hasShortCircuitAccessVersion();
     /**
-     * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+     * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
      *
      * <pre>
      ** If the server chooses to agree to the request of a client for
@@ -13161,12 +13175,25 @@ public final class DataTransferProtos {
               break;
             }
             case 42: {
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000010) == 0x00000010)) {
+                subBuilder = chunksChecksumResponse_.toBuilder();
+              }
+              chunksChecksumResponse_ = input.readMessage(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(chunksChecksumResponse_);
+                chunksChecksumResponse_ = subBuilder.buildPartial();
+              }
               bitField0_ |= 0x00000010;
+              break;
+            }
+            case 50: {
+              bitField0_ |= 0x00000020;
               message_ = input.readBytes();
               break;
             }
-            case 48: {
-              bitField0_ |= 0x00000020;
+            case 56: {
+              bitField0_ |= 0x00000040;
               shortCircuitAccessVersion_ = input.readUInt32();
               break;
             }
@@ -13313,21 +13340,43 @@ public final class DataTransferProtos {
       return readOpChecksumInfo_;
     }
 
-    // optional string message = 5;
-    public static final int MESSAGE_FIELD_NUMBER = 5;
+    // optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;
+    public static final int CHUNKSCHECKSUMRESPONSE_FIELD_NUMBER = 5;
+    private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto chunksChecksumResponse_;
+    /**
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    public boolean hasChunksChecksumResponse() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto getChunksChecksumResponse() {
+      return chunksChecksumResponse_;
+    }
+    /**
+     * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder getChunksChecksumResponseOrBuilder() {
+      return chunksChecksumResponse_;
+    }
+
+    // optional string message = 6;
+    public static final int MESSAGE_FIELD_NUMBER = 6;
     private java.lang.Object message_;
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
      * </pre>
      */
     public boolean hasMessage() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
@@ -13348,7 +13397,7 @@ public final class DataTransferProtos {
       }
     }
     /**
-     * <code>optional string message = 5;</code>
+     * <code>optional string message = 6;</code>
      *
      * <pre>
      ** explanatory text which may be useful to log on the client side 
@@ -13368,11 +13417,11 @@ public final class DataTransferProtos {
       }
     }
 
-    // optional uint32 shortCircuitAccessVersion = 6;
-    public static final int SHORTCIRCUITACCESSVERSION_FIELD_NUMBER = 6;
+    // optional uint32 shortCircuitAccessVersion = 7;
+    public static final int SHORTCIRCUITACCESSVERSION_FIELD_NUMBER = 7;
     private int shortCircuitAccessVersion_;
     /**
-     * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+     * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
      *
      * <pre>
      ** If the server chooses to agree to the request of a client for
@@ -13385,10 +13434,10 @@ public final class DataTransferProtos {
      * </pre>
      */
     public boolean hasShortCircuitAccessVersion() {
-      return ((bitField0_ & 0x00000020) == 0x00000020);
+      return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+     * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
      *
      * <pre>
      ** If the server chooses to agree to the request of a client for
@@ -13409,6 +13458,7 @@ public final class DataTransferProtos {
       firstBadLink_ = "";
       checksumResponse_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto.getDefaultInstance();
       readOpChecksumInfo_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ReadOpChecksumInfoProto.getDefaultInstance();
+      chunksChecksumResponse_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.getDefaultInstance();
       message_ = "";
       shortCircuitAccessVersion_ = 0;
     }
@@ -13433,6 +13483,12 @@ public final class DataTransferProtos {
           return false;
         }
       }
+      if (hasChunksChecksumResponse()) {
+        if (!getChunksChecksumResponse().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -13453,10 +13509,13 @@ public final class DataTransferProtos {
         output.writeMessage(4, readOpChecksumInfo_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getMessageBytes());
+        output.writeMessage(5, chunksChecksumResponse_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeUInt32(6, shortCircuitAccessVersion_);
+        output.writeBytes(6, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeUInt32(7, shortCircuitAccessVersion_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -13485,11 +13544,15 @@ public final class DataTransferProtos {
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getMessageBytes());
+          .computeMessageSize(5, chunksChecksumResponse_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(6, shortCircuitAccessVersion_);
+          .computeBytesSize(6, getMessageBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(7, shortCircuitAccessVersion_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -13534,6 +13597,11 @@ public final class DataTransferProtos {
         result = result && getReadOpChecksumInfo()
             .equals(other.getReadOpChecksumInfo());
       }
+      result = result && (hasChunksChecksumResponse() == other.hasChunksChecksumResponse());
+      if (hasChunksChecksumResponse()) {
+        result = result && getChunksChecksumResponse()
+            .equals(other.getChunksChecksumResponse());
+      }
       result = result && (hasMessage() == other.hasMessage());
       if (hasMessage()) {
         result = result && getMessage()
@@ -13572,6 +13640,10 @@ public final class DataTransferProtos {
       if (hasReadOpChecksumInfo()) {
         hash = (37 * hash) + READOPCHECKSUMINFO_FIELD_NUMBER;
         hash = (53 * hash) + getReadOpChecksumInfo().hashCode();
+      }
+      if (hasChunksChecksumResponse()) {
+        hash = (37 * hash) + CHUNKSCHECKSUMRESPONSE_FIELD_NUMBER;
+        hash = (53 * hash) + getChunksChecksumResponse().hashCode();
       }
       if (hasMessage()) {
         hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
@@ -13684,6 +13756,7 @@ public final class DataTransferProtos {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getChecksumResponseFieldBuilder();
           getReadOpChecksumInfoFieldBuilder();
+          getChunksChecksumResponseFieldBuilder();
         }
       }
       private static Builder create() {
@@ -13708,10 +13781,16 @@ public final class DataTransferProtos {
           readOpChecksumInfoBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000008);
-        message_ = "";
+        if (chunksChecksumResponseBuilder_ == null) {
+          chunksChecksumResponse_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.getDefaultInstance();
+        } else {
+          chunksChecksumResponseBuilder_.clear();
+        }
         bitField0_ = (bitField0_ & ~0x00000010);
-        shortCircuitAccessVersion_ = 0;
+        message_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
+        shortCircuitAccessVersion_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -13767,9 +13846,17 @@ public final class DataTransferProtos {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.message_ = message_;
+        if (chunksChecksumResponseBuilder_ == null) {
+          result.chunksChecksumResponse_ = chunksChecksumResponse_;
+        } else {
+          result.chunksChecksumResponse_ = chunksChecksumResponseBuilder_.build();
+        }
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
+        }
+        result.message_ = message_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
         }
         result.shortCircuitAccessVersion_ = shortCircuitAccessVersion_;
         result.bitField0_ = to_bitField0_;
@@ -13802,8 +13889,11 @@ public final class DataTransferProtos {
         if (other.hasReadOpChecksumInfo()) {
           mergeReadOpChecksumInfo(other.getReadOpChecksumInfo());
         }
+        if (other.hasChunksChecksumResponse()) {
+          mergeChunksChecksumResponse(other.getChunksChecksumResponse());
+        }
         if (other.hasMessage()) {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           message_ = other.message_;
           onChanged();
         }
@@ -13827,6 +13917,12 @@ public final class DataTransferProtos {
         }
         if (hasReadOpChecksumInfo()) {
           if (!getReadOpChecksumInfo().isInitialized()) {
+            
+            return false;
+          }
+        }
+        if (hasChunksChecksumResponse()) {
+          if (!getChunksChecksumResponse().isInitialized()) {
             
             return false;
           }
@@ -14197,20 +14293,137 @@ public final class DataTransferProtos {
         return readOpChecksumInfoBuilder_;
       }
 
-      // optional string message = 5;
+      // optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;
+      private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto chunksChecksumResponse_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder> chunksChecksumResponseBuilder_;
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public boolean hasChunksChecksumResponse() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto getChunksChecksumResponse() {
+        if (chunksChecksumResponseBuilder_ == null) {
+          return chunksChecksumResponse_;
+        } else {
+          return chunksChecksumResponseBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public Builder setChunksChecksumResponse(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto value) {
+        if (chunksChecksumResponseBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          chunksChecksumResponse_ = value;
+          onChanged();
+        } else {
+          chunksChecksumResponseBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public Builder setChunksChecksumResponse(
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder builderForValue) {
+        if (chunksChecksumResponseBuilder_ == null) {
+          chunksChecksumResponse_ = builderForValue.build();
+          onChanged();
+        } else {
+          chunksChecksumResponseBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public Builder mergeChunksChecksumResponse(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto value) {
+        if (chunksChecksumResponseBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010) &&
+              chunksChecksumResponse_ != org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.getDefaultInstance()) {
+            chunksChecksumResponse_ =
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.newBuilder(chunksChecksumResponse_).mergeFrom(value).buildPartial();
+          } else {
+            chunksChecksumResponse_ = value;
+          }
+          onChanged();
+        } else {
+          chunksChecksumResponseBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000010;
+        return this;
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public Builder clearChunksChecksumResponse() {
+        if (chunksChecksumResponseBuilder_ == null) {
+          chunksChecksumResponse_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.getDefaultInstance();
+          onChanged();
+        } else {
+          chunksChecksumResponseBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000010);
+        return this;
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder getChunksChecksumResponseBuilder() {
+        bitField0_ |= 0x00000010;
+        onChanged();
+        return getChunksChecksumResponseFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder getChunksChecksumResponseOrBuilder() {
+        if (chunksChecksumResponseBuilder_ != null) {
+          return chunksChecksumResponseBuilder_.getMessageOrBuilder();
+        } else {
+          return chunksChecksumResponse_;
+        }
+      }
+      /**
+       * <code>optional .hadoop.hdfs.OpChunksChecksumResponseProto chunksChecksumResponse = 5;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder> 
+          getChunksChecksumResponseFieldBuilder() {
+        if (chunksChecksumResponseBuilder_ == null) {
+          chunksChecksumResponseBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProtoOrBuilder>(
+                  chunksChecksumResponse_,
+                  getParentForChildren(),
+                  isClean());
+          chunksChecksumResponse_ = null;
+        }
+        return chunksChecksumResponseBuilder_;
+      }
+
+      // optional string message = 6;
       private java.lang.Object message_ = "";
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
        * </pre>
        */
       public boolean hasMessage() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
@@ -14228,7 +14441,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
@@ -14248,7 +14461,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
@@ -14259,26 +14472,26 @@ public final class DataTransferProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         message_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
        * </pre>
        */
       public Builder clearMessage() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         message_ = getDefaultInstance().getMessage();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string message = 5;</code>
+       * <code>optional string message = 6;</code>
        *
        * <pre>
        ** explanatory text which may be useful to log on the client side 
@@ -14289,16 +14502,16 @@ public final class DataTransferProtos {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         message_ = value;
         onChanged();
         return this;
       }
 
-      // optional uint32 shortCircuitAccessVersion = 6;
+      // optional uint32 shortCircuitAccessVersion = 7;
       private int shortCircuitAccessVersion_ ;
       /**
-       * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+       * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
        *
        * <pre>
        ** If the server chooses to agree to the request of a client for
@@ -14311,10 +14524,10 @@ public final class DataTransferProtos {
        * </pre>
        */
       public boolean hasShortCircuitAccessVersion() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
+        return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+       * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
        *
        * <pre>
        ** If the server chooses to agree to the request of a client for
@@ -14330,7 +14543,7 @@ public final class DataTransferProtos {
         return shortCircuitAccessVersion_;
       }
       /**
-       * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+       * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
        *
        * <pre>
        ** If the server chooses to agree to the request of a client for
@@ -14343,13 +14556,13 @@ public final class DataTransferProtos {
        * </pre>
        */
       public Builder setShortCircuitAccessVersion(int value) {
-        bitField0_ |= 0x00000020;
+        bitField0_ |= 0x00000040;
         shortCircuitAccessVersion_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional uint32 shortCircuitAccessVersion = 6;</code>
+       * <code>optional uint32 shortCircuitAccessVersion = 7;</code>
        *
        * <pre>
        ** If the server chooses to agree to the request of a client for
@@ -14362,7 +14575,7 @@ public final class DataTransferProtos {
        * </pre>
        */
       public Builder clearShortCircuitAccessVersion() {
-        bitField0_ = (bitField0_ & ~0x00000020);
+        bitField0_ = (bitField0_ & ~0x00000040);
         shortCircuitAccessVersion_ = 0;
         onChanged();
         return this;
@@ -17867,33 +18080,34 @@ public final class DataTransferProtos {
       "dfs.Status\022!\n\026downstreamAckTimeNanos\030\003 \001" +
       "(\004:\0010\"\\\n\027ReadOpChecksumInfoProto\022,\n\010chec" +
       "ksum\030\001 \002(\0132\032.hadoop.hdfs.ChecksumProto\022\023",
-      "\n\013chunkOffset\030\002 \002(\004\"\214\002\n\024BlockOpResponseP" +
+      "\n\013chunkOffset\030\002 \002(\004\"\330\002\n\024BlockOpResponseP" +
       "roto\022#\n\006status\030\001 \002(\0162\023.hadoop.hdfs.Statu" +
       "s\022\024\n\014firstBadLink\030\002 \001(\t\022C\n\020checksumRespo" +
       "nse\030\003 \001(\0132).hadoop.hdfs.OpBlockChecksumR" +
       "esponseProto\022@\n\022readOpChecksumInfo\030\004 \001(\013" +
-      "2$.hadoop.hdfs.ReadOpChecksumInfoProto\022\017" +
-      "\n\007message\030\005 \001(\t\022!\n\031shortCircuitAccessVer" +
-      "sion\030\006 \001(\r\"<\n\025ClientReadStatusProto\022#\n\006s" +
-      "tatus\030\001 \002(\0162\023.hadoop.hdfs.Status\"9\n\022DNTr" +
-      "ansferAckProto\022#\n\006status\030\001 \002(\0162\023.hadoop.",
-      "hdfs.Status\"\206\001\n\034OpBlockChecksumResponseP" +
-      "roto\022\023\n\013bytesPerCrc\030\001 \002(\r\022\023\n\013crcPerBlock" +
-      "\030\002 \002(\004\022\013\n\003md5\030\003 \002(\014\022/\n\007crcType\030\004 \001(\0162\036.h" +
-      "adoop.hdfs.ChecksumTypeProto\"E\n\025OpChunks" +
-      "ChecksumProto\022,\n\006header\030\001 \002(\0132\034.hadoop.h" +
-      "dfs.BaseHeaderProto\"\311\001\n\035OpChunksChecksum" +
-      "ResponseProto\022\023\n\013bytesPerCrc\030\001 \002(\r\022\023\n\013cr" +
-      "cPerBlock\030\002 \002(\004\022\025\n\rbytesPerChunk\030\003 \002(\r\022\026" +
-      "\n\016chunksPerBlock\030\004 \002(\004\022\021\n\tchecksums\030\005 \003(" +
-      "\r\022\013\n\003md5\030\006 \002(\014\022/\n\007crcType\030\007 \001(\0162\036.hadoop",
-      ".hdfs.ChecksumTypeProto*\231\001\n\006Status\022\013\n\007SU" +
-      "CCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM\020\002\022\021" +
-      "\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022\026\n\022E" +
-      "RROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006\022\025\n\021" +
-      "ERROR_UNSUPPORTED\020\007B>\n%org.apache.hadoop" +
-      ".hdfs.protocol.protoB\022DataTransferProtos" +
-      "\240\001\001"
+      "2$.hadoop.hdfs.ReadOpChecksumInfoProto\022J" +
+      "\n\026chunksChecksumResponse\030\005 \001(\0132*.hadoop." +
+      "hdfs.OpChunksChecksumResponseProto\022\017\n\007me" +
+      "ssage\030\006 \001(\t\022!\n\031shortCircuitAccessVersion" +
+      "\030\007 \001(\r\"<\n\025ClientReadStatusProto\022#\n\006statu",
+      "s\030\001 \002(\0162\023.hadoop.hdfs.Status\"9\n\022DNTransf" +
+      "erAckProto\022#\n\006status\030\001 \002(\0162\023.hadoop.hdfs" +
+      ".Status\"\206\001\n\034OpBlockChecksumResponseProto" +
+      "\022\023\n\013bytesPerCrc\030\001 \002(\r\022\023\n\013crcPerBlock\030\002 \002" +
+      "(\004\022\013\n\003md5\030\003 \002(\014\022/\n\007crcType\030\004 \001(\0162\036.hadoo" +
+      "p.hdfs.ChecksumTypeProto\"E\n\025OpChunksChec" +
+      "ksumProto\022,\n\006header\030\001 \002(\0132\034.hadoop.hdfs." +
+      "BaseHeaderProto\"\311\001\n\035OpChunksChecksumResp" +
+      "onseProto\022\023\n\013bytesPerCrc\030\001 \002(\r\022\023\n\013crcPer" +
+      "Block\030\002 \002(\004\022\025\n\rbytesPerChunk\030\003 \002(\r\022\026\n\016ch",
+      "unksPerBlock\030\004 \002(\004\022\021\n\tchecksums\030\005 \003(\r\022\013\n" +
+      "\003md5\030\006 \002(\014\022/\n\007crcType\030\007 \001(\0162\036.hadoop.hdf" +
+      "s.ChecksumTypeProto*\231\001\n\006Status\022\013\n\007SUCCES" +
+      "S\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM\020\002\022\021\n\rER" +
+      "ROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022\026\n\022ERROR" +
+      "_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006\022\025\n\021ERRO" +
+      "R_UNSUPPORTED\020\007B>\n%org.apache.hadoop.hdf" +
+      "s.protocol.protoB\022DataTransferProtos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -17995,7 +18209,7 @@ public final class DataTransferProtos {
           internal_static_hadoop_hdfs_BlockOpResponseProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_BlockOpResponseProto_descriptor,
-              new java.lang.String[] { "Status", "FirstBadLink", "ChecksumResponse", "ReadOpChecksumInfo", "Message", "ShortCircuitAccessVersion", });
+              new java.lang.String[] { "Status", "FirstBadLink", "ChecksumResponse", "ReadOpChecksumInfo", "ChunksChecksumResponse", "Message", "ShortCircuitAccessVersion", });
           internal_static_hadoop_hdfs_ClientReadStatusProto_descriptor =
             getDescriptor().getMessageTypes().get(16);
           internal_static_hadoop_hdfs_ClientReadStatusProto_fieldAccessorTable = new
