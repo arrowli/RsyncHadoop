@@ -693,9 +693,9 @@ class DataXceiver extends Receiver implements Runnable {
 						+ ", crcPerBlock=" + crcPerBlock + ", md5=" + md5);
 			}
 			
-			LOG.warn("chunkPerBlock %d"+chunksPerBlock);
-			LOG.warn("bytesPerChunk %d"+bytesPerChunk);
-			LOG.warn("checksums[0] %x"+checksums.get(0));
+			LOG.warn("chunkPerBlock "+chunksPerBlock);
+			LOG.warn("bytesPerChunk "+bytesPerChunk);
+			LOG.warn("checksums[0] "+Integer.toHexString(checksums.get(0)));
 			
 			// write reply
 			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
@@ -704,7 +704,7 @@ class DataXceiver extends Receiver implements Runnable {
 							.setCrcPerBlock(crcPerBlock)
 							.setBytesPerChunk(bytesPerChunk)
 							.setChunksPerBlock(chunksPerBlock)
-							//.addAllChecksums(checksums)
+							.addAllChecksums(checksums)
 							.setMd5(ByteString.copyFrom(md5.getDigest()))
 							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
 							)
