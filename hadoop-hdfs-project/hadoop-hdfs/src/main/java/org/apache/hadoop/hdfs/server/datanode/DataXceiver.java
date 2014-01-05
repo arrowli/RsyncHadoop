@@ -42,6 +42,7 @@ import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.Adler32;
 
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.hdfs.net.Peer;
@@ -676,15 +677,22 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = checksum.getChecksumSize();
+			final int bytesPerChunk = 2^20;
 			final long chunksPerBlock = (metadataIn.getLength() - BlockMetadataHeader
-					.getHeaderSize()) / checksum.getChecksumSize();
+					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			final List<Integer> checksums = new LinkedList<Integer>();
 
-			for (int i = 0; i < chunksPerBlock; i++) {
-				checksums.add(checksumIn.readInt());
+			//generate checksum, chunk = 1MB = 1 * 2^20 B
+			byte[] buf = new byte[bytesPerChunk];
+			InputStream blockIn = datanode.data.getBlockInputStream(block, 0);
+			Adler32 cs = new Adler32();
+			while(blockIn.read(buf) != -1){
+				cs.reset();
+				cs.update(buf);
+				checksums.add(Integer.decode(Long.toString(cs.getValue())));
 			}
-
+			blockIn.close();
+			
 			// compute block checksum
 			final MD5Hash md5 = MD5Hash.digest(checksumIn);
 

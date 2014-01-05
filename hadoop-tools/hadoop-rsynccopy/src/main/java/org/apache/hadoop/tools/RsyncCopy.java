@@ -391,8 +391,8 @@ public class RsyncCopy {
 					LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
 					LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
 					LOG.warn("checksum list:");
-					for(int cs : checksums){
-						LOG.warn(cs);
+					for(Integer cs : checksums){
+						LOG.warn(Integer.toHexString(cs));
 					}
 					
 					// read md5
