@@ -689,7 +689,7 @@ class DataXceiver extends Receiver implements Runnable {
 			while(blockIn.read(buf) != -1){
 				cs.reset();
 				cs.update(buf);
-				checksums.add(Integer.decode(Long.toString(cs.getValue())));
+				checksums.add((int)cs.getValue());
 			}
 			blockIn.close();
 			
@@ -703,7 +703,6 @@ class DataXceiver extends Receiver implements Runnable {
 			
 			LOG.warn("chunkPerBlock "+chunksPerBlock);
 			LOG.warn("bytesPerChunk "+bytesPerChunk);
-			LOG.warn("checksums[0] "+Integer.toHexString(checksums.get(0)));
 			
 			// write reply
 			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
