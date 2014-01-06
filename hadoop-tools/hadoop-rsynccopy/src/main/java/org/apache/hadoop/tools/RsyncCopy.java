@@ -598,6 +598,7 @@ public class RsyncCopy {
 
 	/* @deprecated */
 	void addNewBlock(String src) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
+		HdfsFileStatus fileInfo = namenode.getFileInfo(src);
 		LocatedBlock lb = namenode.append(src, clientName);
 		LocatedBlock lb1 = namenode.addBlock(src , clientName , lb.getBlock() , null, fileInfo.getFileId() , null);
 		LocatedBlock lb2 = namenode.addBlock(src , clientName , lb1.getBlock() , null, fileInfo.getFileId() , null);
