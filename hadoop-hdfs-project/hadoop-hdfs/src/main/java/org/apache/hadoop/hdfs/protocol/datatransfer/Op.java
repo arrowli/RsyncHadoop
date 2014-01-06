@@ -37,7 +37,8 @@ public enum Op {
   TRANSFER_BLOCK((byte)86),
   REQUEST_SHORT_CIRCUIT_FDS((byte)87),
   
-  RSYNC_CHUNKS_CHECKSUM((byte)88);
+  RSYNC_CHUNKS_CHECKSUM((byte)88),
+  RSYNC_CHOOSE_SEGMENT((byte)89);
 
   /** The code for this operation. */
   public final byte code;

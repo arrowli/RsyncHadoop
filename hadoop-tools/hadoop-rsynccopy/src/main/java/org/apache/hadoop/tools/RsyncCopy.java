@@ -49,12 +49,14 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsServerDefaults;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.UnresolvedLinkException;
 import org.apache.hadoop.hdfs.DFSClient.Conf;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
 import org.apache.hadoop.hdfs.protocol.ClientProtocol;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.ExtendedBlock;
 import org.apache.hadoop.hdfs.protocol.HdfsConstants;
+import org.apache.hadoop.hdfs.protocol.HdfsFileStatus;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.LocatedBlocks;
 import org.apache.hadoop.hdfs.security.token.block.DataEncryptionKey;
@@ -594,6 +596,16 @@ public class RsyncCopy {
 		}
 	}
 
+	/* @deprecated */
+	void addNewBlock(String src) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
+		HdfsFileStatus fileInfo = namenode.getFileInfo(src);
+		LocatedBlocks lbs = namenode.getBlockLocations(src, 0, fileInfo.getLen());
+		LocatedBlock lb1 = namenode.addBlock(src , clientName , lbs.getLastLocatedBlock().getBlock() , null, fileInfo.getFileId() , null);
+		LocatedBlock lb2 = namenode.addBlock(src , clientName , lb1.getBlock() , null, fileInfo.getFileId() , null);
+		LOG.warn("add block1 : "+lb1);
+		LOG.warn("add block2 : "+lb2);
+	}
+	
 	public static void main(String args[]) throws Exception {
 		if (args.length < 2) {
 			printUsage();
@@ -608,6 +620,7 @@ public class RsyncCopy {
 				uniqueId, dfs);
 		String src = "/test";
 		rc.getFileChecksum(src);
+		rc.addNewBlock(src);
 		System.exit(0);
 	}
 }
