@@ -70,6 +70,7 @@ import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
 import org.apache.hadoop.hdfs.server.datanode.DataNode.ShortCircuitFdsUnsupportedException;
 import org.apache.hadoop.hdfs.server.datanode.DataNode.ShortCircuitFdsVersionException;
 import org.apache.hadoop.hdfs.server.datanode.fsdataset.LengthInputStream;
+import org.apache.hadoop.hdfs.server.datanode.fsdataset.ReplicaOutputStreams;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.MD5Hash;
@@ -77,6 +78,7 @@ import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.token.SecretManager.InvalidToken;
 import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.util.DataChecksum;
+import org.apache.hadoop.util.DataChecksum.Type;
 
 import com.google.protobuf.ByteString;
 
@@ -641,7 +643,47 @@ class DataXceiver extends Receiver implements Runnable {
 			final String clientname, final long newSize,
 			final long latestGenerationStamp)
 			throws IOException {
+		final boolean isDatanode = clientname.length() == 0;
+		final boolean isClient = !isDatanode;
+
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("opInflateBlock:  clientname="
+					+ clientname + "\n  block  =" + block + ", newGs="
+					+ latestGenerationStamp);
+			LOG.debug("isDatanode=" + isDatanode + ", isClient=" + isClient);
+			LOG.debug("inflateBlock new block size " + newSize);
+		}
+
+		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		
+		checkAccess(out, isClient, block, blockToken, Op.WRITE_BLOCK,
+				BlockTokenSecretManager.AccessMode.WRITE);
+		OutputStream dout = null;
+		OutputStream cout = null;
+		try{
+			ReplicaInPipelineInterface replicaInfo = datanode.data.createTemporary(block);
+			ReplicaOutputStreams streams = replicaInfo.createStreams(true,DataChecksum.newDataChecksum(Type.DEFAULT, 10*1024*1024 /*bytesPerChecksum*/));
+			dout = streams.getDataOut(); // to block file at local disk
+			cout = streams.getChecksumOut(); // output stream for checksum file
+
+			byte[] b = new byte[(int)newSize];
+			dout.write(b);
+
+			// update its generation stamp
+			block.setGenerationStamp(latestGenerationStamp);
+			block.setNumBytes(newSize);
+		} catch (IOException ioe) {
+			LOG.info("opInflateBlock " + block + " received exception " + ioe);
+			throw ioe;
+		} finally {
+			// close all opened streams
+			dout.close();
+			cout.close();
+		}
+
+		// update metrics
+		datanode.metrics.addWriteBlockOp(elapsed());
+		datanode.metrics.incrWritesFromClient(peer.isLocal());
 	}
 	
 	@Override

@@ -601,9 +601,57 @@ public class RsyncCopy {
 		HdfsFileStatus fileInfo = namenode.getFileInfo(src);
 		LocatedBlock lb = namenode.append(src, clientName);
 		LocatedBlock lb1 = namenode.addBlock(src , clientName , lb.getBlock() , null, fileInfo.getFileId() , null);
-		LocatedBlock lb2 = namenode.addBlock(src , clientName , lb1.getBlock() , null, fileInfo.getFileId() , null);
+		
+		final DatanodeInfo[] datanodes = lb1.getLocations();
+
+		// try each datanode location of the block
+		final int timeout = 3000 * datanodes.length + socketTimeout;
+		boolean done = false;
+		for (int j = 0; !done && j < datanodes.length; j++) {
+			DataOutputStream out = null;
+			DataInputStream in = null;
+
+			try {
+				// connect to a datanode
+				IOStreamPair pair = connectToDN(socketFactory,
+						connectToDnViaHostname, getDataEncryptionKey(),
+						datanodes[j], timeout);
+				out = new DataOutputStream(new BufferedOutputStream(
+						pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+				in = new DataInputStream(pair.in);
+
+				LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
+				
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("write to " + datanodes[j] + ": "
+							+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + lb.getBlock());
+				}
+				// inflate block
+				new Sender(out).inflateBlock(lb1.getBlock(), lb1.getBlockToken(), clientName, 10*1024*1024, 0);
+				//new Sender(out).chunksChecksum(block, lb.getBlockToken());
+
+				final BlockOpResponseProto reply = BlockOpResponseProto
+						.parseFrom(PBHelper.vintPrefixed(in));
+
+				if (reply.getStatus() != Status.SUCCESS) {
+					if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {
+						throw new InvalidBlockTokenException();
+					} else {
+						throw new IOException("Bad response " + reply
+								+ " for block " + lb1 + " from datanode "
+								+ datanodes[j]);
+					}
+				}
+			} catch (IOException ie) {
+				LOG.warn("src=" + src + ", datanodes[" + j + "]="
+						+ datanodes[j], ie);
+			} finally {
+				IOUtils.closeStream(in);
+				IOUtils.closeStream(out);
+			}
+		}
+		
 		LOG.warn("add block1 : "+lb1);
-		LOG.warn("add block2 : "+lb2);
 	}
 	
 	public static void main(String args[]) throws Exception {
