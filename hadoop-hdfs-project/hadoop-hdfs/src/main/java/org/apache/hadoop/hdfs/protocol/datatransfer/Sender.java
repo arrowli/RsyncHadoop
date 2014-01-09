@@ -214,4 +214,21 @@ public class Sender implements DataTransferProtocol {
 				.build();
 		send(out, Op.RSYNC_CHUNKS_CHECKSUM, proto);
 	}
+	
+	@Override
+	public void inflateBlock(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken,
+			final String clientname, final long newSize,
+			final long latestGenerationStamp)
+			throws IOException {
+		ClientOperationHeaderProto header = DataTransferProtoUtil
+				.buildClientHeader(block, clientname, blockToken);
+
+		OpWriteBlockProto.Builder proto = OpInflateBlockProto.newBuilder()
+				.setHeader(header)
+				.setNewSize(newSize)
+				.setLatestGenerationStamp(latestGenerationStamp));
+				
+		send(out, Op.RSYNC_INFLATE_BLOCK , proto.build());
+	}
 }

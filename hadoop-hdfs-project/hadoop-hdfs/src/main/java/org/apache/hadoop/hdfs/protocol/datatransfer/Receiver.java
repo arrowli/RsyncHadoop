@@ -80,6 +80,9 @@ public abstract class Receiver implements DataTransferProtocol {
 		case RSYNC_CHUNKS_CHECKSUM:
 			opChunksChecksum(in);
 			break;
+		case RSYNC_INFLATE_BLOCK:
+			opInflateBlock(in);
+			break;
 		case TRANSFER_BLOCK:
 			opTransferBlock(in);
 			break;
@@ -189,5 +192,17 @@ public abstract class Receiver implements DataTransferProtocol {
 
 		chunksChecksum(PBHelper.convert(proto.getHeader().getBlock()),
 				PBHelper.convert(proto.getHeader().getToken()));
+	}
+	
+	/** Receive OP_INFLATE_BLOCK */
+	private void opInflateBlock(DataInputStream in) throws IOException {
+		final OpInflateBlockProto proto = OpInflateBlockProto
+				.parseFrom(vintPrefixed(in));
+		inflateBlock(
+				PBHelper.convert(proto.getHeader().getBaseHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getBaseHeader().getToken()),
+				proto.getHeader().getClientName(),
+				proto.getNewSize(),
+				proto.getLatestGenerationStamp());
 	}
 }

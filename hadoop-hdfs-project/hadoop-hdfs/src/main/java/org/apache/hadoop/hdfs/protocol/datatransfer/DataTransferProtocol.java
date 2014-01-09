@@ -96,6 +96,20 @@ public interface DataTransferProtocol {
       final CachingStrategy cachingStrategy) throws IOException;
 
   /**
+   * Inflate a block to a datanode.
+   * 
+   * @param blk the block being written.
+   * @param blockToken security token for accessing the block.
+   * @param clientName client's name.
+   * @param newSize block size after inflate.
+   * @param latestGenerationStamp the latest generation stamp of the block.
+   */
+  public void inflateBlock(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken,
+			final String clientname, final long newSize,
+			final long latestGenerationStamp)
+			throws IOException;
+  /**
    * Transfer a block to another datanode.
    * The block stage must be
    * either {@link BlockConstructionStage#TRANSFER_RBW}

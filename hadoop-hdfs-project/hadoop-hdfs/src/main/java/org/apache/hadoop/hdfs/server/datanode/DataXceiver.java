@@ -636,6 +636,15 @@ class DataXceiver extends Receiver implements Runnable {
 	}
 
 	@Override
+	public void inflateBlock(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken,
+			final String clientname, final long newSize,
+			final long latestGenerationStamp)
+			throws IOException {
+		
+	}
+	
+	@Override
 	public void transferBlock(final ExtendedBlock blk,
 			final Token<BlockTokenIdentifier> blockToken,
 			final String clientName, final DatanodeInfo[] targets)
