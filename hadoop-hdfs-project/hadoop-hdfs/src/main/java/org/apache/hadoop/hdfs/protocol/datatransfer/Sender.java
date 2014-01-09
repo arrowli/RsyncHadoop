@@ -227,7 +227,7 @@ public class Sender implements DataTransferProtocol {
 		OpWriteBlockProto.Builder proto = OpInflateBlockProto.newBuilder()
 				.setHeader(header)
 				.setNewSize(newSize)
-				.setLatestGenerationStamp(latestGenerationStamp));
+				.setLatestGenerationStamp(latestGenerationStamp);
 				
 		send(out, Op.RSYNC_INFLATE_BLOCK , proto.build());
 	}
