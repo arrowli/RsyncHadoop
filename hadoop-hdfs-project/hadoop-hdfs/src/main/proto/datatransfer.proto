@@ -235,3 +235,9 @@ message OpChunksChecksumResponseProto {
   required bytes md5 = 6;
   optional ChecksumTypeProto crcType = 7;
 }
+
+message OpInflateBlockProto {
+  required ClientOperationHeaderProto header = 1;
+  required uint64 newSize = 2;
+  required uint64 latestGenerationStamp = 3;
+}
