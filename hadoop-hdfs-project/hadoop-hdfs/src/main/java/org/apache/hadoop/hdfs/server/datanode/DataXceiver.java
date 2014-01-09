@@ -672,6 +672,11 @@ class DataXceiver extends Receiver implements Runnable {
 			// update its generation stamp
 			block.setGenerationStamp(latestGenerationStamp);
 			block.setNumBytes(newSize);
+			
+			BlockOpResponseProto.newBuilder()
+			.setStatus(SUCCESS).build()
+			.writeDelimitedTo(out);
+			out.flush();
 		} catch (IOException ioe) {
 			LOG.info("opInflateBlock " + block + " received exception " + ioe);
 			throw ioe;
