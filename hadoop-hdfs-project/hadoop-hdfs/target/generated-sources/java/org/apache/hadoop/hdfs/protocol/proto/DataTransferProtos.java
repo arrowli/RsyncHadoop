@@ -17906,6 +17906,763 @@ public final class DataTransferProtos {
     // @@protoc_insertion_point(class_scope:hadoop.hdfs.OpChunksChecksumResponseProto)
   }
 
+  public interface OpInflateBlockProtoOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    boolean hasHeader();
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader();
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder();
+
+    // required uint64 newSize = 2;
+    /**
+     * <code>required uint64 newSize = 2;</code>
+     */
+    boolean hasNewSize();
+    /**
+     * <code>required uint64 newSize = 2;</code>
+     */
+    long getNewSize();
+
+    // required uint64 latestGenerationStamp = 3;
+    /**
+     * <code>required uint64 latestGenerationStamp = 3;</code>
+     */
+    boolean hasLatestGenerationStamp();
+    /**
+     * <code>required uint64 latestGenerationStamp = 3;</code>
+     */
+    long getLatestGenerationStamp();
+  }
+  /**
+   * Protobuf type {@code hadoop.hdfs.OpInflateBlockProto}
+   */
+  public static final class OpInflateBlockProto extends
+      com.google.protobuf.GeneratedMessage
+      implements OpInflateBlockProtoOrBuilder {
+    // Use OpInflateBlockProto.newBuilder() to construct.
+    private OpInflateBlockProto(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private OpInflateBlockProto(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final OpInflateBlockProto defaultInstance;
+    public static OpInflateBlockProto getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public OpInflateBlockProto getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private OpInflateBlockProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder subBuilder = null;
+              if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                subBuilder = header_.toBuilder();
+              }
+              header_ = input.readMessage(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.PARSER, extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(header_);
+                header_ = subBuilder.buildPartial();
+              }
+              bitField0_ |= 0x00000001;
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              newSize_ = input.readUInt64();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              latestGenerationStamp_ = input.readUInt64();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpInflateBlockProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<OpInflateBlockProto> PARSER =
+        new com.google.protobuf.AbstractParser<OpInflateBlockProto>() {
+      public OpInflateBlockProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new OpInflateBlockProto(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<OpInflateBlockProto> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
+    public static final int HEADER_FIELD_NUMBER = 1;
+    private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto header_;
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    public boolean hasHeader() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader() {
+      return header_;
+    }
+    /**
+     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder() {
+      return header_;
+    }
+
+    // required uint64 newSize = 2;
+    public static final int NEWSIZE_FIELD_NUMBER = 2;
+    private long newSize_;
+    /**
+     * <code>required uint64 newSize = 2;</code>
+     */
+    public boolean hasNewSize() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required uint64 newSize = 2;</code>
+     */
+    public long getNewSize() {
+      return newSize_;
+    }
+
+    // required uint64 latestGenerationStamp = 3;
+    public static final int LATESTGENERATIONSTAMP_FIELD_NUMBER = 3;
+    private long latestGenerationStamp_;
+    /**
+     * <code>required uint64 latestGenerationStamp = 3;</code>
+     */
+    public boolean hasLatestGenerationStamp() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint64 latestGenerationStamp = 3;</code>
+     */
+    public long getLatestGenerationStamp() {
+      return latestGenerationStamp_;
+    }
+
+    private void initFields() {
+      header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
+      newSize_ = 0L;
+      latestGenerationStamp_ = 0L;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasHeader()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasNewSize()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLatestGenerationStamp()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!getHeader().isInitialized()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, header_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, newSize_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(3, latestGenerationStamp_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, header_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, newSize_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(3, latestGenerationStamp_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto)) {
+        return super.equals(obj);
+      }
+      org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto other = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto) obj;
+
+      boolean result = true;
+      result = result && (hasHeader() == other.hasHeader());
+      if (hasHeader()) {
+        result = result && getHeader()
+            .equals(other.getHeader());
+      }
+      result = result && (hasNewSize() == other.hasNewSize());
+      if (hasNewSize()) {
+        result = result && (getNewSize()
+            == other.getNewSize());
+      }
+      result = result && (hasLatestGenerationStamp() == other.hasLatestGenerationStamp());
+      if (hasLatestGenerationStamp()) {
+        result = result && (getLatestGenerationStamp()
+            == other.getLatestGenerationStamp());
+      }
+      result = result &&
+          getUnknownFields().equals(other.getUnknownFields());
+      return result;
+    }
+
+    private int memoizedHashCode = 0;
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasHeader()) {
+        hash = (37 * hash) + HEADER_FIELD_NUMBER;
+        hash = (53 * hash) + getHeader().hashCode();
+      }
+      if (hasNewSize()) {
+        hash = (37 * hash) + NEWSIZE_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getNewSize());
+      }
+      if (hasLatestGenerationStamp()) {
+        hash = (37 * hash) + LATESTGENERATIONSTAMP_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getLatestGenerationStamp());
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code hadoop.hdfs.OpInflateBlockProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpInflateBlockProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.Builder.class);
+      }
+
+      // Construct using org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getHeaderFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        if (headerBuilder_ == null) {
+          header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
+        } else {
+          headerBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        newSize_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        latestGenerationStamp_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor;
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto getDefaultInstanceForType() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.getDefaultInstance();
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto build() {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto buildPartial() {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto result = new org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        if (headerBuilder_ == null) {
+          result.header_ = header_;
+        } else {
+          result.header_ = headerBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.newSize_ = newSize_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.latestGenerationStamp_ = latestGenerationStamp_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto) {
+          return mergeFrom((org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto other) {
+        if (other == org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto.getDefaultInstance()) return this;
+        if (other.hasHeader()) {
+          mergeHeader(other.getHeader());
+        }
+        if (other.hasNewSize()) {
+          setNewSize(other.getNewSize());
+        }
+        if (other.hasLatestGenerationStamp()) {
+          setLatestGenerationStamp(other.getLatestGenerationStamp());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasHeader()) {
+          
+          return false;
+        }
+        if (!hasNewSize()) {
+          
+          return false;
+        }
+        if (!hasLatestGenerationStamp()) {
+          
+          return false;
+        }
+        if (!getHeader().isInitialized()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
+      private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
+      private com.google.protobuf.SingleFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder> headerBuilder_;
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public boolean hasHeader() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader() {
+        if (headerBuilder_ == null) {
+          return header_;
+        } else {
+          return headerBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public Builder setHeader(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto value) {
+        if (headerBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          header_ = value;
+          onChanged();
+        } else {
+          headerBuilder_.setMessage(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public Builder setHeader(
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder builderForValue) {
+        if (headerBuilder_ == null) {
+          header_ = builderForValue.build();
+          onChanged();
+        } else {
+          headerBuilder_.setMessage(builderForValue.build());
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public Builder mergeHeader(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto value) {
+        if (headerBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) == 0x00000001) &&
+              header_ != org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance()) {
+            header_ =
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.newBuilder(header_).mergeFrom(value).buildPartial();
+          } else {
+            header_ = value;
+          }
+          onChanged();
+        } else {
+          headerBuilder_.mergeFrom(value);
+        }
+        bitField0_ |= 0x00000001;
+        return this;
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public Builder clearHeader() {
+        if (headerBuilder_ == null) {
+          header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
+          onChanged();
+        } else {
+          headerBuilder_.clear();
+        }
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder getHeaderBuilder() {
+        bitField0_ |= 0x00000001;
+        onChanged();
+        return getHeaderFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder() {
+        if (headerBuilder_ != null) {
+          return headerBuilder_.getMessageOrBuilder();
+        } else {
+          return header_;
+        }
+      }
+      /**
+       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder> 
+          getHeaderFieldBuilder() {
+        if (headerBuilder_ == null) {
+          headerBuilder_ = new com.google.protobuf.SingleFieldBuilder<
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder>(
+                  header_,
+                  getParentForChildren(),
+                  isClean());
+          header_ = null;
+        }
+        return headerBuilder_;
+      }
+
+      // required uint64 newSize = 2;
+      private long newSize_ ;
+      /**
+       * <code>required uint64 newSize = 2;</code>
+       */
+      public boolean hasNewSize() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required uint64 newSize = 2;</code>
+       */
+      public long getNewSize() {
+        return newSize_;
+      }
+      /**
+       * <code>required uint64 newSize = 2;</code>
+       */
+      public Builder setNewSize(long value) {
+        bitField0_ |= 0x00000002;
+        newSize_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 newSize = 2;</code>
+       */
+      public Builder clearNewSize() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        newSize_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 latestGenerationStamp = 3;
+      private long latestGenerationStamp_ ;
+      /**
+       * <code>required uint64 latestGenerationStamp = 3;</code>
+       */
+      public boolean hasLatestGenerationStamp() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required uint64 latestGenerationStamp = 3;</code>
+       */
+      public long getLatestGenerationStamp() {
+        return latestGenerationStamp_;
+      }
+      /**
+       * <code>required uint64 latestGenerationStamp = 3;</code>
+       */
+      public Builder setLatestGenerationStamp(long value) {
+        bitField0_ |= 0x00000004;
+        latestGenerationStamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 latestGenerationStamp = 3;</code>
+       */
+      public Builder clearLatestGenerationStamp() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        latestGenerationStamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:hadoop.hdfs.OpInflateBlockProto)
+    }
+
+    static {
+      defaultInstance = new OpInflateBlockProto(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:hadoop.hdfs.OpInflateBlockProto)
+  }
+
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_hadoop_hdfs_DataTransferEncryptorMessageProto_descriptor;
   private static
@@ -18011,6 +18768,11 @@ public final class DataTransferProtos {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_hadoop_hdfs_OpInflateBlockProto_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -18102,12 +18864,16 @@ public final class DataTransferProtos {
       "Block\030\002 \002(\004\022\025\n\rbytesPerChunk\030\003 \002(\r\022\026\n\016ch",
       "unksPerBlock\030\004 \002(\004\022\021\n\tchecksums\030\005 \003(\r\022\013\n" +
       "\003md5\030\006 \002(\014\022/\n\007crcType\030\007 \001(\0162\036.hadoop.hdf" +
-      "s.ChecksumTypeProto*\231\001\n\006Status\022\013\n\007SUCCES" +
-      "S\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM\020\002\022\021\n\rER" +
-      "ROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022\026\n\022ERROR" +
-      "_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006\022\025\n\021ERRO" +
-      "R_UNSUPPORTED\020\007B>\n%org.apache.hadoop.hdf" +
-      "s.protocol.protoB\022DataTransferProtos\240\001\001"
+      "s.ChecksumTypeProto\"~\n\023OpInflateBlockPro" +
+      "to\0227\n\006header\030\001 \002(\0132\'.hadoop.hdfs.ClientO" +
+      "perationHeaderProto\022\017\n\007newSize\030\002 \002(\004\022\035\n\025" +
+      "latestGenerationStamp\030\003 \002(\004*\231\001\n\006Status\022\013" +
+      "\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM" +
+      "\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022" +
+      "\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006" +
+      "\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apache.ha",
+      "doop.hdfs.protocol.protoB\022DataTransferPr" +
+      "otos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -18240,6 +19006,12 @@ public final class DataTransferProtos {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_descriptor,
               new java.lang.String[] { "BytesPerCrc", "CrcPerBlock", "BytesPerChunk", "ChunksPerBlock", "Checksums", "Md5", "CrcType", });
+          internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor =
+            getDescriptor().getMessageTypes().get(21);
+          internal_static_hadoop_hdfs_OpInflateBlockProto_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor,
+              new java.lang.String[] { "Header", "NewSize", "LatestGenerationStamp", });
           return null;
         }
       };

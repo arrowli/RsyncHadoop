@@ -32,6 +32,7 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationH
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReadBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReplaceBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpTransferBlockProto;
@@ -224,7 +225,7 @@ public class Sender implements DataTransferProtocol {
 		ClientOperationHeaderProto header = DataTransferProtoUtil
 				.buildClientHeader(block, clientname, blockToken);
 
-		OpWriteBlockProto.Builder proto = OpInflateBlockProto.newBuilder()
+		OpInflateBlockProto.Builder proto = OpInflateBlockProto.newBuilder()
 				.setHeader(header)
 				.setNewSize(newSize)
 				.setLatestGenerationStamp(latestGenerationStamp);
