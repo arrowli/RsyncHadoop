@@ -258,6 +258,6 @@ message SegmentProto{
 }
 
 message OpCalculateSegmentsResponseProto {
-  required uint64 numSegments;
-  repeated SegmentProto segments;
+  required uint64 numSegments = 1;
+  repeated SegmentProto segments = 2;
 }
