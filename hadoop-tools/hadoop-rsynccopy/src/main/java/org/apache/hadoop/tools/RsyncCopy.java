@@ -648,6 +648,7 @@ public class RsyncCopy {
 			} finally {
 				IOUtils.closeStream(in);
 				IOUtils.closeStream(out);
+				namenode.complete(src, clientName , lb1.getBlock() , fileInfo.getFileId());
 			}
 		}
 		
