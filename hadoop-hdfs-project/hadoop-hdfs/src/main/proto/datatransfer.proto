@@ -187,9 +187,10 @@ message BlockOpResponseProto {
   optional OpBlockChecksumResponseProto checksumResponse = 3;
   optional ReadOpChecksumInfoProto readOpChecksumInfo = 4;
   optional OpChunksChecksumResponseProto chunksChecksumResponse = 5;
+  optional OpCalculateSegmentsResponseProto calculateSegmentsResponse = 6;
 
   /** explanatory text which may be useful to log on the client side */
-  optional string message = 6;
+  optional string message = 7;
 
   /** If the server chooses to agree to the request of a client for
    * short-circuit access, it will send a response message with the relevant
@@ -199,7 +200,7 @@ message BlockOpResponseProto {
    * specific version number of the block data that the client is about to
    * read.
    */
-  optional uint32 shortCircuitAccessVersion = 7;
+  optional uint32 shortCircuitAccessVersion = 8;
   
 }
 
@@ -240,4 +241,23 @@ message OpInflateBlockProto {
   required ClientOperationHeaderProto header = 1;
   required uint64 newSize = 2;
   required uint64 latestGenerationStamp = 3;
+}
+
+message OpCalculateSegmentsProto {
+  required ClientOperationHeaderProto header = 1;
+  required uint32 bytesPerChunk = 2;
+  required uint64 chunksPerBlock = 3;
+  repeated uint32 checksums = 4;
+  required bytes md5s = 5;
+  optional ChecksumTypeProto crcType = 6;
+}
+
+message SegmentProto{
+  required uint64 index = 1;
+  required uint64 length = 2;
+}
+
+message OpCalculateSegmentsResponseProto {
+  required uint64 numSegments;
+  repeated SegmentProto segments;
 }
