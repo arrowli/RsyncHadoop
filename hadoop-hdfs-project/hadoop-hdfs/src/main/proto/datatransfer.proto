@@ -227,12 +227,17 @@ message OpChunksChecksumProto {
   required BaseHeaderProto header = 1;
 }
 
+message ChecksumPairProto {
+  required uint32 simple=1;
+  required bytes md5=2;
+}
+
 message OpChunksChecksumResponseProto {
   required uint32 bytesPerCrc = 1;
   required uint64 crcPerBlock = 2;
   required uint32 bytesPerChunk = 3;
   required uint64 chunksPerBlock = 4;
-  repeated uint32 checksums = 5;
+  repeated ChecksumPairProto checksums = 5;
   required bytes md5 = 6;
   optional ChecksumTypeProto crcType = 7;
 }
