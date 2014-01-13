@@ -93,21 +93,21 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 
 /**
- * rsynccopy����һ���ļ��Ĺ����������� :
+ * rsynccopy复制一个文件的工作过程如下 :
  * 
- * 1) ��NN��ȡ�ļ�����block��λ�ã�����Դ�ļ�src��Ŀ���ļ�dst�ġ�
+ * 1) 从NN获取文件所有block的位置，包括源文件src和目标文件dst的。
  * 
- * 2) ��src��dst������block�л�ȡchecksum�б���
+ * 2) 从src和dst的所有block中获取checksum列表。
  * 
- * 3) �ȶԺ󣬰�dst�в���block��checksum�б����ݸ�src�еĲ���DN��
+ * 3) 比对后，把dst中部分block的checksum列表传递给src中的部分DN。
  * 
- * 4) �õ�checksum�б���DN����block���죬�ش���rsynccopy��
+ * 4) 得到checksum列表的DN计算block差异，回传给rsynccopy。
  * 
- * 5) rsynccopy�����յ�����Ϣ������DN��block���촫�ݸ���Ҫ��DN��
+ * 5) rsynccopy根据收到的信息，控制DN把block差异传递给需要的DN。
  * 
- * 6) DN֮�䴫��block���죬��������浽���ص���ʱ�ļ��С�
+ * 6) DN之间传递block差异，并将差异存到本地的临时文件夹。
  * 
- * 7��rsynccopyȷ�����в��촫����Ϻ󣬿���DN��block����ϳ������ļ�
+ * 7）rsynccopy确认所有差异传递完毕后，控制DN将block差异合成最后的文件
  * 
  **/
 
