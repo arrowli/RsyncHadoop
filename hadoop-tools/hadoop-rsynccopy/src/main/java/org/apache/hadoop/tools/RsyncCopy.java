@@ -156,20 +156,19 @@ public class RsyncCopy {
 	private boolean connectToDnViaHostname;
 
 	public RsyncCopy(String srcPath,String dstPath) throws IOException {
+		conf = new Configuration();
 		this.srcPath = new Path(srcPath);
 		this.dstPath = new Path(dstPath);
 	
 		srcDfs = (DistributedFileSystem)this.srcPath.getFileSystem(conf);
 		dstDfs = (DistributedFileSystem)this.dstPath.getFileSystem(conf);
-		RsyncCopyInit(NameNode.getAddress(new Configuration()), null, new Configuration(), null,0);
+		RsyncCopyInit(NameNode.getAddress(conf), null, null,0);
 	}
 	/**
 	 * Create a new DFSClient connected to the given nameNodeAddr or
 	 * rpcNamenode. Exactly one of nameNodeAddr or rpcNamenode must be null.
 	 */
-	private void RsyncCopyInit(InetSocketAddress nameNodeAddr, ClientProtocol rpcNamenode,
-			Configuration conf, FileSystem.Statistics stats, long uniqueId) throws IOException {
-		this.conf = conf;
+	private void RsyncCopyInit(InetSocketAddress nameNodeAddr, ClientProtocol rpcNamenode, FileSystem.Statistics stats, long uniqueId) throws IOException {
 		this.stats = stats;
 		this.connectToDnViaHostname = conf.getBoolean(
 				DFS_CLIENT_USE_DN_HOSTNAME, DFS_CLIENT_USE_DN_HOSTNAME_DEFAULT);
