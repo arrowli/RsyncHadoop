@@ -17020,6 +17020,549 @@ public final class DataTransferProtos {
     // @@protoc_insertion_point(class_scope:hadoop.hdfs.OpChunksChecksumProto)
   }
 
+  public interface ChecksumPairProtoOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required uint32 simple = 1;
+    /**
+     * <code>required uint32 simple = 1;</code>
+     */
+    boolean hasSimple();
+    /**
+     * <code>required uint32 simple = 1;</code>
+     */
+    int getSimple();
+
+    // required bytes md5 = 2;
+    /**
+     * <code>required bytes md5 = 2;</code>
+     */
+    boolean hasMd5();
+    /**
+     * <code>required bytes md5 = 2;</code>
+     */
+    com.google.protobuf.ByteString getMd5();
+  }
+  /**
+   * Protobuf type {@code hadoop.hdfs.ChecksumPairProto}
+   */
+  public static final class ChecksumPairProto extends
+      com.google.protobuf.GeneratedMessage
+      implements ChecksumPairProtoOrBuilder {
+    // Use ChecksumPairProto.newBuilder() to construct.
+    private ChecksumPairProto(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private ChecksumPairProto(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final ChecksumPairProto defaultInstance;
+    public static ChecksumPairProto getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public ChecksumPairProto getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private ChecksumPairProto(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              simple_ = input.readUInt32();
+              break;
+            }
+            case 18: {
+              bitField0_ |= 0x00000002;
+              md5_ = input.readBytes();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_ChecksumPairProto_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_ChecksumPairProto_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<ChecksumPairProto> PARSER =
+        new com.google.protobuf.AbstractParser<ChecksumPairProto>() {
+      public ChecksumPairProto parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new ChecksumPairProto(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<ChecksumPairProto> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required uint32 simple = 1;
+    public static final int SIMPLE_FIELD_NUMBER = 1;
+    private int simple_;
+    /**
+     * <code>required uint32 simple = 1;</code>
+     */
+    public boolean hasSimple() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required uint32 simple = 1;</code>
+     */
+    public int getSimple() {
+      return simple_;
+    }
+
+    // required bytes md5 = 2;
+    public static final int MD5_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString md5_;
+    /**
+     * <code>required bytes md5 = 2;</code>
+     */
+    public boolean hasMd5() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required bytes md5 = 2;</code>
+     */
+    public com.google.protobuf.ByteString getMd5() {
+      return md5_;
+    }
+
+    private void initFields() {
+      simple_ = 0;
+      md5_ = com.google.protobuf.ByteString.EMPTY;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasSimple()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasMd5()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeUInt32(1, simple_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeBytes(2, md5_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(1, simple_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, md5_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto)) {
+        return super.equals(obj);
+      }
+      org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto other = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto) obj;
+
+      boolean result = true;
+      result = result && (hasSimple() == other.hasSimple());
+      if (hasSimple()) {
+        result = result && (getSimple()
+            == other.getSimple());
+      }
+      result = result && (hasMd5() == other.hasMd5());
+      if (hasMd5()) {
+        result = result && getMd5()
+            .equals(other.getMd5());
+      }
+      result = result &&
+          getUnknownFields().equals(other.getUnknownFields());
+      return result;
+    }
+
+    private int memoizedHashCode = 0;
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptorForType().hashCode();
+      if (hasSimple()) {
+        hash = (37 * hash) + SIMPLE_FIELD_NUMBER;
+        hash = (53 * hash) + getSimple();
+      }
+      if (hasMd5()) {
+        hash = (37 * hash) + MD5_FIELD_NUMBER;
+        hash = (53 * hash) + getMd5().hashCode();
+      }
+      hash = (29 * hash) + getUnknownFields().hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code hadoop.hdfs.ChecksumPairProto}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_ChecksumPairProto_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_ChecksumPairProto_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder.class);
+      }
+
+      // Construct using org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        simple_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        md5_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_ChecksumPairProto_descriptor;
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto getDefaultInstanceForType() {
+        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.getDefaultInstance();
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto build() {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto buildPartial() {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto result = new org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.simple_ = simple_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.md5_ = md5_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto) {
+          return mergeFrom((org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto other) {
+        if (other == org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.getDefaultInstance()) return this;
+        if (other.hasSimple()) {
+          setSimple(other.getSimple());
+        }
+        if (other.hasMd5()) {
+          setMd5(other.getMd5());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasSimple()) {
+          
+          return false;
+        }
+        if (!hasMd5()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required uint32 simple = 1;
+      private int simple_ ;
+      /**
+       * <code>required uint32 simple = 1;</code>
+       */
+      public boolean hasSimple() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required uint32 simple = 1;</code>
+       */
+      public int getSimple() {
+        return simple_;
+      }
+      /**
+       * <code>required uint32 simple = 1;</code>
+       */
+      public Builder setSimple(int value) {
+        bitField0_ |= 0x00000001;
+        simple_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint32 simple = 1;</code>
+       */
+      public Builder clearSimple() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        simple_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required bytes md5 = 2;
+      private com.google.protobuf.ByteString md5_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>required bytes md5 = 2;</code>
+       */
+      public boolean hasMd5() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>required bytes md5 = 2;</code>
+       */
+      public com.google.protobuf.ByteString getMd5() {
+        return md5_;
+      }
+      /**
+       * <code>required bytes md5 = 2;</code>
+       */
+      public Builder setMd5(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        md5_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bytes md5 = 2;</code>
+       */
+      public Builder clearMd5() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        md5_ = getDefaultInstance().getMd5();
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:hadoop.hdfs.ChecksumPairProto)
+    }
+
+    static {
+      defaultInstance = new ChecksumPairProto(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:hadoop.hdfs.ChecksumPairProto)
+  }
+
   public interface OpChunksChecksumResponseProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -17063,19 +17606,30 @@ public final class DataTransferProtos {
      */
     long getChunksPerBlock();
 
-    // repeated uint32 checksums = 5;
+    // repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
-    java.util.List<java.lang.Integer> getChecksumsList();
+    java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> 
+        getChecksumsList();
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto getChecksums(int index);
+    /**
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
     int getChecksumsCount();
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
-    int getChecksums(int index);
+    java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder> 
+        getChecksumsOrBuilderList();
+    /**
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder getChecksumsOrBuilder(
+        int index);
 
     // required bytes md5 = 6;
     /**
@@ -17168,25 +17722,12 @@ public final class DataTransferProtos {
               chunksPerBlock_ = input.readUInt64();
               break;
             }
-            case 40: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                checksums_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              checksums_.add(input.readUInt32());
-              break;
-            }
             case 42: {
-              int length = input.readRawVarint32();
-              int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
-                checksums_ = new java.util.ArrayList<java.lang.Integer>();
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
+                checksums_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto>();
                 mutable_bitField0_ |= 0x00000010;
               }
-              while (input.getBytesUntilLimit() > 0) {
-                checksums_.add(input.readUInt32());
-              }
-              input.popLimit(limit);
+              checksums_.add(input.readMessage(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.PARSER, extensionRegistry));
               break;
             }
             case 50: {
@@ -17312,26 +17853,39 @@ public final class DataTransferProtos {
       return chunksPerBlock_;
     }
 
-    // repeated uint32 checksums = 5;
+    // repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;
     public static final int CHECKSUMS_FIELD_NUMBER = 5;
-    private java.util.List<java.lang.Integer> checksums_;
+    private java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> checksums_;
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
-    public java.util.List<java.lang.Integer>
-        getChecksumsList() {
+    public java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> getChecksumsList() {
       return checksums_;
     }
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+     */
+    public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder> 
+        getChecksumsOrBuilderList() {
+      return checksums_;
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
     public int getChecksumsCount() {
       return checksums_.size();
     }
     /**
-     * <code>repeated uint32 checksums = 5;</code>
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
      */
-    public int getChecksums(int index) {
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto getChecksums(int index) {
+      return checksums_.get(index);
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder getChecksumsOrBuilder(
+        int index) {
       return checksums_.get(index);
     }
 
@@ -17401,6 +17955,12 @@ public final class DataTransferProtos {
         memoizedIsInitialized = 0;
         return false;
       }
+      for (int i = 0; i < getChecksumsCount(); i++) {
+        if (!getChecksums(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -17421,7 +17981,7 @@ public final class DataTransferProtos {
         output.writeUInt64(4, chunksPerBlock_);
       }
       for (int i = 0; i < checksums_.size(); i++) {
-        output.writeUInt32(5, checksums_.get(i));
+        output.writeMessage(5, checksums_.get(i));
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(6, md5_);
@@ -17454,14 +18014,9 @@ public final class DataTransferProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(4, chunksPerBlock_);
       }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < checksums_.size(); i++) {
-          dataSize += com.google.protobuf.CodedOutputStream
-            .computeUInt32SizeNoTag(checksums_.get(i));
-        }
-        size += dataSize;
-        size += 1 * getChecksumsList().size();
+      for (int i = 0; i < checksums_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(5, checksums_.get(i));
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -17668,6 +18223,7 @@ public final class DataTransferProtos {
       }
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getChecksumsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -17684,8 +18240,12 @@ public final class DataTransferProtos {
         bitField0_ = (bitField0_ & ~0x00000004);
         chunksPerBlock_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000008);
-        checksums_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        if (checksumsBuilder_ == null) {
+          checksums_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          checksumsBuilder_.clear();
+        }
         md5_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000020);
         crcType_ = org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.ChecksumTypeProto.CHECKSUM_NULL;
@@ -17734,11 +18294,15 @@ public final class DataTransferProtos {
           to_bitField0_ |= 0x00000008;
         }
         result.chunksPerBlock_ = chunksPerBlock_;
-        if (((bitField0_ & 0x00000010) == 0x00000010)) {
-          checksums_ = java.util.Collections.unmodifiableList(checksums_);
-          bitField0_ = (bitField0_ & ~0x00000010);
+        if (checksumsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            checksums_ = java.util.Collections.unmodifiableList(checksums_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.checksums_ = checksums_;
+        } else {
+          result.checksums_ = checksumsBuilder_.build();
         }
-        result.checksums_ = checksums_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000010;
         }
@@ -17775,15 +18339,31 @@ public final class DataTransferProtos {
         if (other.hasChunksPerBlock()) {
           setChunksPerBlock(other.getChunksPerBlock());
         }
-        if (!other.checksums_.isEmpty()) {
-          if (checksums_.isEmpty()) {
-            checksums_ = other.checksums_;
-            bitField0_ = (bitField0_ & ~0x00000010);
-          } else {
-            ensureChecksumsIsMutable();
-            checksums_.addAll(other.checksums_);
+        if (checksumsBuilder_ == null) {
+          if (!other.checksums_.isEmpty()) {
+            if (checksums_.isEmpty()) {
+              checksums_ = other.checksums_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureChecksumsIsMutable();
+              checksums_.addAll(other.checksums_);
+            }
+            onChanged();
           }
-          onChanged();
+        } else {
+          if (!other.checksums_.isEmpty()) {
+            if (checksumsBuilder_.isEmpty()) {
+              checksumsBuilder_.dispose();
+              checksumsBuilder_ = null;
+              checksums_ = other.checksums_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              checksumsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getChecksumsFieldBuilder() : null;
+            } else {
+              checksumsBuilder_.addAllMessages(other.checksums_);
+            }
+          }
         }
         if (other.hasMd5()) {
           setMd5(other.getMd5());
@@ -17815,6 +18395,12 @@ public final class DataTransferProtos {
         if (!hasMd5()) {
           
           return false;
+        }
+        for (int i = 0; i < getChecksumsCount(); i++) {
+          if (!getChecksums(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -17970,70 +18556,244 @@ public final class DataTransferProtos {
         return this;
       }
 
-      // repeated uint32 checksums = 5;
-      private java.util.List<java.lang.Integer> checksums_ = java.util.Collections.emptyList();
+      // repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;
+      private java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> checksums_ =
+        java.util.Collections.emptyList();
       private void ensureChecksumsIsMutable() {
         if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          checksums_ = new java.util.ArrayList<java.lang.Integer>(checksums_);
+          checksums_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto>(checksums_);
           bitField0_ |= 0x00000010;
          }
       }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder> checksumsBuilder_;
+
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
-      public java.util.List<java.lang.Integer>
-          getChecksumsList() {
-        return java.util.Collections.unmodifiableList(checksums_);
+      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> getChecksumsList() {
+        if (checksumsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(checksums_);
+        } else {
+          return checksumsBuilder_.getMessageList();
+        }
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
       public int getChecksumsCount() {
-        return checksums_.size();
+        if (checksumsBuilder_ == null) {
+          return checksums_.size();
+        } else {
+          return checksumsBuilder_.getCount();
+        }
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
-      public int getChecksums(int index) {
-        return checksums_.get(index);
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto getChecksums(int index) {
+        if (checksumsBuilder_ == null) {
+          return checksums_.get(index);
+        } else {
+          return checksumsBuilder_.getMessage(index);
+        }
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
       public Builder setChecksums(
-          int index, int value) {
-        ensureChecksumsIsMutable();
-        checksums_.set(index, value);
-        onChanged();
+          int index, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto value) {
+        if (checksumsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChecksumsIsMutable();
+          checksums_.set(index, value);
+          onChanged();
+        } else {
+          checksumsBuilder_.setMessage(index, value);
+        }
         return this;
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
-      public Builder addChecksums(int value) {
-        ensureChecksumsIsMutable();
-        checksums_.add(value);
-        onChanged();
+      public Builder setChecksums(
+          int index, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder builderForValue) {
+        if (checksumsBuilder_ == null) {
+          ensureChecksumsIsMutable();
+          checksums_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          checksumsBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public Builder addChecksums(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto value) {
+        if (checksumsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChecksumsIsMutable();
+          checksums_.add(value);
+          onChanged();
+        } else {
+          checksumsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public Builder addChecksums(
+          int index, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto value) {
+        if (checksumsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureChecksumsIsMutable();
+          checksums_.add(index, value);
+          onChanged();
+        } else {
+          checksumsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public Builder addChecksums(
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder builderForValue) {
+        if (checksumsBuilder_ == null) {
+          ensureChecksumsIsMutable();
+          checksums_.add(builderForValue.build());
+          onChanged();
+        } else {
+          checksumsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public Builder addChecksums(
+          int index, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder builderForValue) {
+        if (checksumsBuilder_ == null) {
+          ensureChecksumsIsMutable();
+          checksums_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          checksumsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
       public Builder addAllChecksums(
-          java.lang.Iterable<? extends java.lang.Integer> values) {
-        ensureChecksumsIsMutable();
-        super.addAll(values, checksums_);
-        onChanged();
+          java.lang.Iterable<? extends org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto> values) {
+        if (checksumsBuilder_ == null) {
+          ensureChecksumsIsMutable();
+          super.addAll(values, checksums_);
+          onChanged();
+        } else {
+          checksumsBuilder_.addAllMessages(values);
+        }
         return this;
       }
       /**
-       * <code>repeated uint32 checksums = 5;</code>
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
        */
       public Builder clearChecksums() {
-        checksums_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
-        onChanged();
+        if (checksumsBuilder_ == null) {
+          checksums_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          checksumsBuilder_.clear();
+        }
         return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public Builder removeChecksums(int index) {
+        if (checksumsBuilder_ == null) {
+          ensureChecksumsIsMutable();
+          checksums_.remove(index);
+          onChanged();
+        } else {
+          checksumsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder getChecksumsBuilder(
+          int index) {
+        return getChecksumsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder getChecksumsOrBuilder(
+          int index) {
+        if (checksumsBuilder_ == null) {
+          return checksums_.get(index);  } else {
+          return checksumsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder> 
+           getChecksumsOrBuilderList() {
+        if (checksumsBuilder_ != null) {
+          return checksumsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(checksums_);
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder addChecksumsBuilder() {
+        return getChecksumsFieldBuilder().addBuilder(
+            org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder addChecksumsBuilder(
+          int index) {
+        return getChecksumsFieldBuilder().addBuilder(
+            index, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.ChecksumPairProto checksums = 5;</code>
+       */
+      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder> 
+           getChecksumsBuilderList() {
+        return getChecksumsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder> 
+          getChecksumsFieldBuilder() {
+        if (checksumsBuilder_ == null) {
+          checksumsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProtoOrBuilder>(
+                  checksums_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          checksums_ = null;
+        }
+        return checksumsBuilder_;
       }
 
       // required bytes md5 = 6;
@@ -21459,6 +22219,11 @@ public final class DataTransferProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_hadoop_hdfs_OpChunksChecksumProto_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_hadoop_hdfs_ChecksumPairProto_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_hadoop_hdfs_ChecksumPairProto_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -21571,30 +22336,32 @@ public final class DataTransferProtos {
       " \002(\004\022\013\n\003md5\030\003 \002(\014\022/\n\007crcType\030\004 \001(\0162\036.had" +
       "oop.hdfs.ChecksumTypeProto\"E\n\025OpChunksCh" +
       "ecksumProto\022,\n\006header\030\001 \002(\0132\034.hadoop.hdf" +
-      "s.BaseHeaderProto\"\311\001\n\035OpChunksChecksumRe",
-      "sponseProto\022\023\n\013bytesPerCrc\030\001 \002(\r\022\023\n\013crcP" +
-      "erBlock\030\002 \002(\004\022\025\n\rbytesPerChunk\030\003 \002(\r\022\026\n\016" +
-      "chunksPerBlock\030\004 \002(\004\022\021\n\tchecksums\030\005 \003(\r\022" +
-      "\013\n\003md5\030\006 \002(\014\022/\n\007crcType\030\007 \001(\0162\036.hadoop.h" +
-      "dfs.ChecksumTypeProto\"~\n\023OpInflateBlockP" +
-      "roto\0227\n\006header\030\001 \002(\0132\'.hadoop.hdfs.Clien" +
-      "tOperationHeaderProto\022\017\n\007newSize\030\002 \002(\004\022\035" +
-      "\n\025latestGenerationStamp\030\003 \002(\004\"\324\001\n\030OpCalc" +
-      "ulateSegmentsProto\0227\n\006header\030\001 \002(\0132\'.had" +
-      "oop.hdfs.ClientOperationHeaderProto\022\025\n\rb",
-      "ytesPerChunk\030\002 \002(\r\022\026\n\016chunksPerBlock\030\003 \002" +
-      "(\004\022\021\n\tchecksums\030\004 \003(\r\022\014\n\004md5s\030\005 \002(\014\022/\n\007c" +
-      "rcType\030\006 \001(\0162\036.hadoop.hdfs.ChecksumTypeP" +
-      "roto\"-\n\014SegmentProto\022\r\n\005index\030\001 \002(\004\022\016\n\006l" +
-      "ength\030\002 \002(\004\"d\n OpCalculateSegmentsRespon" +
-      "seProto\022\023\n\013numSegments\030\001 \002(\004\022+\n\010segments" +
-      "\030\002 \003(\0132\031.hadoop.hdfs.SegmentProto*\231\001\n\006St" +
-      "atus\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CH" +
-      "ECKSUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXI" +
-      "STS\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSU",
-      "M_OK\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apa" +
-      "che.hadoop.hdfs.protocol.protoB\022DataTran" +
-      "sferProtos\240\001\001"
+      "s.BaseHeaderProto\"0\n\021ChecksumPairProto\022\016",
+      "\n\006simple\030\001 \002(\r\022\013\n\003md5\030\002 \002(\014\"\351\001\n\035OpChunks" +
+      "ChecksumResponseProto\022\023\n\013bytesPerCrc\030\001 \002" +
+      "(\r\022\023\n\013crcPerBlock\030\002 \002(\004\022\025\n\rbytesPerChunk" +
+      "\030\003 \002(\r\022\026\n\016chunksPerBlock\030\004 \002(\004\0221\n\tchecks" +
+      "ums\030\005 \003(\0132\036.hadoop.hdfs.ChecksumPairProt" +
+      "o\022\013\n\003md5\030\006 \002(\014\022/\n\007crcType\030\007 \001(\0162\036.hadoop" +
+      ".hdfs.ChecksumTypeProto\"~\n\023OpInflateBloc" +
+      "kProto\0227\n\006header\030\001 \002(\0132\'.hadoop.hdfs.Cli" +
+      "entOperationHeaderProto\022\017\n\007newSize\030\002 \002(\004" +
+      "\022\035\n\025latestGenerationStamp\030\003 \002(\004\"\324\001\n\030OpCa",
+      "lculateSegmentsProto\0227\n\006header\030\001 \002(\0132\'.h" +
+      "adoop.hdfs.ClientOperationHeaderProto\022\025\n" +
+      "\rbytesPerChunk\030\002 \002(\r\022\026\n\016chunksPerBlock\030\003" +
+      " \002(\004\022\021\n\tchecksums\030\004 \003(\r\022\014\n\004md5s\030\005 \002(\014\022/\n" +
+      "\007crcType\030\006 \001(\0162\036.hadoop.hdfs.ChecksumTyp" +
+      "eProto\"-\n\014SegmentProto\022\r\n\005index\030\001 \002(\004\022\016\n" +
+      "\006length\030\002 \002(\004\"d\n OpCalculateSegmentsResp" +
+      "onseProto\022\023\n\013numSegments\030\001 \002(\004\022+\n\010segmen" +
+      "ts\030\002 \003(\0132\031.hadoop.hdfs.SegmentProto*\231\001\n\006" +
+      "Status\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_",
+      "CHECKSUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_E" +
+      "XISTS\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECK" +
+      "SUM_OK\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.a" +
+      "pache.hadoop.hdfs.protocol.protoB\022DataTr" +
+      "ansferProtos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -21721,32 +22488,38 @@ public final class DataTransferProtos {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpChunksChecksumProto_descriptor,
               new java.lang.String[] { "Header", });
-          internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_descriptor =
+          internal_static_hadoop_hdfs_ChecksumPairProto_descriptor =
             getDescriptor().getMessageTypes().get(20);
+          internal_static_hadoop_hdfs_ChecksumPairProto_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_hadoop_hdfs_ChecksumPairProto_descriptor,
+              new java.lang.String[] { "Simple", "Md5", });
+          internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_descriptor =
+            getDescriptor().getMessageTypes().get(21);
           internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpChunksChecksumResponseProto_descriptor,
               new java.lang.String[] { "BytesPerCrc", "CrcPerBlock", "BytesPerChunk", "ChunksPerBlock", "Checksums", "Md5", "CrcType", });
           internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor =
-            getDescriptor().getMessageTypes().get(21);
+            getDescriptor().getMessageTypes().get(22);
           internal_static_hadoop_hdfs_OpInflateBlockProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpInflateBlockProto_descriptor,
               new java.lang.String[] { "Header", "NewSize", "LatestGenerationStamp", });
           internal_static_hadoop_hdfs_OpCalculateSegmentsProto_descriptor =
-            getDescriptor().getMessageTypes().get(22);
+            getDescriptor().getMessageTypes().get(23);
           internal_static_hadoop_hdfs_OpCalculateSegmentsProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpCalculateSegmentsProto_descriptor,
               new java.lang.String[] { "Header", "BytesPerChunk", "ChunksPerBlock", "Checksums", "Md5S", "CrcType", });
           internal_static_hadoop_hdfs_SegmentProto_descriptor =
-            getDescriptor().getMessageTypes().get(23);
+            getDescriptor().getMessageTypes().get(24);
           internal_static_hadoop_hdfs_SegmentProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_SegmentProto_descriptor,
               new java.lang.String[] { "Index", "Length", });
           internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_descriptor =
-            getDescriptor().getMessageTypes().get(24);
+            getDescriptor().getMessageTypes().get(25);
           internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_descriptor,

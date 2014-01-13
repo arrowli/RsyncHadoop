@@ -58,6 +58,7 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Op;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Receiver;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientReadStatusProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
@@ -736,7 +737,8 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerChunk = 10*1024*1024;
 			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
 					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
-			final List<Integer> checksums = new LinkedList<Integer>();
+			
+			final List<ChecksumPairProto> checksums = new LinkedList<ChecksumPairProto>();
 
 			//generate checksum, chunk = 1MB = 1 * 2^20 B
 			byte[] buf = new byte[bytesPerChunk];
@@ -746,7 +748,15 @@ class DataXceiver extends Receiver implements Runnable {
 			while(blockIn.read(buf) != -1){
 				cs.reset();
 				cs.update(buf);
-				checksums.add((int)cs.getValue());
+				//checksums.add((int)cs.getValue());
+				
+				MD5Hash md5s = MD5Hash.digest(buf);
+				//md5Checksums.add(ByteString.copyFrom(md5s.getDigest()));
+				checksums.add(
+						ChecksumPairProto.newBuilder()
+							.setSimple((int)cs.getValue())
+							.setMd5(ByteString.copyFrom(md5s.getDigest()))
+							.build());
 			}
 			blockIn.close();
 			
@@ -771,7 +781,6 @@ class DataXceiver extends Receiver implements Runnable {
 							.setBytesPerChunk(bytesPerChunk)
 							.setChunksPerBlock(chunksPerBlock)
 							.addAllChecksums(checksums)
-							.setMd5(ByteString.copyFrom(md5.getDigest()))
 							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
 							)
 					.build()

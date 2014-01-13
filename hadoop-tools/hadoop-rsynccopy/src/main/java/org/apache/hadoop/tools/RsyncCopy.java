@@ -87,6 +87,7 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.IOStreamPair;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Op;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
@@ -384,20 +385,23 @@ public class RsyncCopy {
 							crcPerBlock = cpb;
 						}
 
-						final List<Integer> checksums = checksumData.getChecksumsList();
+						final List<ChecksumPairProto> checksums = checksumData.getChecksumsList();
 						
 						LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
 						LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
 						LOG.warn("checksum list:");
-						for(Integer cs : checksums){
-							LOG.warn(Integer.toHexString(cs));
+						for(ChecksumPairProto cs : checksums){
+							final MD5Hash md5s = new MD5Hash(cs.getMd5().toByteArray());
+							LOG.warn("Simple CS : "+
+									Integer.toHexString(cs.getSimple())+
+									" ; MD5 CS : "+md5s);
 						}
 						
 						// read md5
 						final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
 								.toByteArray());
 						md5.write(md5out);
-						LOG.warn(md5);
+						LOG.warn("Block CS : "+md5);
 						// read crc-type
 						final DataChecksum.Type ct;
 						if (checksumData.hasCrcType()) {
