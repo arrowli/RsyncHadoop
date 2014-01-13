@@ -38,7 +38,8 @@ public enum Op {
   REQUEST_SHORT_CIRCUIT_FDS((byte)87),
   
   RSYNC_CHUNKS_CHECKSUM((byte)88),
-  RSYNC_INFLATE_BLOCK((byte)89);
+  RSYNC_INFLATE_BLOCK((byte)89),
+  RSYNC_CALCULATE_SEGMENTS((byte)90);
 
   /** The code for this operation. */
   public final byte code;
