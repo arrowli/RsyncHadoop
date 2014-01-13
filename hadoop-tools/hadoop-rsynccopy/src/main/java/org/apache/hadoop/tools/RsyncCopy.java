@@ -121,16 +121,16 @@ public class RsyncCopy {
 	public ProtocolProxy<ClientProtocol> srcNamenodeProtocolProxy = null;
 	public ProtocolProxy<ClientProtocol> dstNamenodeProtocolProxy = null;
 	static Random r = new Random();
-	final String clientName;
+	String clientName;
 	Configuration conf;
 	SocketFactory socketFactory;
-	final FileSystem.Statistics stats;
+	FileSystem.Statistics stats;
 
 	private long namenodeVersion = ClientProtocol.versionID;
 	protected Integer dataTransferVersion = -1;
 	protected volatile int namespaceId = 0;
 
-	final InetAddress localHost;
+	InetAddress localHost;
 	InetSocketAddress nameNodeAddr;
 
 	// int ipTosValue = NetUtils.NOT_SET_IP_TOS;
@@ -146,9 +146,9 @@ public class RsyncCopy {
 	private DistributedFileSystem srcDfs;
 	private DistributedFileSystem dstDfs;
 
-	final UserGroupInformation ugi;
+	UserGroupInformation ugi;
 	volatile long lastLeaseRenewal;
-	private final String authority;
+	private String authority;
 
 	private DataEncryptionKey encryptionKey;
 	private volatile FsServerDefaults serverDefaults;
@@ -156,23 +156,18 @@ public class RsyncCopy {
 	private boolean connectToDnViaHostname;
 
 	public RsyncCopy(String srcPath,String dstPath) throws IOException {
-		this(NameNode.getAddress(new Configuration()), null, new Configuration(), null,0);
 		this.srcPath = new Path(srcPath);
 		this.dstPath = new Path(dstPath);
-		
-		try{
-			srcDfs = (DistributedFileSystem)this.srcPath.getFileSystem(conf);
-			dstDfs = (DistributedFileSystem)this.dstPath.getFileSystem(conf);
-		}catch(IOException e){
-			throw new IOException("get distributed file system failed.");
-		}
-		
+	
+		srcDfs = (DistributedFileSystem)this.srcPath.getFileSystem(conf);
+		dstDfs = (DistributedFileSystem)this.dstPath.getFileSystem(conf);
+		RsyncCopyInit(NameNode.getAddress(new Configuration()), null, new Configuration(), null,0);
 	}
 	/**
 	 * Create a new DFSClient connected to the given nameNodeAddr or
 	 * rpcNamenode. Exactly one of nameNodeAddr or rpcNamenode must be null.
 	 */
-	private RsyncCopy(InetSocketAddress nameNodeAddr, ClientProtocol rpcNamenode,
+	private void RsyncCopyInit(InetSocketAddress nameNodeAddr, ClientProtocol rpcNamenode,
 			Configuration conf, FileSystem.Statistics stats, long uniqueId) throws IOException {
 		this.conf = conf;
 		this.stats = stats;
