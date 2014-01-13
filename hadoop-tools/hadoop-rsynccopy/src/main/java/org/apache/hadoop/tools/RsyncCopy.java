@@ -255,7 +255,6 @@ public class RsyncCopy {
 					DFS_CLIENT_USE_DN_HOSTNAME, DFS_CLIENT_USE_DN_HOSTNAME_DEFAULT);
 			this.socketFactory = NetUtils.getSocketFactory(conf,
 					ClientProtocol.class);
-			this.localHost = InetAddress.getLocalHost();
 			String taskId = conf.get("mapreduce.task.attempt.id");
 			if (taskId != null) {
 				this.clientName = "RsyncCopy_" + taskId + "_" + r.nextInt() + "_"
