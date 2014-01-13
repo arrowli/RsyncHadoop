@@ -222,9 +222,6 @@ public class RsyncCopy {
 		protected Integer dataTransferVersion = -1;
 		protected volatile int namespaceId = 0;
 
-		final InetAddress localHost;
-		InetSocketAddress nameNodeAddr;
-
 		// int ipTosValue = NetUtils.NOT_SET_IP_TOS;
 
 		volatile boolean clientRunning = true;
@@ -266,16 +263,6 @@ public class RsyncCopy {
 			} else {
 				this.clientName = "RsyncCopy_" + r.nextInt()
 						+ ((uniqueId == 0) ? "" : "_" + uniqueId);
-			}
-
-			if (nameNodeAddr != null && rpcNamenode == null) {
-				this.nameNodeAddr = nameNodeAddr;
-				getNameNode();
-			} else {
-				throw new IllegalArgumentException(
-						"Expecting exactly one of nameNodeAddr and rpcNamenode being null: "
-								+ "nameNodeAddr=" + nameNodeAddr + ", rpcNamenode="
-								+ rpcNamenode);
 			}
 
 			this.ugi = UserGroupInformation.getCurrentUser();
