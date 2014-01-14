@@ -31,7 +31,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -239,6 +241,115 @@ public class RsyncCopy {
 		private volatile long serverDefaultsLastUpdate;
 		private boolean connectToDnViaHostname;
 		
+		private class ChecksumPair{
+			private Integer simple;
+			private Byte[] md5;
+			public ChecksumPair(Integer simple,Byte[] md5){
+				this.setSimple(simple);
+				this.setMd5(md5);
+			}
+			public Integer getSimple() {
+				return simple;
+			}
+			public void setSimple(Integer simple) {
+				this.simple = simple;
+			}
+			public Byte[] getMd5() {
+				return md5;
+			}
+			public void setMd5(Byte[] md5) {
+				this.md5 = md5;
+			}
+		}
+		
+		private class Segment{
+			private Integer index;
+			private Long length;
+			public Segment(Integer index,Long length){
+				this.index = index;
+				this.length = length;
+			}
+			public Integer getIndex() {
+				return index;
+			}
+			public void setIndex(Integer index) {
+				this.index = index;
+			}
+			public Long getLength() {
+				return length;
+			}
+			public void setLength(Long length) {
+				this.length = length;
+			}
+		}
+		
+		private class BlockInfo{
+			private LocatedBlock locatedBlock;
+			private List<ChecksumPair> checksums;
+			private List<Segment> segments;
+			public BlockInfo(LocatedBlock locatedBlock,List<ChecksumPair> checksums,List<Segment> segments){
+				this.locatedBlock = locatedBlock;
+				this.checksums = checksums;
+				this.segments = segments;
+			}
+			public LocatedBlock getLocatedBlock() {
+				return locatedBlock;
+			}
+			public void setLocatedBlock(LocatedBlock locatedBlock) {
+				this.locatedBlock = locatedBlock;
+			}
+			public List<ChecksumPair> getChecksums() {
+				return checksums;
+			}
+			public void setChecksums(List<ChecksumPair> checksums) {
+				this.checksums = checksums;
+			}
+			public void addChecksum(ChecksumPair checksum){
+				this.checksums.add(checksum);
+			}
+			public List<Segment> getSegments() {
+				return segments;
+			}
+			public void setSegments(List<Segment> segments) {
+				this.segments = segments;
+			}
+			public void addSegment(Segment segment){
+				this.segments.add(segment);
+			}
+		}
+		
+		private class FileInfo{
+			private List<BlockInfo> blocks;
+			private String filepath;
+
+			public FileInfo(String filepath){
+				this.setFilepath(filepath);
+				this.blocks = new LinkedList<BlockInfo>();
+			}
+			
+			public List<BlockInfo> getBlocks() {
+				return blocks;
+			}
+
+			public void setBlocks(List<BlockInfo> blocks) {
+				this.blocks = blocks;
+			}
+			
+			public void addBlock(BlockInfo block){
+				this.blocks.add(block);
+			}
+
+			public String getFilepath() {
+				return filepath;
+			}
+
+			public void setFilepath(String filepath) {
+				this.filepath = filepath;
+			}
+		}
+		
+		private FileInfo srcFileInfo;
+		private FileInfo dstFileInfo;
 		
 		RsyncCopyFile(ClientProtocol srcNamenode,ProtocolProxy<ClientProtocol> srcNamenodeProtocolProxy,Path srcPath,
 				ClientProtocol dstNamenode,ProtocolProxy<ClientProtocol> dstNamenodeProtocolProxy,Path dstPath,
@@ -275,7 +386,44 @@ public class RsyncCopy {
 					HdfsServerConstants.READ_TIMEOUT);
 			this.namenodeRPCSocketTimeout = 60 * 1000;
 		}
-		
+		/**
+		 * Get the source file blocks information from NN
+		 * Get the destination file blocks information from NN
+		 */
+		void getSDFileInfo() throws IOException {
+			LocatedBlocks srcLocatedBlocks = callGetBlockLocations(
+					srcNamenode,srcPath.toString(),0,Long.MAX_VALUE,
+					isMetaInfoSupported(srcNamenodeProtocolProxy));
+			if (srcLocatedBlocks == null) {
+				throw new IOException(
+						"Null block locations, mostly because non-existent file "
+								+ srcPath.toString());
+			}
+			LocatedBlocks dstLocatedBlocks = callGetBlockLocations(
+					dstNamenode,dstPath.toString(),0,Long.MAX_VALUE,
+					isMetaInfoSupported(dstNamenodeProtocolProxy));
+			if (dstLocatedBlocks == null) {
+				throw new IOException(
+						"Null block locations, mostly because non-existent file "
+								+ dstPath.toString());
+			}
+			
+			this.srcFileInfo = new FileInfo(srcPath.toString());
+			this.dstFileInfo = new FileInfo(dstPath.toString());
+			
+			for(LocatedBlock lb : srcLocatedBlocks.getLocatedBlocks()){
+				srcFileInfo.addBlock(
+						new BlockInfo(lb,
+								new LinkedList<ChecksumPair>(),
+								new LinkedList<Segment>()));
+			}
+			for(LocatedBlock lb : dstLocatedBlocks.getLocatedBlocks()){
+				dstFileInfo.addBlock(
+						new BlockInfo(lb,
+								new LinkedList<ChecksumPair>(),
+								new LinkedList<Segment>()));
+			}
+		}
 		/**
 		 * Get the checksum of a file.
 		 * 
@@ -284,10 +432,12 @@ public class RsyncCopy {
 		 * @return The checksum
 		 * @see DistributedFileSystem#getFileChecksum(Path)
 		 */
-		void getFileChecksum(String src) throws IOException {
+		void getSDFileChecksum() throws IOException {
 			checkOpen();
-			getFileChecksum(dataTransferVersion, src, srcNamenode,
+			getFileChecksum(dataTransferVersion, srcFileInfo, srcNamenode,
 					srcNamenodeProtocolProxy, socketFactory, socketTimeout);
+			getFileChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
+					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
 		}
 		
 		/**
@@ -297,34 +447,22 @@ public class RsyncCopy {
 		 *            The file path
 		 * @return The checksum
 		 */
-		public void getFileChecksum(int dataTransferVersion, String src,
+		public void getFileChecksum(int dataTransferVersion, FileInfo fileInfo,
 				ClientProtocol namenode,
 				ProtocolProxy<ClientProtocol> namenodeProxy,
 				SocketFactory socketFactory, int socketTimeout) throws IOException {
 			final DataOutputBuffer md5out = new DataOutputBuffer();
-			// get all block locations
-			final LocatedBlocks locatedBlocks = callGetBlockLocations(namenode,
-					src, 0, Long.MAX_VALUE, isMetaInfoSuppoted(namenodeProxy));
-			if (locatedBlocks == null) {
-				throw new IOException(
-						"Null block locations, mostly because non-existent file "
-								+ src);
-			}
 			int namespaceId = 0;
 			boolean refetchBlocks = false;
 			int lastRetriedIndex = -1;
 			dataTransferVersion = DataTransferProtocol.DATA_TRANSFER_VERSION;
-
-			final List<LocatedBlock> locatedblocks = locatedBlocks
-					.getLocatedBlocks();
-
 			int bytesPerCRC = -1;
 			DataChecksum.Type crcType = DataChecksum.Type.DEFAULT;
 			long crcPerBlock = 0;
 
 			// get block checksum for each block
-			for (int i = 0; i < locatedblocks.size(); i++) {
-				LocatedBlock lb = locatedblocks.get(i);
+			for (int i = 0; i < srcFileInfo.getBlocks().size(); i++) {
+				LocatedBlock lb = srcFileInfo.getBlocks().get(i).locatedBlock;
 				final ExtendedBlock block = lb.getBlock();
 				final DatanodeInfo[] datanodes = lb.getLocations();
 
@@ -381,7 +519,7 @@ public class RsyncCopy {
 
 						// read crc-per-block
 						final long cpb = checksumData.getCrcPerBlock();
-						if (locatedblocks.size() > 1 && i == 0) {
+						if (srcFileInfo.getBlocks().size() > 1 && i == 0) {
 							crcPerBlock = cpb;
 						}
 
@@ -395,6 +533,8 @@ public class RsyncCopy {
 							LOG.warn("Simple CS : "+
 									Integer.toHexString(cs.getSimple())+
 									" ; MD5 CS : "+md5s);
+							srcFileInfo.getBlocks().get(i).getChecksums().add(
+									new ChecksumPair(cs.getSimple(),cs.getMd5().toByteArray()));
 						}
 						
 						// read md5
@@ -437,7 +577,7 @@ public class RsyncCopy {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Got access token error in response to OP_BLOCK_CHECKSUM "
 										+ "for file "
-										+ src
+										+ fileInfo.getFilepath()
 										+ " for block "
 										+ block
 										+ " from datanode "
@@ -451,7 +591,7 @@ public class RsyncCopy {
 							break;
 						}
 					} catch (IOException ie) {
-						LOG.warn("src=" + src + ", datanodes[" + j + "]="
+						LOG.warn("src=" + fileInfo.getFilepath() + ", datanodes[" + j + "]="
 								+ datanodes[j], ie);
 					} finally {
 						IOUtils.closeStream(in);
@@ -675,15 +815,31 @@ public class RsyncCopy {
 			}
 		}
 
-		public boolean isMetaInfoSuppoted(ProtocolProxy<ClientProtocol> proxy)
+		public boolean isMetaInfoSupported(ProtocolProxy<ClientProtocol> proxy)
 				throws IOException {
 			return proxy != null
 					&& proxy.isMethodSupported("openAndFetchMetaInfo",
 							String.class, long.class, long.class);
 		}
 		
+		public void printFileInfo(FileInfo fileInfo){
+			LOG.warn("File Info of "+fileInfo.getFilepath());
+			LOG.warn("\tblock count : "+fileInfo.getBlocks().size());
+			for(BlockInfo bi : fileInfo.getBlocks()){
+				LOG.warn("\tblock id : "+bi.getLocatedBlock().getBlock().getBlockId()+
+						"; genstamp : "+bi.getLocatedBlock().getBlock().getGenerationStamp()+
+						"; checksum list :");
+				for(ChecksumPair cp : bi.getChecksums()){
+					LOG.warn("\t\tsimple : "+cp.getSimple()+"; MD5 : "+cp.getMd5().toString());
+				}
+			}
+		}
+		
 		public void run() throws IOException {
-			getFileChecksum(srcPath.toString());
+			getSDFileInfo();
+			getSDFileChecksum();
+			printFileInfo(srcFileInfo);
+			printFileInfo(dstFileInfo);
 		}
 		
 	}
