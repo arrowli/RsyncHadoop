@@ -252,9 +252,8 @@ message OpCalculateSegmentsProto {
   required ClientOperationHeaderProto header = 1;
   required uint32 bytesPerChunk = 2;
   required uint64 chunksPerBlock = 3;
-  repeated uint32 checksums = 4;
-  required bytes md5s = 5;
-  optional ChecksumTypeProto crcType = 6;
+  repeated ChecksumPairProto checksums = 4;
+  optional ChecksumTypeProto crcType = 5;
 }
 
 message SegmentProto{

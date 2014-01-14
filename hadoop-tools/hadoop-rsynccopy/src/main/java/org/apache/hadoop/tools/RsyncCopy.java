@@ -533,7 +533,7 @@ public class RsyncCopy {
 							LOG.warn("Simple CS : "+
 									Integer.toHexString(cs.getSimple())+
 									" ; MD5 CS : "+md5s);
-							srcFileInfo.getBlocks().get(i).getChecksums().add(
+							fileInfo.getBlocks().get(i).getChecksums().add(
 									new ChecksumPair(cs.getSimple(),md5s.getDigest()));
 						}
 						
@@ -830,7 +830,8 @@ public class RsyncCopy {
 						"; genstamp : "+bi.getLocatedBlock().getBlock().getGenerationStamp()+
 						"; checksum list :");
 				for(ChecksumPair cp : bi.getChecksums()){
-					LOG.warn("\t\tsimple : "+cp.getSimple()+"; MD5 : "+cp.getMd5().toString());
+					MD5Hash md5 = new MD5Hash(cp.getMd5());
+					LOG.warn("\t\tsimple : "+Integer.toHexString(cp.getSimple())+"; MD5 : "+md5);
 				}
 			}
 		}
