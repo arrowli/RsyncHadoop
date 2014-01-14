@@ -243,10 +243,10 @@ public class RsyncCopy {
 		
 		private class ChecksumPair{
 			private Integer simple;
-			private Byte[] md5;
-			public ChecksumPair(Integer simple,Byte[] md5){
-				this.setSimple(simple);
-				this.setMd5(md5);
+			private byte[] md5;
+			public ChecksumPair(Integer simple,byte[] bs){
+				this.simple = simple;
+				this.md5 = bs;
 			}
 			public Integer getSimple() {
 				return simple;
@@ -254,10 +254,10 @@ public class RsyncCopy {
 			public void setSimple(Integer simple) {
 				this.simple = simple;
 			}
-			public Byte[] getMd5() {
+			public byte[] getMd5() {
 				return md5;
 			}
-			public void setMd5(Byte[] md5) {
+			public void setMd5(byte[] md5) {
 				this.md5 = md5;
 			}
 		}
@@ -534,7 +534,7 @@ public class RsyncCopy {
 									Integer.toHexString(cs.getSimple())+
 									" ; MD5 CS : "+md5s);
 							srcFileInfo.getBlocks().get(i).getChecksums().add(
-									new ChecksumPair(cs.getSimple(),cs.getMd5().toByteArray()));
+									new ChecksumPair(cs.getSimple(),md5s.getDigest()));
 						}
 						
 						// read md5
