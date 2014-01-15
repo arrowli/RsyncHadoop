@@ -245,7 +245,9 @@ public class Sender implements DataTransferProtocol {
 				.buildClientHeader(block, clientname, blockToken);
 		
 		OpCalculateSegmentsProto.Builder proto = OpCalculateSegmentsProto.newBuilder()
-				.setHeader(header);
+				.setHeader(header)
+				.setBytesPerChunk(10*1024*1024)
+				.setChunksPerBlock(block.getNumBytes()/(10*1024*1024));
 		for(int i = 0 ; i < simples.size() ; i++){
 			proto.addChecksums(
 					ChecksumPairProto.newBuilder()
