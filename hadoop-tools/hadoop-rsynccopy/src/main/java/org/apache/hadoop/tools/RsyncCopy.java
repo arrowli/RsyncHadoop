@@ -642,10 +642,12 @@ public class RsyncCopy {
 						List<SegmentProto> segments = segmentsData.getSegmentsList();
 						
 						for(SegmentProto segment : segments){
-							LOG.warn("Chunk index : "+segment.getIndex()+"; Offset : "+segment.getLength());
+							LOG.warn("Chunk index : "+segment.getIndex()+"; Offset : "+Long.toHexString(segment.getLength()));
 						}
 
+						bi.setSegments(segments);
 						done = true;
+						break;
 						
 					} catch (InvalidBlockTokenException ibte) {
 						
@@ -886,6 +888,9 @@ public class RsyncCopy {
 				for(ChecksumPair cp : bi.getChecksums()){
 					MD5Hash md5 = new MD5Hash(cp.getMd5());
 					LOG.warn("\t\tsimple : "+Integer.toHexString(cp.getSimple())+"; MD5 : "+md5);
+				}
+				for(SegmentProto segment : bi.getSegments()){
+					LOG.warn("\t\tindex : "+segment.getIndex()+"; offset : "+Long.toHexString(segment.getLength()));
 				}
 			}
 		}

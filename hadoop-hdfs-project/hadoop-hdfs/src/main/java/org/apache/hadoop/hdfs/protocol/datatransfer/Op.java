@@ -39,7 +39,9 @@ public enum Op {
   
   RSYNC_CHUNKS_CHECKSUM((byte)88),
   RSYNC_INFLATE_BLOCK((byte)89),
-  RSYNC_CALCULATE_SEGMENTS((byte)90);
+  RSYNC_CALCULATE_SEGMENTS((byte)90),
+  RSYNC_CHOOSE_SEGMENT((byte)91),
+  RSYNC_SEND_SEGMENT((byte)92);
 
   /** The code for this operation. */
   public final byte code;

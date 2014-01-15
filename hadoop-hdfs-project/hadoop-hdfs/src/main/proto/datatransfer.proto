@@ -265,3 +265,18 @@ message OpCalculateSegmentsResponseProto {
   required uint64 numSegments = 1;
   repeated SegmentProto segments = 2;
 }
+
+message OpChooseSegmentProto {
+  required ClientOperationHeaderProto header = 1;
+  required uint64 blockOffset = 2;
+  required uint64 length = 3;
+  optional bool sendChecksums = 4 [default = true];
+  repeated DatanodeInfoProto targets = 5;
+}
+
+message OpSendSegmentProto {
+  required ClientOperationHeaderProto header = 1;
+  required uint64 blockOffset = 2;
+  required uint64 length = 3;
+  optional bool sendChecksums = 4 [default = true];
+}
