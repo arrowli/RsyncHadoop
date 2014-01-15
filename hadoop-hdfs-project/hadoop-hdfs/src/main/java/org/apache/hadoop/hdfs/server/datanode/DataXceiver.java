@@ -40,6 +40,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.channels.ClosedChannelException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -808,6 +809,12 @@ class DataXceiver extends Receiver implements Runnable {
 		      final String clientname,
 		      final List<Integer> simples,
 		      final List<byte[]> md5s) throws IOException{
+		MessageDigest mdInst = null;
+		try{
+			mdInst = MessageDigest.getInstance("MD5");
+		}catch(NoSuchAlgorithmException e){
+			LOG.warn("no such algorithm : "+e); 
+		}
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		LOG.warn("CalculateSegments is called.");
 		LOG.warn("Client name : "+clientname);
@@ -884,7 +891,7 @@ class DataXceiver extends Receiver implements Runnable {
 				if(checksumMap.containsKey((int)cs.getValue())){
 					boolean found = false;
 					for(ChecksumPair cp : checksumMap.get((int)cs.getValue())){
-						MessageDigest mdInst = MessageDigest.getInstance("MD5");
+						
 						if(bufOffset == buf.length) mdInst.update(buf);
 						else{
 							mdInst.update(buf, bufOffset+1, buf.length - (bufOffset+1));

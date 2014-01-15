@@ -49,6 +49,7 @@ import org.apache.hadoop.security.token.Token;
 import org.apache.hadoop.util.DataChecksum;
 
 import com.google.protobuf.Message;
+import com.google.protobuf.ByteString;
 
 /** Sender */
 @InterfaceAudience.Private
