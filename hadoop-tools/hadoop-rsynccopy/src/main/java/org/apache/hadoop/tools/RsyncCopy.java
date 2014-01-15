@@ -91,7 +91,9 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 
@@ -262,32 +264,11 @@ public class RsyncCopy {
 			}
 		}
 		
-		private class Segment{
-			private Integer index;
-			private Long length;
-			public Segment(Integer index,Long length){
-				this.index = index;
-				this.length = length;
-			}
-			public Integer getIndex() {
-				return index;
-			}
-			public void setIndex(Integer index) {
-				this.index = index;
-			}
-			public Long getLength() {
-				return length;
-			}
-			public void setLength(Long length) {
-				this.length = length;
-			}
-		}
-		
 		private class BlockInfo{
 			private LocatedBlock locatedBlock;
 			private List<ChecksumPair> checksums;
-			private List<Segment> segments;
-			public BlockInfo(LocatedBlock locatedBlock,List<ChecksumPair> checksums,List<Segment> segments){
+			private List<SegmentProto> segments;
+			public BlockInfo(LocatedBlock locatedBlock,List<ChecksumPair> checksums,List<SegmentProto> segments){
 				this.locatedBlock = locatedBlock;
 				this.checksums = checksums;
 				this.segments = segments;
@@ -307,13 +288,13 @@ public class RsyncCopy {
 			public void addChecksum(ChecksumPair checksum){
 				this.checksums.add(checksum);
 			}
-			public List<Segment> getSegments() {
+			public List<SegmentProto> getSegments() {
 				return segments;
 			}
-			public void setSegments(List<Segment> segments) {
+			public void setSegments(List<SegmentProto> segments) {
 				this.segments = segments;
 			}
-			public void addSegment(Segment segment){
+			public void addSegment(SegmentProto segment){
 				this.segments.add(segment);
 			}
 		}
@@ -415,13 +396,13 @@ public class RsyncCopy {
 				srcFileInfo.addBlock(
 						new BlockInfo(lb,
 								new LinkedList<ChecksumPair>(),
-								new LinkedList<Segment>()));
+								new LinkedList<SegmentProto>()));
 			}
 			for(LocatedBlock lb : dstLocatedBlocks.getLocatedBlocks()){
 				dstFileInfo.addBlock(
 						new BlockInfo(lb,
 								new LinkedList<ChecksumPair>(),
-								new LinkedList<Segment>()));
+								new LinkedList<SegmentProto>()));
 			}
 		}
 		/**
@@ -601,6 +582,79 @@ public class RsyncCopy {
 
 				if (!done) {
 					throw new IOException("Fail to get block MD5 for " + block);
+				}
+			}
+		}
+		
+		private void calculateSegments(){
+			List<Integer> simples = new LinkedList<Integer>();
+			List<byte[]> md5s = new LinkedList<byte[]>();
+			
+			for(BlockInfo bi : dstFileInfo.getBlocks()){
+				for(ChecksumPair cp : bi.getChecksums()){
+					simples.add(cp.getSimple());
+					md5s.add(cp.getMd5());
+				}
+			}
+			
+			for(BlockInfo bi : srcFileInfo.getBlocks()){
+				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
+				final int timeout = 3000 * datanodes.length + socketTimeout;
+				boolean done = false;
+				for (int j = 0; !done && j < datanodes.length; j++) {
+					DataOutputStream out = null;
+					DataInputStream in = null;
+
+					try {
+						// connect to a datanode
+						IOStreamPair pair = connectToDN(socketFactory,
+								connectToDnViaHostname, getDataEncryptionKey(),
+								datanodes[j], timeout);
+						out = new DataOutputStream(new BufferedOutputStream(
+								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+						in = new DataInputStream(pair.in);
+
+						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
+
+						// call calculateSegments
+						new Sender(out).calculateSegments(
+								bi.getLocatedBlock().getBlock(), 
+								bi.getLocatedBlock().getBlockToken(), 
+								clientName, simples, md5s);
+
+						//read reply
+						final BlockOpResponseProto reply = BlockOpResponseProto
+								.parseFrom(PBHelper.vintPrefixed(in));
+
+						if (reply.getStatus() != Status.SUCCESS) {
+							if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {
+								throw new InvalidBlockTokenException();
+							} else {
+								throw new IOException("Bad response " + reply
+										+ " for block " + bi.getLocatedBlock().getBlock() + " from datanode "
+										+ datanodes[j]);
+							}
+						}
+
+						OpCalculateSegmentsResponseProto segmentsData = reply
+								.getCalculateSegmentsResponse();
+
+						List<SegmentProto> segments = segmentsData.getSegmentsList();
+						
+						for(SegmentProto segment : segments){
+							LOG.warn("Chunk index : "+segment.getIndex()+"; Offset : "+segment.getLength());
+						}
+
+						done = true;
+						
+					} catch (InvalidBlockTokenException ibte) {
+						
+					} catch (IOException ie) {
+						
+					}finally {
+						IOUtils.closeStream(in);
+						IOUtils.closeStream(out);
+					}
 				}
 			}
 		}
@@ -841,6 +895,7 @@ public class RsyncCopy {
 			getSDFileChecksum();
 			printFileInfo(srcFileInfo);
 			printFileInfo(dstFileInfo);
+			calculateSegments();
 		}
 		
 	}

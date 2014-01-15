@@ -18,6 +18,7 @@
 package org.apache.hadoop.hdfs.protocol.datatransfer;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -183,4 +184,19 @@ public interface DataTransferProtocol {
    */
   public void chunksChecksum(final ExtendedBlock blk,
       final Token<BlockTokenIdentifier> blockToken) throws IOException;
+  
+  /**
+   * calculate src file block difference from dst file ,return segments information.
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @param clientname
+   * @param cntChecksum checksum numbers
+   * @throws IOException
+   */
+  public void calculateSegments(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken,
+      final String clientname,
+      final List<Integer> simples,
+      final List<byte[]> md5s) throws IOException;
 }

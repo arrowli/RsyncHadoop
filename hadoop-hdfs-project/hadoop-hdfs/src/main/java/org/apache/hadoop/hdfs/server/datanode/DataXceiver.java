@@ -39,7 +39,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.channels.ClosedChannelException;
+import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.Adler32;
@@ -61,8 +64,10 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseP
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientReadStatusProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ReadOpChecksumInfoProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;
@@ -797,6 +802,147 @@ class DataXceiver extends Receiver implements Runnable {
 		datanode.metrics.addBlockChecksumOp(elapsed());
 	}
 
+	@Override
+	public void calculateSegments(final ExtendedBlock blk,
+		      final Token<BlockTokenIdentifier> blockToken,
+		      final String clientname,
+		      final List<Integer> simples,
+		      final List<byte[]> md5s) throws IOException{
+		final DataOutputStream out = new DataOutputStream(getOutputStream());
+		LOG.warn("CalculateSegments is called.");
+		LOG.warn("Client name : "+clientname);
+		for(Integer i : simples){
+			LOG.warn(Integer.toHexString(i));
+		}
+		for(byte[] bs : md5s){
+			MD5Hash md5 = new MD5Hash(bs);
+			LOG.warn(md5);
+		}
+		
+		final LengthInputStream metadataIn = datanode.data
+				.getMetaDataInputStream(blk);
+		final DataInputStream checksumIn = new DataInputStream(
+				new BufferedInputStream(metadataIn,
+						HdfsConstants.IO_FILE_BUFFER_SIZE));
+
+		updateCurrentThreadName("Calculating segments for block " + blk);
+		try {
+			// read metadata file
+			final BlockMetadataHeader header = BlockMetadataHeader
+					.readHeader(checksumIn);
+			final DataChecksum checksum = header.getChecksum();
+			final int bytesPerCRC = checksum.getBytesPerChecksum();
+			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
+					.getHeaderSize()) / checksum.getChecksumSize();
+			final int bytesPerChunk = 10*1024*1024;
+			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
+					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
+			
+			//Initialize dst file checksum hashtable
+			class ChecksumPair{
+				public int index;
+				public int simple;
+				public byte[] md5;
+				ChecksumPair(int index,int simple,byte[] md5){
+					this.index = index;
+					this.simple = simple;
+					this.md5 = md5;
+				}
+			}
+			HashMap<Integer,List<ChecksumPair> > checksumMap = new HashMap<Integer,List<ChecksumPair> >();
+			for(int i = 0 ; i < simples.size() ; i++){
+				if(checksumMap.containsKey(simples.get(i))){
+					checksumMap.get(simples.get(i)).add(new ChecksumPair(i,simples.get(i),md5s.get(i)));
+				}else{
+					List<ChecksumPair>  md5 = new LinkedList<ChecksumPair>();
+					md5.add(new ChecksumPair(i,simples.get(i),md5s.get(i)));
+					checksumMap.put(simples.get(i), md5);
+				}
+			}
+
+			//read src file block checksum to generate segments info
+			byte[] buf = new byte[bytesPerChunk];
+			InputStream blockIn = datanode.data.getBlockInputStream(blk, 0);
+			Adler32 cs = new Adler32();
+			
+			List<SegmentProto> segments = new LinkedList<SegmentProto>();
+			
+			int startOffset = 0;//上次segment保存的偏移
+			int nowOffset = 0;//目前读到的偏移
+			int bufOffset = buf.length;//buf需要循环利用
+			int readBytesOneTime = blockIn.read(buf);
+			nowOffset += readBytesOneTime;
+			 
+			do{
+				cs.reset();
+				if(bufOffset == buf.length) cs.update(buf);
+				else{
+					cs.update(buf, bufOffset+1, buf.length - (bufOffset+1));
+					cs.update(buf, 0, bufOffset+1);
+				}
+				
+				if(checksumMap.containsKey((int)cs.getValue())){
+					boolean found = false;
+					for(ChecksumPair cp : checksumMap.get((int)cs.getValue())){
+						MessageDigest mdInst = MessageDigest.getInstance("MD5");
+						if(bufOffset == buf.length) mdInst.update(buf);
+						else{
+							mdInst.update(buf, bufOffset+1, buf.length - (bufOffset+1));
+							mdInst.update(buf, 0, bufOffset+1);
+						}
+						
+						//find a match chunk
+						if(MessageDigest.isEqual(mdInst.digest(), cp.md5)){
+							found = true;
+							segments.add(SegmentProto
+									.newBuilder()
+									.setIndex(cp.index)
+									.setLength(startOffset)
+									.build());
+							
+							readBytesOneTime = blockIn.read(buf);
+							startOffset = nowOffset;
+							nowOffset += readBytesOneTime;
+							bufOffset = buf.length;
+							break;
+						}
+					}
+					
+					if(found == false){
+						if(bufOffset == buf.length){
+							bufOffset = 1;
+						}else{
+							bufOffset++;
+						}
+						readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
+						nowOffset++;
+					}
+				}
+			}while(readBytesOneTime != -1);
+			
+			blockIn.close();
+			
+			// compute block checksum
+			final MD5Hash md5 = MD5Hash.digest(checksumIn);
+			
+			// write reply
+			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
+					.setCalculateSegmentsResponse(OpCalculateSegmentsResponseProto
+							.newBuilder().setNumSegments(segments.size())
+							.addAllSegments(segments))
+					.build()
+					.writeDelimitedTo(out);
+			out.flush();
+		} finally {
+			IOUtils.closeStream(out);
+			IOUtils.closeStream(checksumIn);
+			IOUtils.closeStream(metadataIn);
+		}
+
+		// update metrics
+		datanode.metrics.addBlockChecksumOp(elapsed());
+	}
+	
 	@Override
 	public void blockChecksum(final ExtendedBlock block,
 			final Token<BlockTokenIdentifier> blockToken) throws IOException {

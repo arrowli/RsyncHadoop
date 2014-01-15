@@ -22,10 +22,14 @@ import static org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferProtoUtil
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
@@ -205,5 +209,28 @@ public abstract class Receiver implements DataTransferProtocol {
 				proto.getHeader().getClientName(),
 				proto.getNewSize(),
 				proto.getLatestGenerationStamp());
+	}
+	
+	/** Receive OP_RSYNC_CALCULATE_SEGMENTS */
+	private void opCalculateSegments(DataInputStream in) throws IOException {
+		final OpCalculateSegmentsProto proto = OpCalculateSegmentsProto
+				.parseFrom(vintPrefixed(in));
+		
+		
+		List<ChecksumPairProto> checksums = proto.getChecksumsList();
+		List<Integer> simples = new LinkedList<Integer>();
+		List<byte[]> md5s = new LinkedList<byte[]>();
+		
+		for(ChecksumPairProto cp : checksums){
+			simples.add(cp.getSimple());
+			md5s.add(cp.getMd5().toByteArray());
+		}
+		
+		calculateSegments(
+				PBHelper.convert(proto.getHeader().getBaseHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getBaseHeader().getToken()),
+				proto.getHeader().getClientName(),
+				simples,
+				md5s);
 	}
 }

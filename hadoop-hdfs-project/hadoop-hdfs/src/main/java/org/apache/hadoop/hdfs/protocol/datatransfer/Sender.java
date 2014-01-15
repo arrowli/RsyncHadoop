@@ -22,14 +22,17 @@ import static org.apache.hadoop.hdfs.protocol.datatransfer.DataTransferProtoUtil
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.ExtendedBlock;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
@@ -231,5 +234,25 @@ public class Sender implements DataTransferProtocol {
 				.setLatestGenerationStamp(latestGenerationStamp);
 				
 		send(out, Op.RSYNC_INFLATE_BLOCK , proto.build());
+	}
+	
+	@Override
+	public void calculateSegments(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken,
+			final String clientname,final List<Integer> simples,List<byte[]> md5s) throws IOException {
+		ClientOperationHeaderProto header = DataTransferProtoUtil
+				.buildClientHeader(block, clientname, blockToken);
+		
+		OpCalculateSegmentsProto.Builder proto = OpCalculateSegmentsProto.newBuilder()
+				.setHeader(header);
+		for(int i = 0 ; i < simples.size() ; i++){
+			proto.addChecksums(
+					ChecksumPairProto.newBuilder()
+					.setSimple(simples.get(i))
+					.setMd5(ByteString.copyFrom(md5s.get(i)))
+					.build());
+		}
+		
+		send(out,Op.RSYNC_CALCULATE_SEGMENTS,proto.build());
 	}
 }
