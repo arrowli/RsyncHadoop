@@ -85,6 +85,9 @@ public abstract class Receiver implements DataTransferProtocol {
 		case RSYNC_CHUNKS_CHECKSUM:
 			opChunksChecksum(in);
 			break;
+		case RSYNC_CALCULATE_SEGMENTS:
+			opCalculateSegments(in);
+			break;
 		case RSYNC_INFLATE_BLOCK:
 			opInflateBlock(in);
 			break;
