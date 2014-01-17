@@ -93,7 +93,6 @@ import org.apache.hadoop.util.DataChecksum;
 import org.apache.hadoop.util.DataChecksum.Type;
 
 import com.google.protobuf.ByteString;
-import com.sun.java.util.jar.pack.Package.File;
 
 /**
  * Thread for processing incoming/outgoing data stream.
