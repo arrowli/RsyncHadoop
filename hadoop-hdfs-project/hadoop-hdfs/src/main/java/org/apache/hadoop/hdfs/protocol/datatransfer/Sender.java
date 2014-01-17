@@ -33,11 +33,13 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReadBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReplaceBlockProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpSendSegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpTransferBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpRequestShortCircuitAccessProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.CachingStrategyProto;
@@ -248,7 +250,7 @@ public class Sender implements DataTransferProtocol {
 				.setHeader(header)
 				.setBytesPerChunk(10*1024*1024)
 				.setChunksPerBlock(block.getNumBytes()/(10*1024*1024));
-		for(int i = 0 ; i < simples.size() ; i++){
+		for(int i = 0 ; i < simples.size() ; i++){/* 这段代码可以移到PBHelper中，建立新的convert函数 */
 			proto.addChecksums(
 					ChecksumPairProto.newBuilder()
 					.setSimple(simples.get(i))
@@ -257,5 +259,45 @@ public class Sender implements DataTransferProtocol {
 		}
 		
 		send(out,Op.RSYNC_CALCULATE_SEGMENTS,proto.build());
+	}
+	
+	@Override
+	public void chooseSegment(final ExtendedBlock blk,
+		      final Token<BlockTokenIdentifier> blockToken,
+		      final String clientname,
+		      final long blockOffset,
+		      final long length,
+		      final boolean sendChecksum,
+		      final DatanodeInfo[] targets) throws IOException {
+		ClientOperationHeaderProto header = DataTransferProtoUtil
+				.buildClientHeader(blk, clientname, blockToken);
+		
+		OpChooseSegmentProto.Builder proto = OpChooseSegmentProto.newBuilder()
+				.setHeader(header)
+				.setBlockOffset(blockOffset)
+				.setLength(length)
+				.setSendChecksums(sendChecksum)
+				.addAllTargets(PBHelper.convert(targets));
+		
+		send(out,Op.RSYNC_CHOOSE_SEGMENT,proto.build());
+	}
+	
+	@Override
+	public void sendSegment(final ExtendedBlock blk,
+		      final Token<BlockTokenIdentifier> blockToken,
+		      final String clientname,
+		      final long blockOffset,
+		      final long length,
+		      final boolean sendChecksum) throws IOException {
+		ClientOperationHeaderProto header = DataTransferProtoUtil
+				.buildClientHeader(blk, clientname, blockToken);
+		
+		OpSendSegmentProto.Builder proto = OpSendSegmentProto.newBuilder()
+				.setHeader(header)
+				.setBlockOffset(blockOffset)
+				.setLength(length)
+				.setSendChecksums(sendChecksum);
+		
+		send(out,Op.RSYNC_SEND_SEGMENT,proto.build());
 	}
 }

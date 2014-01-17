@@ -27,14 +27,17 @@ import java.util.List;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
+import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReadBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpReplaceBlockProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpSendSegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpTransferBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpRequestShortCircuitAccessProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.CachingStrategyProto;
@@ -87,6 +90,12 @@ public abstract class Receiver implements DataTransferProtocol {
 			break;
 		case RSYNC_CALCULATE_SEGMENTS:
 			opCalculateSegments(in);
+			break;
+		case RSYNC_CHOOSE_SEGMENT:
+			opChooseSegment(in);
+			break;
+		case RSYNC_SEND_SEGMENT:
+			opSendSegment(in);
 			break;
 		case RSYNC_INFLATE_BLOCK:
 			opInflateBlock(in);
@@ -235,5 +244,43 @@ public abstract class Receiver implements DataTransferProtocol {
 				proto.getHeader().getClientName(),
 				simples,
 				md5s);
+	}
+	
+	/** Receive OP_RSYNC_CHOOSE_SEGMENT */
+	private void opChooseSegment(DataInputStream in) throws IOException {
+		final OpChooseSegmentProto proto = OpChooseSegmentProto
+				.parseFrom(vintPrefixed(in));
+		
+		long blockOffset = proto.getBlockOffset();
+		long length = proto.getLength();
+		DatanodeInfo[] datanodes = PBHelper.convert(proto.getTargetsList());
+		boolean sendChecksums = proto.getSendChecksums();
+		
+		chooseSegment(
+				PBHelper.convert(proto.getHeader().getBaseHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getBaseHeader().getToken()),
+				proto.getHeader().getClientName(),
+				blockOffset,
+				length,
+				sendChecksums,
+				datanodes);
+	}
+	
+	/** Receive OP_RSYNC_SEND_SEGMENT */
+	private void opSendSegment(DataInputStream in) throws IOException {
+		final OpSendSegmentProto proto = OpSendSegmentProto
+				.parseFrom(vintPrefixed(in));
+		
+		long blockOffset = proto.getBlockOffset();
+		long length = proto.getLength();
+		boolean sendChecksums = proto.getSendChecksums();
+		
+		sendSegment(
+				PBHelper.convert(proto.getHeader().getBaseHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getBaseHeader().getToken()),
+				proto.getHeader().getClientName(),
+				blockOffset,
+				length,
+				sendChecksums);
 	}
 }

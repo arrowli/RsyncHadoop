@@ -186,7 +186,7 @@ public interface DataTransferProtocol {
       final Token<BlockTokenIdentifier> blockToken) throws IOException;
   
   /**
-   * calculate src file block difference from dst file ,return segments information.
+   * Calculate src file block difference from dst file ,return segments information.
    * 
    * @param blk a block.
    * @param blockToken security token for accessing the block.
@@ -199,4 +199,38 @@ public interface DataTransferProtocol {
       final String clientname,
       final List<Integer> simples,
       final List<byte[]> md5s) throws IOException;
+  
+  /**
+   * Choose segment to transfer , call by dfsClient.
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @param clientname
+   * @param cntChecksum checksum numbers
+   * @throws IOException
+   */
+  public void chooseSegment(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken,
+      final String clientname,
+      final long blockOffset,
+      final long length,
+      final boolean sendChecksum,
+      final DatanodeInfo[] targets) throws IOException;
+  
+  /**
+   * Send segment from one srcDN to dstDN, dstDN save this segment in tmp file.
+   * Used by chooseSegment.
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @param clientname
+   * @param cntChecksum checksum numbers
+   * @throws IOException
+   */
+  public void sendSegment(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken,
+      final String clientname,
+      final long blockOffset,
+      final long length,
+      final boolean sendChecksum) throws IOException;
 }

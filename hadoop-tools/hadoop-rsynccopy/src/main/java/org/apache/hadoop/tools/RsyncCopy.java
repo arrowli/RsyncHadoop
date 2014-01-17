@@ -661,6 +661,50 @@ public class RsyncCopy {
 			}
 		}
 		
+		private void sendSegments(){
+			for(BlockInfo bi : srcFileInfo.getBlocks()){
+				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
+				final int timeout = 3000 * datanodes.length + socketTimeout;
+				boolean done = false;
+				for (int j = 0; !done && j < datanodes.length; j++) {
+					DataOutputStream out = null;
+					DataInputStream in = null;
+
+					try {
+						// connect to a datanode
+						IOStreamPair pair = connectToDN(socketFactory,
+								connectToDnViaHostname, getDataEncryptionKey(),
+								datanodes[j], timeout);
+						out = new DataOutputStream(new BufferedOutputStream(
+								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+						in = new DataInputStream(pair.in);
+
+						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
+
+						// call chooseSegment
+						new Sender(out).chooseSegment(bi.getLocatedBlock().getBlock(), 
+								bi.getLocatedBlock().getBlockToken(), 
+								clientName, 
+								bi.segments.get(0).getIndex(), 
+								bi.segments.get(0).getLength(), true, 
+								bi.getLocatedBlock().getLocations());
+
+						//read reply
+						done = true;
+						break;
+						
+					} catch (InvalidBlockTokenException ibte) {
+						
+					} catch (IOException ie) {
+						
+					}finally {
+						IOUtils.closeStream(in);
+						IOUtils.closeStream(out);
+					}
+				}
+			}
+		}
+		
 		private LocatedBlocks callGetBlockLocations(ClientProtocol namenode,
 				String src, long start, long length, boolean supportMetaInfo)
 				throws IOException {
@@ -901,6 +945,9 @@ public class RsyncCopy {
 			printFileInfo(srcFileInfo);
 			printFileInfo(dstFileInfo);
 			calculateSegments();
+			printFileInfo(srcFileInfo);
+			printFileInfo(dstFileInfo);
+			sendSegments();
 		}
 		
 	}

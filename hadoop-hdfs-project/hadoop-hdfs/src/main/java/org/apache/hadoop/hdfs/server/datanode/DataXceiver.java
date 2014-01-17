@@ -24,6 +24,7 @@ import static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status.SU
 import static org.apache.hadoop.util.Time.now;
 import static org.apache.hadoop.hdfs.server.datanode.DataNode.DN_CLIENTTRACE_FORMAT;
 
+import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -43,12 +44,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.Adler32;
 
 import org.apache.commons.logging.Log;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.net.Peer;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.ExtendedBlock;
@@ -64,6 +67,7 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientReadStatusProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.DNTransferAckProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
@@ -73,6 +77,7 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;
 import org.apache.hadoop.hdfs.security.token.block.BlockTokenSecretManager;
+import org.apache.hadoop.hdfs.security.token.block.InvalidBlockTokenException;
 import org.apache.hadoop.hdfs.server.common.HdfsServerConstants;
 import org.apache.hadoop.hdfs.server.datanode.DataNode.ShortCircuitFdsUnsupportedException;
 import org.apache.hadoop.hdfs.server.datanode.DataNode.ShortCircuitFdsVersionException;
@@ -88,6 +93,7 @@ import org.apache.hadoop.util.DataChecksum;
 import org.apache.hadoop.util.DataChecksum.Type;
 
 import com.google.protobuf.ByteString;
+import com.sun.java.util.jar.pack.Package.File;
 
 /**
  * Thread for processing incoming/outgoing data stream.
@@ -948,6 +954,88 @@ class DataXceiver extends Receiver implements Runnable {
 
 		// update metrics
 		datanode.metrics.addBlockChecksumOp(elapsed());
+	}
+	
+	@Override
+	public void chooseSegment(final ExtendedBlock blk,
+		      final Token<BlockTokenIdentifier> blockToken,
+		      final String clientname,
+		      final long blockOffset,
+		      final long length,
+		      final boolean sendChecksum,
+		      final DatanodeInfo[] targets) throws IOException {
+		LOG.warn("chooseSegment is called. blk "+blk+
+				",block offset "+Long.toHexString(blockOffset)+
+				",length "+Long.toHexString(length));
+		DataOutputStream out = null;
+		Socket sock = null;
+		for(DatanodeInfo target : targets){
+			try {
+		        final String dnAddr = target.getXferAddr(connectToDnViaHostname);
+		        InetSocketAddress curTarget = NetUtils.createSocketAddr(dnAddr);
+		        if (LOG.isDebugEnabled()) {
+		          LOG.debug("Connecting to datanode " + dnAddr);
+		        }
+		        sock = datanode.newSocket();
+		        NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
+		        sock.setSoTimeout(targets.length * dnConf.socketTimeout);
+
+		        long writeTimeout = dnConf.socketWriteTimeout + 
+		                            HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * (targets.length-1);
+		        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout);
+		        InputStream unbufIn = NetUtils.getInputStream(sock);
+		        
+		        out = new DataOutputStream(new BufferedOutputStream(unbufOut,
+		            HdfsConstants.SMALL_BUFFER_SIZE));
+		        in = new DataInputStream(unbufIn);
+
+		        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum);;
+
+		        // send segment data & checksum
+		        //blockSender.sendBlock(out, unbufOut, null);
+		        
+		        //response 
+		        
+		      } catch (IOException ie) {
+		        LOG.warn("Failed to transfer " + blk +
+	        		"segment["+Long.toHexString(blockOffset)+":"+ 
+		        	Long.toHexString(blockOffset+length-1) +"] to " +
+	        		target + " got ", ie);
+		      } finally {
+		        IOUtils.closeStream(out);
+		        IOUtils.closeStream(in);
+		        IOUtils.closeSocket(sock);
+		      }
+		}
+		
+		new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum);
+	}
+	
+	@Override
+	public void sendSegment(final ExtendedBlock blk,
+		      final Token<BlockTokenIdentifier> blockToken,
+		      final String clientname,
+		      final long blockOffset,
+		      final long length,
+		      final boolean sendChecksum) throws IOException {
+		LOG.warn("sendSegment is called. blk "+blk+
+				",block offset "+Long.toHexString(blockOffset)+
+				",length "+Long.toHexString(length));
+		
+		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+		if(dfsDataPath == null){
+			LOG.warn("dfs.datanode.data.dir is not set");
+			return;
+		}
+		
+		File dfsDataRoot = new File(dfsDataPath);
+		if(!dfsDataRoot.exists() || dfsDataRoot.isFile()){
+			LOG.warn("Directory "+dfsDataPath+"does not exist.");
+		}
+		String dfsTmpPath = "/current/rsync_tmp";
+		String blkPath = "/"+blk+"_"+blockToken;
+		File blkDir = new File(dfsDataPath+dfsTmpPath+blkPath);
+		blkDir.mkdirs();
 	}
 	
 	@Override
