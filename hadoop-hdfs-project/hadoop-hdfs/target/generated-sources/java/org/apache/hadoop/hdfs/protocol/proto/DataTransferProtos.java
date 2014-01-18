@@ -22234,1233 +22234,6 @@ public final class DataTransferProtos {
     // @@protoc_insertion_point(class_scope:hadoop.hdfs.OpCalculateSegmentsResponseProto)
   }
 
-  public interface OpChooseSegmentProtoOrBuilder
-      extends com.google.protobuf.MessageOrBuilder {
-
-    // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    boolean hasHeader();
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader();
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder();
-
-    // required uint64 blockOffset = 2;
-    /**
-     * <code>required uint64 blockOffset = 2;</code>
-     */
-    boolean hasBlockOffset();
-    /**
-     * <code>required uint64 blockOffset = 2;</code>
-     */
-    long getBlockOffset();
-
-    // required uint64 length = 3;
-    /**
-     * <code>required uint64 length = 3;</code>
-     */
-    boolean hasLength();
-    /**
-     * <code>required uint64 length = 3;</code>
-     */
-    long getLength();
-
-    // optional bool sendChecksums = 4 [default = true];
-    /**
-     * <code>optional bool sendChecksums = 4 [default = true];</code>
-     */
-    boolean hasSendChecksums();
-    /**
-     * <code>optional bool sendChecksums = 4 [default = true];</code>
-     */
-    boolean getSendChecksums();
-
-    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> 
-        getTargetsList();
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index);
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    int getTargetsCount();
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
-        getTargetsOrBuilderList();
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
-        int index);
-  }
-  /**
-   * Protobuf type {@code hadoop.hdfs.OpChooseSegmentProto}
-   */
-  public static final class OpChooseSegmentProto extends
-      com.google.protobuf.GeneratedMessage
-      implements OpChooseSegmentProtoOrBuilder {
-    // Use OpChooseSegmentProto.newBuilder() to construct.
-    private OpChooseSegmentProto(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
-      super(builder);
-      this.unknownFields = builder.getUnknownFields();
-    }
-    private OpChooseSegmentProto(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final OpChooseSegmentProto defaultInstance;
-    public static OpChooseSegmentProto getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public OpChooseSegmentProto getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private OpChooseSegmentProto(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      initFields();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(input, unknownFields,
-                                     extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 10: {
-              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000001) == 0x00000001)) {
-                subBuilder = header_.toBuilder();
-              }
-              header_ = input.readMessage(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.PARSER, extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(header_);
-                header_ = subBuilder.buildPartial();
-              }
-              bitField0_ |= 0x00000001;
-              break;
-            }
-            case 16: {
-              bitField0_ |= 0x00000002;
-              blockOffset_ = input.readUInt64();
-              break;
-            }
-            case 24: {
-              bitField0_ |= 0x00000004;
-              length_ = input.readUInt64();
-              break;
-            }
-            case 32: {
-              bitField0_ |= 0x00000008;
-              sendChecksums_ = input.readBool();
-              break;
-            }
-            case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>();
-                mutable_bitField0_ |= 0x00000010;
-              }
-              targets_.add(input.readMessage(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.PARSER, extensionRegistry));
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e.getMessage()).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          targets_ = java.util.Collections.unmodifiableList(targets_);
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor;
-    }
-
-    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpChooseSegmentProto_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.Builder.class);
-    }
-
-    public static com.google.protobuf.Parser<OpChooseSegmentProto> PARSER =
-        new com.google.protobuf.AbstractParser<OpChooseSegmentProto>() {
-      public OpChooseSegmentProto parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new OpChooseSegmentProto(input, extensionRegistry);
-      }
-    };
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<OpChooseSegmentProto> getParserForType() {
-      return PARSER;
-    }
-
-    private int bitField0_;
-    // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
-    public static final int HEADER_FIELD_NUMBER = 1;
-    private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto header_;
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    public boolean hasHeader() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
-    }
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader() {
-      return header_;
-    }
-    /**
-     * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-     */
-    public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder() {
-      return header_;
-    }
-
-    // required uint64 blockOffset = 2;
-    public static final int BLOCKOFFSET_FIELD_NUMBER = 2;
-    private long blockOffset_;
-    /**
-     * <code>required uint64 blockOffset = 2;</code>
-     */
-    public boolean hasBlockOffset() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
-    }
-    /**
-     * <code>required uint64 blockOffset = 2;</code>
-     */
-    public long getBlockOffset() {
-      return blockOffset_;
-    }
-
-    // required uint64 length = 3;
-    public static final int LENGTH_FIELD_NUMBER = 3;
-    private long length_;
-    /**
-     * <code>required uint64 length = 3;</code>
-     */
-    public boolean hasLength() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>required uint64 length = 3;</code>
-     */
-    public long getLength() {
-      return length_;
-    }
-
-    // optional bool sendChecksums = 4 [default = true];
-    public static final int SENDCHECKSUMS_FIELD_NUMBER = 4;
-    private boolean sendChecksums_;
-    /**
-     * <code>optional bool sendChecksums = 4 [default = true];</code>
-     */
-    public boolean hasSendChecksums() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
-    }
-    /**
-     * <code>optional bool sendChecksums = 4 [default = true];</code>
-     */
-    public boolean getSendChecksums() {
-      return sendChecksums_;
-    }
-
-    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;
-    public static final int TARGETS_FIELD_NUMBER = 5;
-    private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_;
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
-      return targets_;
-    }
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
-        getTargetsOrBuilderList() {
-      return targets_;
-    }
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    public int getTargetsCount() {
-      return targets_.size();
-    }
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
-      return targets_.get(index);
-    }
-    /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-     */
-    public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
-        int index) {
-      return targets_.get(index);
-    }
-
-    private void initFields() {
-      header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
-      blockOffset_ = 0L;
-      length_ = 0L;
-      sendChecksums_ = true;
-      targets_ = java.util.Collections.emptyList();
-    }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized != -1) return isInitialized == 1;
-
-      if (!hasHeader()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasBlockOffset()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!hasLength()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      if (!getHeader().isInitialized()) {
-        memoizedIsInitialized = 0;
-        return false;
-      }
-      for (int i = 0; i < getTargetsCount(); i++) {
-        if (!getTargets(i).isInitialized()) {
-          memoizedIsInitialized = 0;
-          return false;
-        }
-      }
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, header_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeUInt64(2, blockOffset_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeUInt64(3, length_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBool(4, sendChecksums_);
-      }
-      for (int i = 0; i < targets_.size(); i++) {
-        output.writeMessage(5, targets_.get(i));
-      }
-      getUnknownFields().writeTo(output);
-    }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
-      int size = memoizedSerializedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, header_);
-      }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, blockOffset_);
-      }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(3, length_);
-      }
-      if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(4, sendChecksums_);
-      }
-      for (int i = 0; i < targets_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, targets_.get(i));
-      }
-      size += getUnknownFields().getSerializedSize();
-      memoizedSerializedSize = size;
-      return size;
-    }
-
-    private static final long serialVersionUID = 0L;
-    @java.lang.Override
-    protected java.lang.Object writeReplace()
-        throws java.io.ObjectStreamException {
-      return super.writeReplace();
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto)) {
-        return super.equals(obj);
-      }
-      org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto other = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto) obj;
-
-      boolean result = true;
-      result = result && (hasHeader() == other.hasHeader());
-      if (hasHeader()) {
-        result = result && getHeader()
-            .equals(other.getHeader());
-      }
-      result = result && (hasBlockOffset() == other.hasBlockOffset());
-      if (hasBlockOffset()) {
-        result = result && (getBlockOffset()
-            == other.getBlockOffset());
-      }
-      result = result && (hasLength() == other.hasLength());
-      if (hasLength()) {
-        result = result && (getLength()
-            == other.getLength());
-      }
-      result = result && (hasSendChecksums() == other.hasSendChecksums());
-      if (hasSendChecksums()) {
-        result = result && (getSendChecksums()
-            == other.getSendChecksums());
-      }
-      result = result && getTargetsList()
-          .equals(other.getTargetsList());
-      result = result &&
-          getUnknownFields().equals(other.getUnknownFields());
-      return result;
-    }
-
-    private int memoizedHashCode = 0;
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptorForType().hashCode();
-      if (hasHeader()) {
-        hash = (37 * hash) + HEADER_FIELD_NUMBER;
-        hash = (53 * hash) + getHeader().hashCode();
-      }
-      if (hasBlockOffset()) {
-        hash = (37 * hash) + BLOCKOFFSET_FIELD_NUMBER;
-        hash = (53 * hash) + hashLong(getBlockOffset());
-      }
-      if (hasLength()) {
-        hash = (37 * hash) + LENGTH_FIELD_NUMBER;
-        hash = (53 * hash) + hashLong(getLength());
-      }
-      if (hasSendChecksums()) {
-        hash = (37 * hash) + SENDCHECKSUMS_FIELD_NUMBER;
-        hash = (53 * hash) + hashBoolean(getSendChecksums());
-      }
-      if (getTargetsCount() > 0) {
-        hash = (37 * hash) + TARGETS_FIELD_NUMBER;
-        hash = (53 * hash) + getTargetsList().hashCode();
-      }
-      hash = (29 * hash) + getUnknownFields().hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseDelimitedFrom(input, extensionRegistry);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input);
-    }
-    public static org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return PARSER.parseFrom(input, extensionRegistry);
-    }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto prototype) {
-      return newBuilder().mergeFrom(prototype);
-    }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code hadoop.hdfs.OpChooseSegmentProto}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder>
-       implements org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProtoOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor;
-      }
-
-      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpChooseSegmentProto_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.class, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.Builder.class);
-      }
-
-      // Construct using org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getHeaderFieldBuilder();
-          getTargetsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        if (headerBuilder_ == null) {
-          header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
-        } else {
-          headerBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        blockOffset_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        length_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        sendChecksums_ = true;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        if (targetsBuilder_ == null) {
-          targets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
-        } else {
-          targetsBuilder_.clear();
-        }
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor;
-      }
-
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto getDefaultInstanceForType() {
-        return org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.getDefaultInstance();
-      }
-
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto build() {
-        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto buildPartial() {
-        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto result = new org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        if (headerBuilder_ == null) {
-          result.header_ = header_;
-        } else {
-          result.header_ = headerBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.blockOffset_ = blockOffset_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.length_ = length_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.sendChecksums_ = sendChecksums_;
-        if (targetsBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
-            targets_ = java.util.Collections.unmodifiableList(targets_);
-            bitField0_ = (bitField0_ & ~0x00000010);
-          }
-          result.targets_ = targets_;
-        } else {
-          result.targets_ = targetsBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto) {
-          return mergeFrom((org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto other) {
-        if (other == org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto.getDefaultInstance()) return this;
-        if (other.hasHeader()) {
-          mergeHeader(other.getHeader());
-        }
-        if (other.hasBlockOffset()) {
-          setBlockOffset(other.getBlockOffset());
-        }
-        if (other.hasLength()) {
-          setLength(other.getLength());
-        }
-        if (other.hasSendChecksums()) {
-          setSendChecksums(other.getSendChecksums());
-        }
-        if (targetsBuilder_ == null) {
-          if (!other.targets_.isEmpty()) {
-            if (targets_.isEmpty()) {
-              targets_ = other.targets_;
-              bitField0_ = (bitField0_ & ~0x00000010);
-            } else {
-              ensureTargetsIsMutable();
-              targets_.addAll(other.targets_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.targets_.isEmpty()) {
-            if (targetsBuilder_.isEmpty()) {
-              targetsBuilder_.dispose();
-              targetsBuilder_ = null;
-              targets_ = other.targets_;
-              bitField0_ = (bitField0_ & ~0x00000010);
-              targetsBuilder_ = 
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getTargetsFieldBuilder() : null;
-            } else {
-              targetsBuilder_.addAllMessages(other.targets_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        if (!hasHeader()) {
-          
-          return false;
-        }
-        if (!hasBlockOffset()) {
-          
-          return false;
-        }
-        if (!hasLength()) {
-          
-          return false;
-        }
-        if (!getHeader().isInitialized()) {
-          
-          return false;
-        }
-        for (int i = 0; i < getTargetsCount(); i++) {
-          if (!getTargets(i).isInitialized()) {
-            
-            return false;
-          }
-        }
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChooseSegmentProto) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      private int bitField0_;
-
-      // required .hadoop.hdfs.ClientOperationHeaderProto header = 1;
-      private org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
-      private com.google.protobuf.SingleFieldBuilder<
-          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder> headerBuilder_;
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public boolean hasHeader() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto getHeader() {
-        if (headerBuilder_ == null) {
-          return header_;
-        } else {
-          return headerBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public Builder setHeader(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto value) {
-        if (headerBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          header_ = value;
-          onChanged();
-        } else {
-          headerBuilder_.setMessage(value);
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public Builder setHeader(
-          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder builderForValue) {
-        if (headerBuilder_ == null) {
-          header_ = builderForValue.build();
-          onChanged();
-        } else {
-          headerBuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public Builder mergeHeader(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto value) {
-        if (headerBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001) &&
-              header_ != org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance()) {
-            header_ =
-              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.newBuilder(header_).mergeFrom(value).buildPartial();
-          } else {
-            header_ = value;
-          }
-          onChanged();
-        } else {
-          headerBuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public Builder clearHeader() {
-        if (headerBuilder_ == null) {
-          header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
-          onChanged();
-        } else {
-          headerBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        return this;
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder getHeaderBuilder() {
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return getHeaderFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder getHeaderOrBuilder() {
-        if (headerBuilder_ != null) {
-          return headerBuilder_.getMessageOrBuilder();
-        } else {
-          return header_;
-        }
-      }
-      /**
-       * <code>required .hadoop.hdfs.ClientOperationHeaderProto header = 1;</code>
-       */
-      private com.google.protobuf.SingleFieldBuilder<
-          org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder> 
-          getHeaderFieldBuilder() {
-        if (headerBuilder_ == null) {
-          headerBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.Builder, org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProtoOrBuilder>(
-                  header_,
-                  getParentForChildren(),
-                  isClean());
-          header_ = null;
-        }
-        return headerBuilder_;
-      }
-
-      // required uint64 blockOffset = 2;
-      private long blockOffset_ ;
-      /**
-       * <code>required uint64 blockOffset = 2;</code>
-       */
-      public boolean hasBlockOffset() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>required uint64 blockOffset = 2;</code>
-       */
-      public long getBlockOffset() {
-        return blockOffset_;
-      }
-      /**
-       * <code>required uint64 blockOffset = 2;</code>
-       */
-      public Builder setBlockOffset(long value) {
-        bitField0_ |= 0x00000002;
-        blockOffset_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 blockOffset = 2;</code>
-       */
-      public Builder clearBlockOffset() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        blockOffset_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // required uint64 length = 3;
-      private long length_ ;
-      /**
-       * <code>required uint64 length = 3;</code>
-       */
-      public boolean hasLength() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required uint64 length = 3;</code>
-       */
-      public long getLength() {
-        return length_;
-      }
-      /**
-       * <code>required uint64 length = 3;</code>
-       */
-      public Builder setLength(long value) {
-        bitField0_ |= 0x00000004;
-        length_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required uint64 length = 3;</code>
-       */
-      public Builder clearLength() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        length_ = 0L;
-        onChanged();
-        return this;
-      }
-
-      // optional bool sendChecksums = 4 [default = true];
-      private boolean sendChecksums_ = true;
-      /**
-       * <code>optional bool sendChecksums = 4 [default = true];</code>
-       */
-      public boolean hasSendChecksums() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional bool sendChecksums = 4 [default = true];</code>
-       */
-      public boolean getSendChecksums() {
-        return sendChecksums_;
-      }
-      /**
-       * <code>optional bool sendChecksums = 4 [default = true];</code>
-       */
-      public Builder setSendChecksums(boolean value) {
-        bitField0_ |= 0x00000008;
-        sendChecksums_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool sendChecksums = 4 [default = true];</code>
-       */
-      public Builder clearSendChecksums() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        sendChecksums_ = true;
-        onChanged();
-        return this;
-      }
-
-      // repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;
-      private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_ =
-        java.util.Collections.emptyList();
-      private void ensureTargetsIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>(targets_);
-          bitField0_ |= 0x00000010;
-         }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilder<
-          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> targetsBuilder_;
-
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
-        if (targetsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(targets_);
-        } else {
-          return targetsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public int getTargetsCount() {
-        if (targetsBuilder_ == null) {
-          return targets_.size();
-        } else {
-          return targetsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
-        if (targetsBuilder_ == null) {
-          return targets_.get(index);
-        } else {
-          return targetsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder setTargets(
-          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
-        if (targetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTargetsIsMutable();
-          targets_.set(index, value);
-          onChanged();
-        } else {
-          targetsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder setTargets(
-          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
-        if (targetsBuilder_ == null) {
-          ensureTargetsIsMutable();
-          targets_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          targetsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder addTargets(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
-        if (targetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTargetsIsMutable();
-          targets_.add(value);
-          onChanged();
-        } else {
-          targetsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder addTargets(
-          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
-        if (targetsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureTargetsIsMutable();
-          targets_.add(index, value);
-          onChanged();
-        } else {
-          targetsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder addTargets(
-          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
-        if (targetsBuilder_ == null) {
-          ensureTargetsIsMutable();
-          targets_.add(builderForValue.build());
-          onChanged();
-        } else {
-          targetsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder addTargets(
-          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
-        if (targetsBuilder_ == null) {
-          ensureTargetsIsMutable();
-          targets_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          targetsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder addAllTargets(
-          java.lang.Iterable<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> values) {
-        if (targetsBuilder_ == null) {
-          ensureTargetsIsMutable();
-          super.addAll(values, targets_);
-          onChanged();
-        } else {
-          targetsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder clearTargets() {
-        if (targetsBuilder_ == null) {
-          targets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
-          onChanged();
-        } else {
-          targetsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public Builder removeTargets(int index) {
-        if (targetsBuilder_ == null) {
-          ensureTargetsIsMutable();
-          targets_.remove(index);
-          onChanged();
-        } else {
-          targetsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder getTargetsBuilder(
-          int index) {
-        return getTargetsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
-          int index) {
-        if (targetsBuilder_ == null) {
-          return targets_.get(index);  } else {
-          return targetsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
-           getTargetsOrBuilderList() {
-        if (targetsBuilder_ != null) {
-          return targetsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(targets_);
-        }
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder() {
-        return getTargetsFieldBuilder().addBuilder(
-            org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder(
-          int index) {
-        return getTargetsFieldBuilder().addBuilder(
-            index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 5;</code>
-       */
-      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder> 
-           getTargetsBuilderList() {
-        return getTargetsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
-          getTargetsFieldBuilder() {
-        if (targetsBuilder_ == null) {
-          targetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder>(
-                  targets_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
-                  getParentForChildren(),
-                  isClean());
-          targets_ = null;
-        }
-        return targetsBuilder_;
-      }
-
-      // @@protoc_insertion_point(builder_scope:hadoop.hdfs.OpChooseSegmentProto)
-    }
-
-    static {
-      defaultInstance = new OpChooseSegmentProto(true);
-      defaultInstance.initFields();
-    }
-
-    // @@protoc_insertion_point(class_scope:hadoop.hdfs.OpChooseSegmentProto)
-  }
-
   public interface OpSendSegmentProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
@@ -23507,6 +22280,41 @@ public final class DataTransferProtos {
      * <code>optional bool sendChecksums = 4 [default = true];</code>
      */
     boolean getSendChecksums();
+
+    // required bool isClient = 5;
+    /**
+     * <code>required bool isClient = 5;</code>
+     */
+    boolean hasIsClient();
+    /**
+     * <code>required bool isClient = 5;</code>
+     */
+    boolean getIsClient();
+
+    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> 
+        getTargetsList();
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index);
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    int getTargetsCount();
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
+        getTargetsOrBuilderList();
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code hadoop.hdfs.OpSendSegmentProto}
@@ -23587,6 +22395,19 @@ public final class DataTransferProtos {
               sendChecksums_ = input.readBool();
               break;
             }
+            case 40: {
+              bitField0_ |= 0x00000010;
+              isClient_ = input.readBool();
+              break;
+            }
+            case 50: {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+                targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>();
+                mutable_bitField0_ |= 0x00000020;
+              }
+              targets_.add(input.readMessage(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.PARSER, extensionRegistry));
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -23595,6 +22416,9 @@ public final class DataTransferProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          targets_ = java.util.Collections.unmodifiableList(targets_);
+        }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
@@ -23697,11 +22521,65 @@ public final class DataTransferProtos {
       return sendChecksums_;
     }
 
+    // required bool isClient = 5;
+    public static final int ISCLIENT_FIELD_NUMBER = 5;
+    private boolean isClient_;
+    /**
+     * <code>required bool isClient = 5;</code>
+     */
+    public boolean hasIsClient() {
+      return ((bitField0_ & 0x00000010) == 0x00000010);
+    }
+    /**
+     * <code>required bool isClient = 5;</code>
+     */
+    public boolean getIsClient() {
+      return isClient_;
+    }
+
+    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
+    public static final int TARGETS_FIELD_NUMBER = 6;
+    private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_;
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
+      return targets_;
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
+        getTargetsOrBuilderList() {
+      return targets_;
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    public int getTargetsCount() {
+      return targets_.size();
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
+      return targets_.get(index);
+    }
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     */
+    public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
+        int index) {
+      return targets_.get(index);
+    }
+
     private void initFields() {
       header_ = org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto.getDefaultInstance();
       blockOffset_ = 0L;
       length_ = 0L;
       sendChecksums_ = true;
+      isClient_ = false;
+      targets_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -23720,9 +22598,19 @@ public final class DataTransferProtos {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasIsClient()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       if (!getHeader().isInitialized()) {
         memoizedIsInitialized = 0;
         return false;
+      }
+      for (int i = 0; i < getTargetsCount(); i++) {
+        if (!getTargets(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
       memoizedIsInitialized = 1;
       return true;
@@ -23742,6 +22630,12 @@ public final class DataTransferProtos {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBool(4, sendChecksums_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        output.writeBool(5, isClient_);
+      }
+      for (int i = 0; i < targets_.size(); i++) {
+        output.writeMessage(6, targets_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -23767,6 +22661,14 @@ public final class DataTransferProtos {
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, sendChecksums_);
+      }
+      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(5, isClient_);
+      }
+      for (int i = 0; i < targets_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(6, targets_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -23811,6 +22713,13 @@ public final class DataTransferProtos {
         result = result && (getSendChecksums()
             == other.getSendChecksums());
       }
+      result = result && (hasIsClient() == other.hasIsClient());
+      if (hasIsClient()) {
+        result = result && (getIsClient()
+            == other.getIsClient());
+      }
+      result = result && getTargetsList()
+          .equals(other.getTargetsList());
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
       return result;
@@ -23839,6 +22748,14 @@ public final class DataTransferProtos {
       if (hasSendChecksums()) {
         hash = (37 * hash) + SENDCHECKSUMS_FIELD_NUMBER;
         hash = (53 * hash) + hashBoolean(getSendChecksums());
+      }
+      if (hasIsClient()) {
+        hash = (37 * hash) + ISCLIENT_FIELD_NUMBER;
+        hash = (53 * hash) + hashBoolean(getIsClient());
+      }
+      if (getTargetsCount() > 0) {
+        hash = (37 * hash) + TARGETS_FIELD_NUMBER;
+        hash = (53 * hash) + getTargetsList().hashCode();
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -23942,6 +22859,7 @@ public final class DataTransferProtos {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
           getHeaderFieldBuilder();
+          getTargetsFieldBuilder();
         }
       }
       private static Builder create() {
@@ -23962,6 +22880,14 @@ public final class DataTransferProtos {
         bitField0_ = (bitField0_ & ~0x00000004);
         sendChecksums_ = true;
         bitField0_ = (bitField0_ & ~0x00000008);
+        isClient_ = false;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        if (targetsBuilder_ == null) {
+          targets_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+        } else {
+          targetsBuilder_.clear();
+        }
         return this;
       }
 
@@ -24010,6 +22936,19 @@ public final class DataTransferProtos {
           to_bitField0_ |= 0x00000008;
         }
         result.sendChecksums_ = sendChecksums_;
+        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+          to_bitField0_ |= 0x00000010;
+        }
+        result.isClient_ = isClient_;
+        if (targetsBuilder_ == null) {
+          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+            targets_ = java.util.Collections.unmodifiableList(targets_);
+            bitField0_ = (bitField0_ & ~0x00000020);
+          }
+          result.targets_ = targets_;
+        } else {
+          result.targets_ = targetsBuilder_.build();
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -24038,6 +22977,35 @@ public final class DataTransferProtos {
         if (other.hasSendChecksums()) {
           setSendChecksums(other.getSendChecksums());
         }
+        if (other.hasIsClient()) {
+          setIsClient(other.getIsClient());
+        }
+        if (targetsBuilder_ == null) {
+          if (!other.targets_.isEmpty()) {
+            if (targets_.isEmpty()) {
+              targets_ = other.targets_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+            } else {
+              ensureTargetsIsMutable();
+              targets_.addAll(other.targets_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.targets_.isEmpty()) {
+            if (targetsBuilder_.isEmpty()) {
+              targetsBuilder_.dispose();
+              targetsBuilder_ = null;
+              targets_ = other.targets_;
+              bitField0_ = (bitField0_ & ~0x00000020);
+              targetsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getTargetsFieldBuilder() : null;
+            } else {
+              targetsBuilder_.addAllMessages(other.targets_);
+            }
+          }
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -24055,9 +23023,19 @@ public final class DataTransferProtos {
           
           return false;
         }
+        if (!hasIsClient()) {
+          
+          return false;
+        }
         if (!getHeader().isInitialized()) {
           
           return false;
+        }
+        for (int i = 0; i < getTargetsCount(); i++) {
+          if (!getTargets(i).isInitialized()) {
+            
+            return false;
+          }
         }
         return true;
       }
@@ -24297,6 +23275,279 @@ public final class DataTransferProtos {
         return this;
       }
 
+      // required bool isClient = 5;
+      private boolean isClient_ ;
+      /**
+       * <code>required bool isClient = 5;</code>
+       */
+      public boolean hasIsClient() {
+        return ((bitField0_ & 0x00000010) == 0x00000010);
+      }
+      /**
+       * <code>required bool isClient = 5;</code>
+       */
+      public boolean getIsClient() {
+        return isClient_;
+      }
+      /**
+       * <code>required bool isClient = 5;</code>
+       */
+      public Builder setIsClient(boolean value) {
+        bitField0_ |= 0x00000010;
+        isClient_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bool isClient = 5;</code>
+       */
+      public Builder clearIsClient() {
+        bitField0_ = (bitField0_ & ~0x00000010);
+        isClient_ = false;
+        onChanged();
+        return this;
+      }
+
+      // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
+      private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_ =
+        java.util.Collections.emptyList();
+      private void ensureTargetsIsMutable() {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+          targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>(targets_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> targetsBuilder_;
+
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
+        if (targetsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(targets_);
+        } else {
+          return targetsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public int getTargetsCount() {
+        if (targetsBuilder_ == null) {
+          return targets_.size();
+        } else {
+          return targetsBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
+        if (targetsBuilder_ == null) {
+          return targets_.get(index);
+        } else {
+          return targetsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder setTargets(
+          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
+        if (targetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTargetsIsMutable();
+          targets_.set(index, value);
+          onChanged();
+        } else {
+          targetsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder setTargets(
+          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
+        if (targetsBuilder_ == null) {
+          ensureTargetsIsMutable();
+          targets_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          targetsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder addTargets(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
+        if (targetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTargetsIsMutable();
+          targets_.add(value);
+          onChanged();
+        } else {
+          targetsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder addTargets(
+          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
+        if (targetsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureTargetsIsMutable();
+          targets_.add(index, value);
+          onChanged();
+        } else {
+          targetsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder addTargets(
+          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
+        if (targetsBuilder_ == null) {
+          ensureTargetsIsMutable();
+          targets_.add(builderForValue.build());
+          onChanged();
+        } else {
+          targetsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder addTargets(
+          int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
+        if (targetsBuilder_ == null) {
+          ensureTargetsIsMutable();
+          targets_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          targetsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder addAllTargets(
+          java.lang.Iterable<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> values) {
+        if (targetsBuilder_ == null) {
+          ensureTargetsIsMutable();
+          super.addAll(values, targets_);
+          onChanged();
+        } else {
+          targetsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder clearTargets() {
+        if (targetsBuilder_ == null) {
+          targets_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+          onChanged();
+        } else {
+          targetsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public Builder removeTargets(int index) {
+        if (targetsBuilder_ == null) {
+          ensureTargetsIsMutable();
+          targets_.remove(index);
+          onChanged();
+        } else {
+          targetsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder getTargetsBuilder(
+          int index) {
+        return getTargetsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
+          int index) {
+        if (targetsBuilder_ == null) {
+          return targets_.get(index);  } else {
+          return targetsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
+           getTargetsOrBuilderList() {
+        if (targetsBuilder_ != null) {
+          return targetsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(targets_);
+        }
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder() {
+        return getTargetsFieldBuilder().addBuilder(
+            org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder(
+          int index) {
+        return getTargetsFieldBuilder().addBuilder(
+            index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       */
+      public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder> 
+           getTargetsBuilderList() {
+        return getTargetsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
+          getTargetsFieldBuilder() {
+        if (targetsBuilder_ == null) {
+          targetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder>(
+                  targets_,
+                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  getParentForChildren(),
+                  isClean());
+          targets_ = null;
+        }
+        return targetsBuilder_;
+      }
+
       // @@protoc_insertion_point(builder_scope:hadoop.hdfs.OpSendSegmentProto)
     }
 
@@ -24439,11 +23690,6 @@ public final class DataTransferProtos {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
-    internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_hadoop_hdfs_OpChooseSegmentProto_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_hadoop_hdfs_OpSendSegmentProto_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -24556,21 +23802,18 @@ public final class DataTransferProtos {
       "\022\r\n\005index\030\001 \002(\004\022\016\n\006length\030\002 \002(\004\"d\n OpCal" +
       "culateSegmentsResponseProto\022\023\n\013numSegmen" +
       "ts\030\001 \002(\004\022+\n\010segments\030\002 \003(\0132\031.hadoop.hdfs" +
-      ".SegmentProto\"\302\001\n\024OpChooseSegmentProto\0227",
-      "\n\006header\030\001 \002(\0132\'.hadoop.hdfs.ClientOpera" +
-      "tionHeaderProto\022\023\n\013blockOffset\030\002 \002(\004\022\016\n\006" +
-      "length\030\003 \002(\004\022\033\n\rsendChecksums\030\004 \001(\010:\004tru" +
-      "e\022/\n\007targets\030\005 \003(\0132\036.hadoop.hdfs.Datanod" +
-      "eInfoProto\"\217\001\n\022OpSendSegmentProto\0227\n\006hea" +
-      "der\030\001 \002(\0132\'.hadoop.hdfs.ClientOperationH" +
-      "eaderProto\022\023\n\013blockOffset\030\002 \002(\004\022\016\n\006lengt" +
-      "h\030\003 \002(\004\022\033\n\rsendChecksums\030\004 \001(\010:\004true*\231\001\n" +
-      "\006Status\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR" +
-      "_CHECKSUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_",
-      "EXISTS\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHEC" +
-      "KSUM_OK\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org." +
-      "apache.hadoop.hdfs.protocol.protoB\022DataT" +
-      "ransferProtos\240\001\001"
+      ".SegmentProto\"\322\001\n\022OpSendSegmentProto\0227\n\006",
+      "header\030\001 \002(\0132\'.hadoop.hdfs.ClientOperati" +
+      "onHeaderProto\022\023\n\013blockOffset\030\002 \002(\004\022\016\n\006le" +
+      "ngth\030\003 \002(\004\022\033\n\rsendChecksums\030\004 \001(\010:\004true\022" +
+      "\020\n\010isClient\030\005 \002(\010\022/\n\007targets\030\006 \003(\0132\036.had" +
+      "oop.hdfs.DatanodeInfoProto*\231\001\n\006Status\022\013\n" +
+      "\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM\020" +
+      "\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022\026" +
+      "\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006\022" +
+      "\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apache.had" +
+      "oop.hdfs.protocol.protoB\022DataTransferPro",
+      "tos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -24733,18 +23976,12 @@ public final class DataTransferProtos {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_descriptor,
               new java.lang.String[] { "NumSegments", "Segments", });
-          internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor =
-            getDescriptor().getMessageTypes().get(26);
-          internal_static_hadoop_hdfs_OpChooseSegmentProto_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-              internal_static_hadoop_hdfs_OpChooseSegmentProto_descriptor,
-              new java.lang.String[] { "Header", "BlockOffset", "Length", "SendChecksums", "Targets", });
           internal_static_hadoop_hdfs_OpSendSegmentProto_descriptor =
-            getDescriptor().getMessageTypes().get(27);
+            getDescriptor().getMessageTypes().get(26);
           internal_static_hadoop_hdfs_OpSendSegmentProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpSendSegmentProto_descriptor,
-              new java.lang.String[] { "Header", "BlockOffset", "Length", "SendChecksums", });
+              new java.lang.String[] { "Header", "BlockOffset", "Length", "SendChecksums", "IsClient", "Targets", });
           return null;
         }
       };

@@ -990,7 +990,7 @@ class DataXceiver extends Receiver implements Runnable {
 			            HdfsConstants.SMALL_BUFFER_SIZE));
 			        in = new DataInputStream(unbufIn);
 	
-			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum,false,datanodes);
+			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum,false,targets);
 	
 			        // send segment data & checksum
 			        //blockSender.sendBlock(out, unbufOut, null);
