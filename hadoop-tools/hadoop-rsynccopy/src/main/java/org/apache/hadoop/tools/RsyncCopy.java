@@ -682,11 +682,11 @@ public class RsyncCopy {
 						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
 
 						// call chooseSegment
-						new Sender(out).chooseSegment(bi.getLocatedBlock().getBlock(), 
+						new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
 								bi.getLocatedBlock().getBlockToken(), 
 								clientName, 
 								bi.segments.get(0).getIndex(), 
-								bi.segments.get(0).getLength(), true, 
+								bi.segments.get(0).getLength(), true, true,
 								bi.getLocatedBlock().getLocations());
 
 						//read reply
