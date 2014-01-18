@@ -201,30 +201,16 @@ public interface DataTransferProtocol {
       final List<byte[]> md5s) throws IOException;
   
   /**
-   * Choose segment to transfer , call by dfsClient.
+   * Send segment from srcDN to dstDN , call by ControlNode.
    * 
    * @param blk a block.
    * @param blockToken security token for accessing the block.
    * @param clientname
-   * @param cntChecksum checksum numbers
-   * @throws IOException
-   */
-  public void chooseSegment(final ExtendedBlock blk,
-      final Token<BlockTokenIdentifier> blockToken,
-      final String clientname,
-      final long blockOffset,
-      final long length,
-      final boolean sendChecksum,
-      final DatanodeInfo[] targets) throws IOException;
-  
-  /**
-   * Send segment from one srcDN to dstDN, dstDN save this segment in tmp file.
-   * Used by chooseSegment.
-   * 
-   * @param blk a block.
-   * @param blockToken security token for accessing the block.
-   * @param clientname
-   * @param cntChecksum checksum numbers
+   * @param blockOffset
+   * @param length
+   * @param sendChecksum
+   * @param isClient
+   * @param targets
    * @throws IOException
    */
   public void sendSegment(final ExtendedBlock blk,
@@ -232,5 +218,7 @@ public interface DataTransferProtocol {
       final String clientname,
       final long blockOffset,
       final long length,
-      final boolean sendChecksum) throws IOException;
+      final boolean sendChecksum,
+      final boolean isClient,
+      final DatanodeInfo[] targets) throws IOException;
 }

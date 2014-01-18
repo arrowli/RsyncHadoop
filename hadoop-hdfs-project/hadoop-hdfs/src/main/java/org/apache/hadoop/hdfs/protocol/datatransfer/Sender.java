@@ -262,33 +262,14 @@ public class Sender implements DataTransferProtocol {
 	}
 	
 	@Override
-	public void chooseSegment(final ExtendedBlock blk,
-		      final Token<BlockTokenIdentifier> blockToken,
-		      final String clientname,
-		      final long blockOffset,
-		      final long length,
-		      final boolean sendChecksum,
-		      final DatanodeInfo[] targets) throws IOException {
-		ClientOperationHeaderProto header = DataTransferProtoUtil
-				.buildClientHeader(blk, clientname, blockToken);
-		
-		OpChooseSegmentProto.Builder proto = OpChooseSegmentProto.newBuilder()
-				.setHeader(header)
-				.setBlockOffset(blockOffset)
-				.setLength(length)
-				.setSendChecksums(sendChecksum)
-				.addAllTargets(PBHelper.convert(targets));
-		
-		send(out,Op.RSYNC_CHOOSE_SEGMENT,proto.build());
-	}
-	
-	@Override
 	public void sendSegment(final ExtendedBlock blk,
 		      final Token<BlockTokenIdentifier> blockToken,
 		      final String clientname,
 		      final long blockOffset,
 		      final long length,
-		      final boolean sendChecksum) throws IOException {
+		      final boolean sendChecksum,
+		      final boolean isClient,
+		      final DatanodeInfo[] targets) throws IOException {
 		ClientOperationHeaderProto header = DataTransferProtoUtil
 				.buildClientHeader(blk, clientname, blockToken);
 		
@@ -296,7 +277,9 @@ public class Sender implements DataTransferProtocol {
 				.setHeader(header)
 				.setBlockOffset(blockOffset)
 				.setLength(length)
-				.setSendChecksums(sendChecksum);
+				.setSendChecksums(sendChecksum)
+				.setIsClient(isClient)
+				.addAllTargets(PBHelper.convert(targets));
 		
 		send(out,Op.RSYNC_SEND_SEGMENT,proto.build());
 	}

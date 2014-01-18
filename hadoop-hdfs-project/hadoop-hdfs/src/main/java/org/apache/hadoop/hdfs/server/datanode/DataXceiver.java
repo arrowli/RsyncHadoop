@@ -956,85 +956,78 @@ class DataXceiver extends Receiver implements Runnable {
 	}
 	
 	@Override
-	public void chooseSegment(final ExtendedBlock blk,
-		      final Token<BlockTokenIdentifier> blockToken,
-		      final String clientname,
-		      final long blockOffset,
-		      final long length,
-		      final boolean sendChecksum,
-		      final DatanodeInfo[] targets) throws IOException {
-		LOG.warn("chooseSegment is called. blk "+blk+
-				",block offset "+Long.toHexString(blockOffset)+
-				",length "+Long.toHexString(length));
-		DataOutputStream out = null;
-		Socket sock = null;
-		for(DatanodeInfo target : targets){
-			try {
-		        final String dnAddr = target.getXferAddr(connectToDnViaHostname);
-		        InetSocketAddress curTarget = NetUtils.createSocketAddr(dnAddr);
-		        if (LOG.isDebugEnabled()) {
-		          LOG.debug("Connecting to datanode " + dnAddr);
-		        }
-		        sock = datanode.newSocket();
-		        NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
-		        sock.setSoTimeout(targets.length * dnConf.socketTimeout);
-
-		        long writeTimeout = dnConf.socketWriteTimeout + 
-		                            HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * (targets.length-1);
-		        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout);
-		        InputStream unbufIn = NetUtils.getInputStream(sock);
-		        
-		        out = new DataOutputStream(new BufferedOutputStream(unbufOut,
-		            HdfsConstants.SMALL_BUFFER_SIZE));
-		        in = new DataInputStream(unbufIn);
-
-		        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum);;
-
-		        // send segment data & checksum
-		        //blockSender.sendBlock(out, unbufOut, null);
-		        
-		        //response 
-		        
-		      } catch (IOException ie) {
-		        LOG.warn("Failed to transfer " + blk +
-	        		"segment["+Long.toHexString(blockOffset)+":"+ 
-		        	Long.toHexString(blockOffset+length-1) +"] to " +
-	        		target + " got ", ie);
-		      } finally {
-		        IOUtils.closeStream(out);
-		        IOUtils.closeStream(in);
-		        IOUtils.closeSocket(sock);
-		      }
-		}
-		
-		new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum);
-	}
-	
-	@Override
 	public void sendSegment(final ExtendedBlock blk,
 		      final Token<BlockTokenIdentifier> blockToken,
 		      final String clientname,
 		      final long blockOffset,
 		      final long length,
-		      final boolean sendChecksum) throws IOException {
-		LOG.warn("sendSegment is called. blk "+blk+
-				",block offset "+Long.toHexString(blockOffset)+
-				",length "+Long.toHexString(length));
-		
-		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
-		if(dfsDataPath == null){
-			LOG.warn("dfs.datanode.data.dir is not set");
-			return;
+		      final boolean sendChecksum,
+		      final boolean isClient,
+		      final DatanodeInfo[] targets) throws IOException {
+		if(isClient){
+			LOG.warn("chooseSegment is called. blk "+blk+
+					",block offset "+Long.toHexString(blockOffset)+
+					",length "+Long.toHexString(length));
+			DataOutputStream out = null;
+			Socket sock = null;
+			for(DatanodeInfo target : targets){
+				try {
+			        final String dnAddr = target.getXferAddr(connectToDnViaHostname);
+			        InetSocketAddress curTarget = NetUtils.createSocketAddr(dnAddr);
+			        if (LOG.isDebugEnabled()) {
+			          LOG.debug("Connecting to datanode " + dnAddr);
+			        }
+			        sock = datanode.newSocket();
+			        NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
+			        sock.setSoTimeout(targets.length * dnConf.socketTimeout);
+	
+			        long writeTimeout = dnConf.socketWriteTimeout + 
+			                            HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * (targets.length-1);
+			        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout);
+			        InputStream unbufIn = NetUtils.getInputStream(sock);
+			        
+			        out = new DataOutputStream(new BufferedOutputStream(unbufOut,
+			            HdfsConstants.SMALL_BUFFER_SIZE));
+			        in = new DataInputStream(unbufIn);
+	
+			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum,false,datanodes);
+	
+			        // send segment data & checksum
+			        //blockSender.sendBlock(out, unbufOut, null);
+			        
+			        //response 
+			        
+			      } catch (IOException ie) {
+			        LOG.warn("Failed to transfer " + blk +
+		        		"segment["+Long.toHexString(blockOffset)+":"+ 
+			        	Long.toHexString(blockOffset+length-1) +"] to " +
+		        		target + " got ", ie);
+			      } finally {
+			        IOUtils.closeStream(out);
+			        IOUtils.closeStream(in);
+			        IOUtils.closeSocket(sock);
+			      }
+			}
+		}else{
+			LOG.warn("sendSegment is called. blk "+blk+
+					",block offset "+Long.toHexString(blockOffset)+
+					",length "+Long.toHexString(length));
+			
+			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+			if(dfsDataPath == null){
+				LOG.warn("dfs.datanode.data.dir is not set");
+				return;
+			}
+			
+			File dfsDataRoot = new File(dfsDataPath);
+			if(!dfsDataRoot.exists() || dfsDataRoot.isFile()){
+				LOG.warn("Directory "+dfsDataPath+"does not exist.");
+			}
+			String dfsTmpPath = "/current/rsync_tmp";
+			String blkPath = "/"+blk+"_"+blockToken;
+			File blkDir = new File(dfsDataPath+dfsTmpPath+blkPath);
+			blkDir.mkdirs();
 		}
-		
-		File dfsDataRoot = new File(dfsDataPath);
-		if(!dfsDataRoot.exists() || dfsDataRoot.isFile()){
-			LOG.warn("Directory "+dfsDataPath+"does not exist.");
-		}
-		String dfsTmpPath = "/current/rsync_tmp";
-		String blkPath = "/"+blk+"_"+blockToken;
-		File blkDir = new File(dfsDataPath+dfsTmpPath+blkPath);
-		blkDir.mkdirs();
 	}
 	
 	@Override
