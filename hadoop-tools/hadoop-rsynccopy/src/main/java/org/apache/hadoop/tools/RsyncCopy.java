@@ -690,9 +690,17 @@ public class RsyncCopy {
 								bi.getLocatedBlock().getLocations());
 
 						//read reply
-						done = true;
-						break;
-						
+						final BlockOpResponseProto reply = BlockOpResponseProto
+								.parseFrom(PBHelper.vintPrefixed(in));
+
+						if (reply.getStatus() != Status.SUCCESS) {
+							LOG.warn("Bad response " + reply
+										+ " for block " + bi.getLocatedBlock().getBlock() + " from datanode "
+										+ datanodes[j]);
+							continue;
+						}else{
+							break;
+						}
 					} catch (InvalidBlockTokenException ibte) {
 						
 					} catch (IOException ie) {
@@ -948,6 +956,8 @@ public class RsyncCopy {
 			printFileInfo(srcFileInfo);
 			printFileInfo(dstFileInfo);
 			sendSegments();
+			printFileInfo(srcFileInfo);
+			printFileInfo(dstFileInfo);
 		}
 		
 	}

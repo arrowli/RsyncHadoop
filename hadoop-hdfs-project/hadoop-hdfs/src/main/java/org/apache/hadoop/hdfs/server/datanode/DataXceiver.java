@@ -32,6 +32,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -737,6 +738,7 @@ class DataXceiver extends Receiver implements Runnable {
 						HdfsConstants.IO_FILE_BUFFER_SIZE));
 
 		updateCurrentThreadName("Getting checksums for block " + block);
+		InputStream blockIn = null;
 		try {
 			// read metadata file
 			final BlockMetadataHeader header = BlockMetadataHeader
@@ -753,7 +755,7 @@ class DataXceiver extends Receiver implements Runnable {
 
 			//generate checksum, chunk = 1MB = 1 * 2^20 B
 			byte[] buf = new byte[bytesPerChunk];
-			InputStream blockIn = datanode.data.getBlockInputStream(block, 0);
+			blockIn = datanode.data.getBlockInputStream(block, 0);
 			Adler32 cs = new Adler32();
 			
 			while(blockIn.read(buf) != -1){
@@ -802,6 +804,7 @@ class DataXceiver extends Receiver implements Runnable {
 			IOUtils.closeStream(out);
 			IOUtils.closeStream(checksumIn);
 			IOUtils.closeStream(metadataIn);
+			IOUtils.closeStream(blockIn);
 		}
 
 		// update metrics
@@ -964,12 +967,13 @@ class DataXceiver extends Receiver implements Runnable {
 		      final boolean sendChecksum,
 		      final boolean isClient,
 		      final DatanodeInfo[] targets) throws IOException {
+		LOG.warn("sendSegment is called. blk "+blk+
+				",block offset "+Long.toHexString(blockOffset)+
+				",length "+Long.toHexString(length));
+		DataOutputStream out = null;
+		Socket sock = null;
+		InputStream blockIn = null;
 		if(isClient){
-			LOG.warn("chooseSegment is called. blk "+blk+
-					",block offset "+Long.toHexString(blockOffset)+
-					",length "+Long.toHexString(length));
-			DataOutputStream out = null;
-			Socket sock = null;
 			for(DatanodeInfo target : targets){
 				try {
 			        final String dnAddr = target.getXferAddr(connectToDnViaHostname);
@@ -993,9 +997,25 @@ class DataXceiver extends Receiver implements Runnable {
 			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum,false,targets);
 	
 			        // send segment data & checksum
-			        //blockSender.sendBlock(out, unbufOut, null);
-			        
+			        Adler32 checksum = new Adler32();
+			        blockIn = datanode.data.getBlockInputStream(blk, blockOffset);
+			        byte[] buffer = new byte[(int) length];
+			        long bytesRead = blockIn.read(buffer);
+			        checksum.update(buffer);
+			        out.writeLong(length);
+			        out.writeLong(checksum.getValue());
+			        out.write(buffer);
 			        //response 
+			        final BlockOpResponseProto reply = BlockOpResponseProto
+							.parseFrom(PBHelper.vintPrefixed(in));
+
+					if (reply.getStatus() != Status.SUCCESS) {
+						LOG.warn("Bad response " + reply
+									+ " for block " + blk + " from datanode "
+									+ target);
+						writeResponse(Status.ERROR, null, out);
+						return;
+					}
 			        
 			      } catch (IOException ie) {
 			        LOG.warn("Failed to transfer " + blk +
@@ -1006,13 +1026,12 @@ class DataXceiver extends Receiver implements Runnable {
 			        IOUtils.closeStream(out);
 			        IOUtils.closeStream(in);
 			        IOUtils.closeSocket(sock);
+			        IOUtils.closeStream(blockIn);
 			      }
 			}
+			writeResponse(Status.SUCCESS, null, out);
 		}else{
-			LOG.warn("sendSegment is called. blk "+blk+
-					",block offset "+Long.toHexString(blockOffset)+
-					",length "+Long.toHexString(length));
-			
+			out = new DataOutputStream(getOutputStream());
 			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
 			if(dfsDataPath == null){
 				LOG.warn("dfs.datanode.data.dir is not set");
@@ -1024,9 +1043,39 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Directory "+dfsDataPath+"does not exist.");
 			}
 			String dfsTmpPath = "/current/rsync_tmp";
-			String blkPath = "/"+blk+"_"+blockToken;
-			File blkDir = new File(dfsDataPath+dfsTmpPath+blkPath);
-			blkDir.mkdirs();
+			String blkPath = "/"+blk.getBlockName()+"_"+blockToken.getIdentifier();
+			String segmentPath = "/"+blockOffset+"_"+length;
+			File segmentFile = new File(dfsDataPath+dfsTmpPath+blkPath+segmentPath);
+			
+			//如果之前有写入中断的，可能会留下残缺文件，删除就行了。
+			if(segmentFile.exists()) segmentFile.delete();
+			segmentFile.createNewFile();
+			FileOutputStream outFile = new FileOutputStream(segmentFile);
+			
+			//TODO:还没有校验接收到的数据
+			try{
+				long bytesToRead = in.readLong();
+				long checksum = in.readLong();
+				long bytesRead = -1;
+				long bytesSum = 0;
+				byte[] buffer = new byte[1024*1024];
+				while((bytesRead = in.read(buffer)) != -1){
+					bytesSum += bytesRead;
+					outFile.write(buffer);
+					if(bytesSum > bytesToRead){
+						LOG.warn("Get more data than expact.");
+					}
+				}
+				writeResponse(SUCCESS, null, out);
+			}catch (IOException e){
+				throw new IOException("block ["+blk.getBlockId()+"] offset ["+blockOffset+"] length ["+length+"] read fail");
+			}finally{
+				outFile.close();
+				IOUtils.closeStream(out);
+		        IOUtils.closeStream(in);
+		        IOUtils.closeSocket(sock);
+			}
+			
 		}
 	}
 	
