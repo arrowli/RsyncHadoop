@@ -686,7 +686,7 @@ public class RsyncCopy {
 								bi.getLocatedBlock().getBlockToken(), 
 								clientName, 
 								bi.segments.get(0).getIndex(), 
-								bi.segments.get(0).getLength(), true, true,
+								10*1024*1024, true, true,
 								bi.getLocatedBlock().getLocations());
 
 						//read reply
