@@ -302,6 +302,7 @@ public class RsyncCopy {
 		private class FileInfo{
 			private List<BlockInfo> blocks;
 			private String filepath;
+			private long fileSize;
 
 			public FileInfo(String filepath){
 				this.setFilepath(filepath);
@@ -326,6 +327,14 @@ public class RsyncCopy {
 
 			public void setFilepath(String filepath) {
 				this.filepath = filepath;
+			}
+
+			public long getFileSize() {
+				return fileSize;
+			}
+
+			public void setFileSize(long fileSize) {
+				this.fileSize = fileSize;
 			}
 		}
 		
@@ -388,9 +397,12 @@ public class RsyncCopy {
 						"Null block locations, mostly because non-existent file "
 								+ dstPath.toString());
 			}
-			
+
 			this.srcFileInfo = new FileInfo(srcPath.toString());
 			this.dstFileInfo = new FileInfo(dstPath.toString());
+			
+			this.srcFileInfo.setFileSize(srcLocatedBlocks.getFileLength());
+			this.dstFileInfo.setFileSize(dstLocatedBlocks.getFileLength());
 			
 			for(LocatedBlock lb : srcLocatedBlocks.getLocatedBlocks()){
 				srcFileInfo.addBlock(
@@ -644,8 +656,33 @@ public class RsyncCopy {
 						for(SegmentProto segment : segments){
 							LOG.warn("Chunk index : "+segment.getIndex()+"; Offset : "+Long.toHexString(segment.getLength()));
 						}
-
-						bi.setSegments(segments);
+						
+						int chunkSize = 10*1024*1024;
+						for(SegmentProto segment : segments){
+							if(bi.getSegments().isEmpty()) 
+								bi.getSegments().add(
+									SegmentProto.newBuilder()
+									.setIndex(segment.getIndex())
+									.setLength(chunkSize)
+									.build());
+							else{
+								SegmentProto last = bi.getSegments().get(bi.getSegments().size()-1);
+								if(last.getIndex()+last.getLength() < segment.getLength()){
+									bi.addSegment(
+										SegmentProto.newBuilder()
+										.setIndex(last.getIndex()+last.getLength())
+										.setLength(segment.getLength() - (last.getIndex()+last.getLength()))
+										.build());
+								}
+								last = bi.getSegments().get(bi.getSegments().size()-1);
+								bi.getSegments().add(
+										SegmentProto.newBuilder()
+										.setIndex(last.getIndex()+last.getLength())
+										.setLength(chunkSize)
+										.build());
+							}
+						}
+						
 						done = true;
 						break;
 						
@@ -659,6 +696,15 @@ public class RsyncCopy {
 					}
 				}
 			}
+			
+			//矫正最后一个segment的大小
+			BlockInfo lastBlock = srcFileInfo.getBlocks().get(srcFileInfo.getBlocks().size()-1);
+			SegmentProto lastSegment = lastBlock.getSegments().get(lastBlock.getSegments().size()-1);
+			lastBlock.getSegments().set(lastBlock.getSegments().size()-1, 
+					SegmentProto.newBuilder()
+					.setIndex(lastSegment.getIndex())
+					.setLength(srcFileInfo.getFileSize()-lastSegment.getIndex())
+					.build());
 		}
 		
 		private void sendSegments(){
@@ -681,26 +727,31 @@ public class RsyncCopy {
 
 						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
 
-						// call chooseSegment
-						new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
-								bi.getLocatedBlock().getBlockToken(), 
-								clientName, 
-								bi.segments.get(0).getIndex(), 
-								10*1024*1024, true, true,
-								bi.getLocatedBlock().getLocations());
-
-						//read reply
-						final BlockOpResponseProto reply = BlockOpResponseProto
-								.parseFrom(PBHelper.vintPrefixed(in));
-
-						if (reply.getStatus() != Status.SUCCESS) {
-							LOG.warn("Bad response " + reply
-										+ " for block " + bi.getLocatedBlock().getBlock() + " from datanode "
-										+ datanodes[j]);
-							continue;
-						}else{
-							break;
+						boolean noBreak = true;
+						for(SegmentProto segment : bi.getSegments()){
+							// call chooseSegment
+							new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
+									bi.getLocatedBlock().getBlockToken(), 
+									clientName, 
+									segment.getIndex(), 
+									segment.getLength(), true, true,
+									bi.getLocatedBlock().getLocations());
+	
+							//read reply
+							final BlockOpResponseProto reply = BlockOpResponseProto
+									.parseFrom(PBHelper.vintPrefixed(in));
+	
+							if (reply.getStatus() != Status.SUCCESS) {
+								LOG.warn("Bad response " + reply
+											+ " for block " + bi.getLocatedBlock().getBlock() + " from datanode "
+											+ datanodes[j]);
+								noBreak = false;
+								break;
+							}else{
+								continue;
+							}
 						}
+						if(noBreak) break;
 					} catch (InvalidBlockTokenException ibte) {
 						
 					} catch (IOException ie) {

@@ -1005,6 +1005,7 @@ class DataXceiver extends Receiver implements Runnable {
 			        byte[] buffer = new byte[(int) length];
 			        long bytesRead = blockIn.read(buffer);
 			        checksum.update(buffer);
+			        LOG.warn("Sender bytesToRead "+length + "; checksum "+checksum.getValue());
 			        out.writeLong(length);
 			        out.writeLong(checksum.getValue());
 			        out.write(buffer);
@@ -1062,6 +1063,7 @@ class DataXceiver extends Receiver implements Runnable {
 			try{
 				long bytesToRead = in.readLong();
 				long checksum = in.readLong();
+				LOG.warn("Receiver bytesToRead "+bytesToRead + "; checksum "+checksum);
 				long bytesRead = -1;
 				long bytesSum = 0;
 				byte[] buffer = new byte[1024*1024];
