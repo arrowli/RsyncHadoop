@@ -973,7 +973,10 @@ class DataXceiver extends Receiver implements Runnable {
 		DataOutputStream out = null;
 		Socket sock = null;
 		InputStream blockIn = null;
+		//TODO:try-catch-finally的逻辑还是有问题的，
+		//修改的内容：finally中在出现异常时需要释放的资源统一释放
 		if(isClient){
+			boolean finished = false;
 			for(DatanodeInfo target : targets){
 				try {
 			        final String dnAddr = target.getXferAddr(connectToDnViaHostname);
@@ -1023,13 +1026,13 @@ class DataXceiver extends Receiver implements Runnable {
 			        	Long.toHexString(blockOffset+length-1) +"] to " +
 		        		target + " got ", ie);
 			      } finally {
-			        IOUtils.closeStream(out);
 			        IOUtils.closeStream(in);
 			        IOUtils.closeSocket(sock);
 			        IOUtils.closeStream(blockIn);
 			      }
 			}
 			writeResponse(Status.SUCCESS, null, out);
+			IOUtils.closeStream(out);
 		}else{
 			out = new DataOutputStream(getOutputStream());
 			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
@@ -1045,9 +1048,12 @@ class DataXceiver extends Receiver implements Runnable {
 			String dfsTmpPath = "/current/rsync_tmp";
 			String blkPath = "/"+blk.getBlockName()+"_"+blockToken.getIdentifier();
 			String segmentPath = "/"+blockOffset+"_"+length;
+			
+			File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
 			File segmentFile = new File(dfsDataPath+dfsTmpPath+blkPath+segmentPath);
 			
-			//如果之前有写入中断的，可能会留下残缺文件，删除就行了。
+			//如果没有blockDir的文件夹，新建一个，如果之前有写入中断的，可能会留下残缺文件，删除就行了。
+			if(!blockDir.exists()) blockDir.mkdirs();
 			if(segmentFile.exists()) segmentFile.delete();
 			segmentFile.createNewFile();
 			FileOutputStream outFile = new FileOutputStream(segmentFile);
