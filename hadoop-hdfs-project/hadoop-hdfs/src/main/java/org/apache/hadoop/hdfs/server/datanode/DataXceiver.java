@@ -969,7 +969,7 @@ class DataXceiver extends Receiver implements Runnable {
 		      final DatanodeInfo[] targets) throws IOException {
 		LOG.warn("sendSegment is called. blk "+blk+
 				",block offset "+Long.toHexString(blockOffset)+
-				",length "+Long.toHexString(length));
+				",length "+Long.toHexString(length)+";isClient = "+isClient);
 		DataOutputStream out = null;
 		Socket sock = null;
 		InputStream blockIn = null;
@@ -1046,7 +1046,7 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Directory "+dfsDataPath+"does not exist.");
 			}
 			String dfsTmpPath = "/current/rsync_tmp";
-			String blkPath = "/"+blk.getBlockName()+"_"+blockToken.getIdentifier();
+			String blkPath = "/"+blk.getBlockId()+"_"+blk.getGenerationStamp();
 			String segmentPath = "/"+blockOffset+"_"+length;
 			
 			File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
@@ -1072,7 +1072,7 @@ class DataXceiver extends Receiver implements Runnable {
 						LOG.warn("Get more data than expact.");
 					}
 				}
-				writeResponse(SUCCESS, null, out);
+				writeResponse(Status.SUCCESS, null, out);
 			}catch (IOException e){
 				throw new IOException("block ["+blk.getBlockId()+"] offset ["+blockOffset+"] length ["+length+"] read fail");
 			}finally{
