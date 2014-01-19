@@ -1027,8 +1027,8 @@ class DataXceiver extends Receiver implements Runnable {
 		        		target + " got ", ie);
 			      } finally {
 			        IOUtils.closeStream(in);
-			        IOUtils.closeSocket(sock);
-			        IOUtils.closeStream(blockIn);
+			        if(sock != null)IOUtils.closeSocket(sock);
+			        if(blockIn != null)IOUtils.closeStream(blockIn);
 			      }
 			}
 			writeResponse(Status.SUCCESS, null, out);
@@ -1077,9 +1077,9 @@ class DataXceiver extends Receiver implements Runnable {
 				throw new IOException("block ["+blk.getBlockId()+"] offset ["+blockOffset+"] length ["+length+"] read fail");
 			}finally{
 				outFile.close();
-				IOUtils.closeStream(out);
+				if(out != null)IOUtils.closeStream(out);
 		        IOUtils.closeStream(in);
-		        IOUtils.closeSocket(sock);
+		        if(sock != null)IOUtils.closeSocket(sock);
 			}
 			
 		}
