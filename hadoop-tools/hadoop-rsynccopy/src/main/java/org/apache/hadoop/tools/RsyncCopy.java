@@ -267,9 +267,9 @@ public class RsyncCopy {
 		
 		private class BlockInfo{
 			private LocatedBlock locatedBlock;
-			private List<ChecksumPair> checksums;
-			private List<SegmentProto> segments;
-			public BlockInfo(LocatedBlock locatedBlock,List<ChecksumPair> checksums,List<SegmentProto> segments){
+			private LinkedList<ChecksumPair> checksums;
+			private LinkedList<SegmentProto> segments;
+			public BlockInfo(LocatedBlock locatedBlock,LinkedList<ChecksumPair> checksums,LinkedList<SegmentProto> segments){
 				this.locatedBlock = locatedBlock;
 				this.checksums = checksums;
 				this.segments = segments;
@@ -283,20 +283,17 @@ public class RsyncCopy {
 			public List<ChecksumPair> getChecksums() {
 				return checksums;
 			}
-			public void setChecksums(List<ChecksumPair> checksums) {
+			public void setChecksums(LinkedList<ChecksumPair> checksums) {
 				this.checksums = checksums;
 			}
 			public void addChecksum(ChecksumPair checksum){
 				this.checksums.add(checksum);
 			}
-			public List<SegmentProto> getSegments() {
+			public LinkedList<SegmentProto> getSegments() {
 				return segments;
 			}
-			public void setSegments(List<SegmentProto> segments) {
+			public void setSegments(LinkedList<SegmentProto> segments) {
 				this.segments = segments;
-			}
-			public void addSegment(SegmentProto segment){
-				this.segments.add(segment);
 			}
 		}
 		
@@ -650,7 +647,7 @@ public class RsyncCopy {
 						OpCalculateSegmentsResponseProto segmentsData = reply
 								.getCalculateSegmentsResponse();
 
-						List<SegmentProto> segments = segmentsData.getSegmentsList();
+						LinkedList<SegmentProto> segments = new LinkedList<SegmentProto>(segmentsData.getSegmentsList());
 						
 						bi.setSegments(segments);
 						
