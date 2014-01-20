@@ -1049,13 +1049,13 @@ class DataXceiver extends Receiver implements Runnable {
 			        	Long.toHexString(blockOffset+length-1) +"] to " +
 		        		target + " got ", ie);
 			      } finally {
-			        IOUtils.closeStream(in);
-			        if(sock != null)IOUtils.closeSocket(sock);
 			        if(blockIn != null)IOUtils.closeStream(blockIn);
 			      }
 			}
 			writeResponse(Status.SUCCESS, null, out);
+			IOUtils.closeStream(in);
 			IOUtils.closeStream(out);
+			if(sock != null)IOUtils.closeSocket(sock);
 		}else{
 			out = new DataOutputStream(getOutputStream());
 			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
