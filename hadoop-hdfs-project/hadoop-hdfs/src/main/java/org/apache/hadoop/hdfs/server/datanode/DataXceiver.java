@@ -1026,11 +1026,11 @@ class DataXceiver extends Receiver implements Runnable {
 			        byte[] buffer = new byte[(int) length];
 			        long bytesRead = blockIn.read(buffer);
 			        checksum.update(buffer);
-			        LOG.warn("Sender bytesToRead "+length + "; checksum "+checksum.getValue());
 			        out.writeLong(length);
 			        out.writeLong(checksum.getValue());
 			        out.write(buffer);
 			        out.flush();
+			        LOG.warn("Sender bytesToRead "+length + "; checksum "+checksum.getValue());
 			        //response 
 			        final BlockOpResponseProto reply = BlockOpResponseProto
 							.parseFrom(PBHelper.vintPrefixed(in));
@@ -1088,7 +1088,7 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Receiver bytesToRead "+bytesToRead + "; checksum "+checksum);
 				int bytesRead = -1;
 				long bytesSum = 0;
-				byte[] buffer = new byte[1024*1024];
+				byte[] buffer = new byte[1024];
 				while((bytesRead = in.read(buffer)) != -1){
 					bytesSum += bytesRead;
 					LOG.warn("Have read "+bytesSum+" bytes data");
@@ -1097,6 +1097,7 @@ class DataXceiver extends Receiver implements Runnable {
 						LOG.warn("Get more data than expact.");
 					}
 				}
+				outFile.flush();
 				writeResponse(Status.SUCCESS, null, out);
 			}catch (IOException e){
 				throw new IOException("block ["+blk.getBlockId()+"] offset ["+blockOffset+"] length ["+length+"] read fail");
