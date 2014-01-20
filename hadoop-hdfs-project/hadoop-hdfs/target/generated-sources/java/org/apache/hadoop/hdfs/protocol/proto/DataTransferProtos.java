@@ -20875,15 +20875,15 @@ public final class DataTransferProtos {
   public interface SegmentProtoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required uint64 index = 1;
+    // required uint64 offset = 1;
     /**
-     * <code>required uint64 index = 1;</code>
+     * <code>required uint64 offset = 1;</code>
      */
-    boolean hasIndex();
+    boolean hasOffset();
     /**
-     * <code>required uint64 index = 1;</code>
+     * <code>required uint64 offset = 1;</code>
      */
-    long getIndex();
+    long getOffset();
 
     // required uint64 length = 2;
     /**
@@ -20894,6 +20894,16 @@ public final class DataTransferProtos {
      * <code>required uint64 length = 2;</code>
      */
     long getLength();
+
+    // required uint64 index = 3;
+    /**
+     * <code>required uint64 index = 3;</code>
+     */
+    boolean hasIndex();
+    /**
+     * <code>required uint64 index = 3;</code>
+     */
+    long getIndex();
   }
   /**
    * Protobuf type {@code hadoop.hdfs.SegmentProto}
@@ -20948,12 +20958,17 @@ public final class DataTransferProtos {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              index_ = input.readUInt64();
+              offset_ = input.readUInt64();
               break;
             }
             case 16: {
               bitField0_ |= 0x00000002;
               length_ = input.readUInt64();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              index_ = input.readUInt64();
               break;
             }
           }
@@ -20996,20 +21011,20 @@ public final class DataTransferProtos {
     }
 
     private int bitField0_;
-    // required uint64 index = 1;
-    public static final int INDEX_FIELD_NUMBER = 1;
-    private long index_;
+    // required uint64 offset = 1;
+    public static final int OFFSET_FIELD_NUMBER = 1;
+    private long offset_;
     /**
-     * <code>required uint64 index = 1;</code>
+     * <code>required uint64 offset = 1;</code>
      */
-    public boolean hasIndex() {
+    public boolean hasOffset() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required uint64 index = 1;</code>
+     * <code>required uint64 offset = 1;</code>
      */
-    public long getIndex() {
-      return index_;
+    public long getOffset() {
+      return offset_;
     }
 
     // required uint64 length = 2;
@@ -21028,20 +21043,41 @@ public final class DataTransferProtos {
       return length_;
     }
 
+    // required uint64 index = 3;
+    public static final int INDEX_FIELD_NUMBER = 3;
+    private long index_;
+    /**
+     * <code>required uint64 index = 3;</code>
+     */
+    public boolean hasIndex() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>required uint64 index = 3;</code>
+     */
+    public long getIndex() {
+      return index_;
+    }
+
     private void initFields() {
-      index_ = 0L;
+      offset_ = 0L;
       length_ = 0L;
+      index_ = 0L;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized != -1) return isInitialized == 1;
 
-      if (!hasIndex()) {
+      if (!hasOffset()) {
         memoizedIsInitialized = 0;
         return false;
       }
       if (!hasLength()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasIndex()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -21053,10 +21089,13 @@ public final class DataTransferProtos {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeUInt64(1, index_);
+        output.writeUInt64(1, offset_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeUInt64(2, length_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(3, index_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -21069,11 +21108,15 @@ public final class DataTransferProtos {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(1, index_);
+          .computeUInt64Size(1, offset_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(2, length_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(3, index_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -21098,15 +21141,20 @@ public final class DataTransferProtos {
       org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto other = (org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto) obj;
 
       boolean result = true;
-      result = result && (hasIndex() == other.hasIndex());
-      if (hasIndex()) {
-        result = result && (getIndex()
-            == other.getIndex());
+      result = result && (hasOffset() == other.hasOffset());
+      if (hasOffset()) {
+        result = result && (getOffset()
+            == other.getOffset());
       }
       result = result && (hasLength() == other.hasLength());
       if (hasLength()) {
         result = result && (getLength()
             == other.getLength());
+      }
+      result = result && (hasIndex() == other.hasIndex());
+      if (hasIndex()) {
+        result = result && (getIndex()
+            == other.getIndex());
       }
       result = result &&
           getUnknownFields().equals(other.getUnknownFields());
@@ -21121,13 +21169,17 @@ public final class DataTransferProtos {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptorForType().hashCode();
-      if (hasIndex()) {
-        hash = (37 * hash) + INDEX_FIELD_NUMBER;
-        hash = (53 * hash) + hashLong(getIndex());
+      if (hasOffset()) {
+        hash = (37 * hash) + OFFSET_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getOffset());
       }
       if (hasLength()) {
         hash = (37 * hash) + LENGTH_FIELD_NUMBER;
         hash = (53 * hash) + hashLong(getLength());
+      }
+      if (hasIndex()) {
+        hash = (37 * hash) + INDEX_FIELD_NUMBER;
+        hash = (53 * hash) + hashLong(getIndex());
       }
       hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
@@ -21238,10 +21290,12 @@ public final class DataTransferProtos {
 
       public Builder clear() {
         super.clear();
-        index_ = 0L;
+        offset_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000001);
         length_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000002);
+        index_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -21273,11 +21327,15 @@ public final class DataTransferProtos {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.index_ = index_;
+        result.offset_ = offset_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
         result.length_ = length_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.index_ = index_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -21294,22 +21352,29 @@ public final class DataTransferProtos {
 
       public Builder mergeFrom(org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto other) {
         if (other == org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto.getDefaultInstance()) return this;
-        if (other.hasIndex()) {
-          setIndex(other.getIndex());
+        if (other.hasOffset()) {
+          setOffset(other.getOffset());
         }
         if (other.hasLength()) {
           setLength(other.getLength());
+        }
+        if (other.hasIndex()) {
+          setIndex(other.getIndex());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
-        if (!hasIndex()) {
+        if (!hasOffset()) {
           
           return false;
         }
         if (!hasLength()) {
+          
+          return false;
+        }
+        if (!hasIndex()) {
           
           return false;
         }
@@ -21335,35 +21400,35 @@ public final class DataTransferProtos {
       }
       private int bitField0_;
 
-      // required uint64 index = 1;
-      private long index_ ;
+      // required uint64 offset = 1;
+      private long offset_ ;
       /**
-       * <code>required uint64 index = 1;</code>
+       * <code>required uint64 offset = 1;</code>
        */
-      public boolean hasIndex() {
+      public boolean hasOffset() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required uint64 index = 1;</code>
+       * <code>required uint64 offset = 1;</code>
        */
-      public long getIndex() {
-        return index_;
+      public long getOffset() {
+        return offset_;
       }
       /**
-       * <code>required uint64 index = 1;</code>
+       * <code>required uint64 offset = 1;</code>
        */
-      public Builder setIndex(long value) {
+      public Builder setOffset(long value) {
         bitField0_ |= 0x00000001;
-        index_ = value;
+        offset_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required uint64 index = 1;</code>
+       * <code>required uint64 offset = 1;</code>
        */
-      public Builder clearIndex() {
+      public Builder clearOffset() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        index_ = 0L;
+        offset_ = 0L;
         onChanged();
         return this;
       }
@@ -21397,6 +21462,39 @@ public final class DataTransferProtos {
       public Builder clearLength() {
         bitField0_ = (bitField0_ & ~0x00000002);
         length_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      // required uint64 index = 3;
+      private long index_ ;
+      /**
+       * <code>required uint64 index = 3;</code>
+       */
+      public boolean hasIndex() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required uint64 index = 3;</code>
+       */
+      public long getIndex() {
+        return index_;
+      }
+      /**
+       * <code>required uint64 index = 3;</code>
+       */
+      public Builder setIndex(long value) {
+        bitField0_ |= 0x00000004;
+        index_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required uint64 index = 3;</code>
+       */
+      public Builder clearIndex() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        index_ = 0L;
         onChanged();
         return this;
       }
@@ -23798,22 +23896,22 @@ public final class DataTransferProtos {
       "\rbytesPerChunk\030\002 \002(\r\022\026\n\016chunksPerBlock\030\003" +
       " \002(\004\0221\n\tchecksums\030\004 \003(\0132\036.hadoop.hdfs.Ch" +
       "ecksumPairProto\022/\n\007crcType\030\005 \001(\0162\036.hadoo" +
-      "p.hdfs.ChecksumTypeProto\"-\n\014SegmentProto" +
-      "\022\r\n\005index\030\001 \002(\004\022\016\n\006length\030\002 \002(\004\"d\n OpCal" +
-      "culateSegmentsResponseProto\022\023\n\013numSegmen" +
-      "ts\030\001 \002(\004\022+\n\010segments\030\002 \003(\0132\031.hadoop.hdfs" +
-      ".SegmentProto\"\322\001\n\022OpSendSegmentProto\0227\n\006",
-      "header\030\001 \002(\0132\'.hadoop.hdfs.ClientOperati" +
-      "onHeaderProto\022\023\n\013blockOffset\030\002 \002(\004\022\016\n\006le" +
-      "ngth\030\003 \002(\004\022\033\n\rsendChecksums\030\004 \001(\010:\004true\022" +
-      "\020\n\010isClient\030\005 \002(\010\022/\n\007targets\030\006 \003(\0132\036.had" +
-      "oop.hdfs.DatanodeInfoProto*\231\001\n\006Status\022\013\n" +
-      "\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECKSUM\020" +
-      "\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXISTS\020\004\022\026" +
-      "\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_OK\020\006\022" +
-      "\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apache.had" +
-      "oop.hdfs.protocol.protoB\022DataTransferPro",
-      "tos\240\001\001"
+      "p.hdfs.ChecksumTypeProto\"=\n\014SegmentProto" +
+      "\022\016\n\006offset\030\001 \002(\004\022\016\n\006length\030\002 \002(\004\022\r\n\005inde" +
+      "x\030\003 \002(\004\"d\n OpCalculateSegmentsResponsePr" +
+      "oto\022\023\n\013numSegments\030\001 \002(\004\022+\n\010segments\030\002 \003" +
+      "(\0132\031.hadoop.hdfs.SegmentProto\"\322\001\n\022OpSend",
+      "SegmentProto\0227\n\006header\030\001 \002(\0132\'.hadoop.hd" +
+      "fs.ClientOperationHeaderProto\022\023\n\013blockOf" +
+      "fset\030\002 \002(\004\022\016\n\006length\030\003 \002(\004\022\033\n\rsendChecks" +
+      "ums\030\004 \001(\010:\004true\022\020\n\010isClient\030\005 \002(\010\022/\n\007tar" +
+      "gets\030\006 \003(\0132\036.hadoop.hdfs.DatanodeInfoPro" +
+      "to*\231\001\n\006Status\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n" +
+      "\016ERROR_CHECKSUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014" +
+      "ERROR_EXISTS\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017" +
+      "\n\013CHECKSUM_OK\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>" +
+      "\n%org.apache.hadoop.hdfs.protocol.protoB",
+      "\022DataTransferProtos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -23969,7 +24067,7 @@ public final class DataTransferProtos {
           internal_static_hadoop_hdfs_SegmentProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_SegmentProto_descriptor,
-              new java.lang.String[] { "Index", "Length", });
+              new java.lang.String[] { "Offset", "Length", "Index", });
           internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_descriptor =
             getDescriptor().getMessageTypes().get(25);
           internal_static_hadoop_hdfs_OpCalculateSegmentsResponseProto_fieldAccessorTable = new

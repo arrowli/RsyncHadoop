@@ -685,7 +685,8 @@ public class RsyncCopy {
 						SegmentProto.newBuilder()
 						.setIndex(lastSegment.getIndex())
 						.setLength(lastBlock.getLocatedBlock().getBlock().getNumBytes() - lastSegment.getOffset())
-						.setOffset(lastSegment.getOffset()));
+						.setOffset(lastSegment.getOffset())
+						.build());
 			}
 		}
 		
