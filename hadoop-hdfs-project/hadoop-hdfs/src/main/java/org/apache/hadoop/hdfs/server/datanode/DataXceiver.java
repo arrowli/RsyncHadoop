@@ -922,7 +922,7 @@ class DataXceiver extends Receiver implements Runnable {
 							
 							segments.add(SegmentProto
 									.newBuilder()
-									.setOffset(nowOffset-bytesPerChunk)
+									.setOffset(nowOffset-bytesPerChunk > 0 ? nowOffset - bytesPerChunk : 0)
 									.setIndex(cp.index)
 									.setLength(bytesPerChunk)
 									.build());
@@ -1085,12 +1085,12 @@ class DataXceiver extends Receiver implements Runnable {
 				long bytesToRead = in.readLong();
 				long checksum = in.readLong();
 				LOG.warn("Receiver bytesToRead "+bytesToRead + "; checksum "+checksum);
-				long bytesRead = -1;
+				int bytesRead = -1;
 				long bytesSum = 0;
 				byte[] buffer = new byte[1024*1024];
 				while((bytesRead = in.read(buffer)) != -1){
 					bytesSum += bytesRead;
-					outFile.write(buffer);
+					outFile.write(buffer,0,bytesRead);
 					if(bytesSum > bytesToRead){
 						LOG.warn("Get more data than expact.");
 					}

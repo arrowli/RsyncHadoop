@@ -445,6 +445,7 @@ public class RsyncCopy {
 				ClientProtocol namenode,
 				ProtocolProxy<ClientProtocol> namenodeProxy,
 				SocketFactory socketFactory, int socketTimeout) throws IOException {
+			LOG.warn("getFileShecksum start");
 			final DataOutputBuffer md5out = new DataOutputBuffer();
 			int namespaceId = 0;
 			boolean refetchBlocks = false;
@@ -475,8 +476,6 @@ public class RsyncCopy {
 						out = new DataOutputStream(new BufferedOutputStream(
 								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
 						in = new DataInputStream(pair.in);
-
-						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
 						
 						if (LOG.isDebugEnabled()) {
 							LOG.debug("write to " + datanodes[j] + ": "
@@ -600,6 +599,7 @@ public class RsyncCopy {
 		}
 		
 		private void calculateSegments(){
+			LOG.warn("calculateSegments start");
 			List<Integer> simples = new LinkedList<Integer>();
 			List<byte[]> md5s = new LinkedList<byte[]>();
 			
@@ -627,8 +627,6 @@ public class RsyncCopy {
 								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
 						in = new DataInputStream(pair.in);
 
-						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
-
 						// call calculateSegments
 						new Sender(out).calculateSegments(
 								bi.getLocatedBlock().getBlock(), 
@@ -653,12 +651,6 @@ public class RsyncCopy {
 								.getCalculateSegmentsResponse();
 
 						List<SegmentProto> segments = segmentsData.getSegmentsList();
-						
-						for(SegmentProto segment : segments){
-							LOG.warn("Chunk index : "+segment.getIndex()+
-									"; Offset : "+Long.toHexString(segment.getOffset())+
-									"; Length : "+Long.toHexString(segment.getLength()));
-						}
 						
 						bi.setSegments(segments);
 						
@@ -691,6 +683,7 @@ public class RsyncCopy {
 		}
 		
 		private void sendSegments(){
+			LOG.warn("sendSegment start.");
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
@@ -707,8 +700,6 @@ public class RsyncCopy {
 						out = new DataOutputStream(new BufferedOutputStream(
 								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
 						in = new DataInputStream(pair.in);
-
-						LOG.warn("BlockMetadataHeader size : "+BlockMetadataHeader.getHeaderSize());
 
 						boolean noBreak = true;
 						for(SegmentProto segment : bi.getSegments()){
@@ -984,14 +975,8 @@ public class RsyncCopy {
 		public void run() throws IOException {
 			getSDFileInfo();
 			getSDFileChecksum();
-			printFileInfo(srcFileInfo);
-			printFileInfo(dstFileInfo);
 			calculateSegments();
-			printFileInfo(srcFileInfo);
-			printFileInfo(dstFileInfo);
 			sendSegments();
-			printFileInfo(srcFileInfo);
-			printFileInfo(dstFileInfo);
 		}
 		
 	}
