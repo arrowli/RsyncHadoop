@@ -257,8 +257,9 @@ message OpCalculateSegmentsProto {
 }
 
 message SegmentProto{
-  required uint64 index = 1;
+  required uint64 offset = 1;
   required uint64 length = 2;
+  required uint64 index = 3 [default = -1];
 }
 
 message OpCalculateSegmentsResponseProto {
