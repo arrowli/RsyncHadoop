@@ -1090,6 +1090,7 @@ class DataXceiver extends Receiver implements Runnable {
 				byte[] buffer = new byte[1024*1024];
 				while((bytesRead = in.read(buffer)) != -1){
 					bytesSum += bytesRead;
+					LOG.warn("Have read "+bytesSum+" bytes data");
 					outFile.write(buffer,0,bytesRead);
 					if(bytesSum > bytesToRead){
 						LOG.warn("Get more data than expact.");
