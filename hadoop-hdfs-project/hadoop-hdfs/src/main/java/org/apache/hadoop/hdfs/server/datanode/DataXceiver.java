@@ -1006,12 +1006,12 @@ class DataXceiver extends Receiver implements Runnable {
 			          LOG.debug("Connecting to datanode " + dnAddr);
 			        }
 			        sock = datanode.newSocket();
-			        NetUtils.connect(sock, curTarget, dnConf.socketTimeout*100);
-			        sock.setSoTimeout(targets.length * dnConf.socketTimeout*100);
+			        NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
+			        sock.setSoTimeout(targets.length * dnConf.socketTimeout);
 	
 			        long writeTimeout = dnConf.socketWriteTimeout + 
 			                            HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * (targets.length-1);
-			        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout*100);
+			        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout);
 			        InputStream unbufIn = NetUtils.getInputStream(sock);
 			        
 			        out = new DataOutputStream(new BufferedOutputStream(unbufOut,
@@ -1088,8 +1088,9 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Receiver bytesToRead "+bytesToRead + "; checksum "+checksum);
 				int bytesRead = -1;
 				long bytesSum = 0;
-				byte[] buffer = new byte[1024];
-				while((bytesRead = in.read(buffer)) != -1){
+				byte[] buffer = new byte[1024*1024];
+				while(((bytesRead = in.read(buffer)) != -1)
+						&&(bytesSum < bytesToRead)){
 					bytesSum += bytesRead;
 					LOG.warn("Have read "+bytesSum+" bytes data");
 					outFile.write(buffer,0,bytesRead);
