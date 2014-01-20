@@ -1089,8 +1089,8 @@ class DataXceiver extends Receiver implements Runnable {
 				int bytesRead = -1;
 				long bytesSum = 0;
 				byte[] buffer = new byte[1024*1024];
-				while(((bytesRead = in.read(buffer)) != -1)
-						&&(bytesSum < bytesToRead)){
+				while((bytesSum < bytesToRead)&&
+						((bytesRead = in.read(buffer)) != -1)){
 					bytesSum += bytesRead;
 					LOG.warn("Have read "+bytesSum+" bytes data");
 					outFile.write(buffer,0,bytesRead);
