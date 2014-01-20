@@ -1089,7 +1089,7 @@ class DataXceiver extends Receiver implements Runnable {
 				int bytesRead = -1;
 				long bytesSum = 0;
 				byte[] buffer = new byte[1024*1024];
-				while((bytesSum < bytesToRead)&&
+				while((bytesSum < bytesToRead)&&					//为什么只通过in.read(buffer) ！= -1不能判断输入结束...
 						((bytesRead = in.read(buffer)) != -1)){
 					bytesSum += bytesRead;
 					LOG.warn("Have read "+bytesSum+" bytes data");

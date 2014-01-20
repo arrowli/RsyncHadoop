@@ -718,8 +718,6 @@ public class RsyncCopy {
 											+ datanodes[j]);
 								noBreak = false;
 								break;
-							}else{
-								continue;
 							}
 						}
 						if(noBreak) break;
@@ -964,7 +962,9 @@ public class RsyncCopy {
 					LOG.warn("\t\tsimple : "+Integer.toHexString(cp.getSimple())+"; MD5 : "+md5);
 				}
 				for(SegmentProto segment : bi.getSegments()){
-					LOG.warn("\t\tindex : "+segment.getIndex()+"; offset : "+Long.toHexString(segment.getLength()));
+					LOG.warn("\t\tindex : "+segment.getIndex()+
+							"; offset : "+Long.toHexString(segment.getOffset())+
+							"; length : "+Long.toHexString(segment.getLength()));
 				}
 			}
 		}
@@ -973,6 +973,7 @@ public class RsyncCopy {
 			getSDFileInfo();
 			getSDFileChecksum();
 			calculateSegments();
+			printFileInfo(srcFileInfo);
 			sendSegments();
 		}
 		
