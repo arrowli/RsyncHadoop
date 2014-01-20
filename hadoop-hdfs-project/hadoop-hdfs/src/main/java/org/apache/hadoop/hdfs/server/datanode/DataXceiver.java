@@ -1006,12 +1006,12 @@ class DataXceiver extends Receiver implements Runnable {
 			          LOG.debug("Connecting to datanode " + dnAddr);
 			        }
 			        sock = datanode.newSocket();
-			        NetUtils.connect(sock, curTarget, dnConf.socketTimeout);
-			        sock.setSoTimeout(targets.length * dnConf.socketTimeout);
+			        NetUtils.connect(sock, curTarget, dnConf.socketTimeout*100);
+			        sock.setSoTimeout(targets.length * dnConf.socketTimeout*100);
 	
 			        long writeTimeout = dnConf.socketWriteTimeout + 
 			                            HdfsServerConstants.WRITE_TIMEOUT_EXTENSION * (targets.length-1);
-			        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout);
+			        OutputStream unbufOut = NetUtils.getOutputStream(sock, writeTimeout*100);
 			        InputStream unbufIn = NetUtils.getInputStream(sock);
 			        
 			        out = new DataOutputStream(new BufferedOutputStream(unbufOut,
@@ -1030,7 +1030,7 @@ class DataXceiver extends Receiver implements Runnable {
 			        out.writeLong(checksum.getValue());
 			        out.write(buffer);
 			        out.flush();
-			        LOG.warn("Sender bytesToRead "+length + "; checksum "+checksum.getValue());
+			        LOG.warn("Sender bytesToRead "+length + "; checksum "+checksum.getValue()+"; bytesRead "+bytesRead);
 			        //response 
 			        final BlockOpResponseProto reply = BlockOpResponseProto
 							.parseFrom(PBHelper.vintPrefixed(in));
