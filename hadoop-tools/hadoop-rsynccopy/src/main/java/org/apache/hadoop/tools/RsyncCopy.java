@@ -684,22 +684,22 @@ public class RsyncCopy {
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
-				boolean done = false;
-				for (int j = 0; !done && j < datanodes.length; j++) {
+				boolean noBreak = true;
+				for (int j = 0; j < datanodes.length; j++) {
 					DataOutputStream out = null;
 					DataInputStream in = null;
-
-					try {
-						// connect to a datanode
-						IOStreamPair pair = connectToDN(socketFactory,
-								connectToDnViaHostname, getDataEncryptionKey(),
-								datanodes[j], timeout);
-						out = new DataOutputStream(new BufferedOutputStream(
-								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
-						in = new DataInputStream(pair.in);
-
-						boolean noBreak = true;
-						for(SegmentProto segment : bi.getSegments()){
+					for(SegmentProto segment : bi.getSegments()){
+						try {
+							// connect to a datanode
+							IOStreamPair pair = connectToDN(socketFactory,
+									connectToDnViaHostname, getDataEncryptionKey(),
+									datanodes[j], timeout);
+							out = new DataOutputStream(new BufferedOutputStream(
+									pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+							in = new DataInputStream(pair.in);
+	
+							
+							
 							// call sendSegment
 							LOG.warn("SendSegment index : "+segment.getIndex()+
 									"; offset : "+segment.getOffset()+
@@ -722,16 +722,18 @@ public class RsyncCopy {
 								noBreak = false;
 								break;
 							}
+							
+						} catch (InvalidBlockTokenException ibte) {
+							
+						} catch (IOException ie) {
+							
+						}finally {
+							IOUtils.closeStream(in);
+							IOUtils.closeStream(out);
 						}
-						if(noBreak) break;
-					} catch (InvalidBlockTokenException ibte) {
-						
-					} catch (IOException ie) {
-						
-					}finally {
-						IOUtils.closeStream(in);
-						IOUtils.closeStream(out);
 					}
+					
+					if(noBreak) break;
 				}
 			}
 		}
