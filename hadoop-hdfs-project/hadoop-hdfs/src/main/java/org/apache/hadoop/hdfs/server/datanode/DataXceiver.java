@@ -882,6 +882,7 @@ class DataXceiver extends Receiver implements Runnable {
 			
 			List<SegmentProto> segments = new LinkedList<SegmentProto>();
 			
+			long blockSize = blk.getNumBytes();
 			int startOffset = 0;//上次segment保存的偏移
 			int nowOffset = 0;//目前读到的偏移
 			int bufOffset = buf.length;//buf需要循环利用
@@ -909,10 +910,21 @@ class DataXceiver extends Receiver implements Runnable {
 						//find a match chunk
 						if(MessageDigest.isEqual(mdInst.digest(), cp.md5)){
 							found = true;
+							
+							if(nowOffset-startOffset > bytesPerChunk){
+								segments.add(SegmentProto
+										.newBuilder()
+										.setOffset(startOffset)
+										.setLength(nowOffset-startOffset-bytesPerChunk)
+										.setIndex(-1)
+										.build());
+							}
+							
 							segments.add(SegmentProto
 									.newBuilder()
+									.setOffset(nowOffset-bytesPerChunk)
 									.setIndex(cp.index)
-									.setLength(startOffset)
+									.setLength(bytesPerChunk)
 									.build());
 							
 							readBytesOneTime = blockIn.read(buf);
@@ -934,6 +946,15 @@ class DataXceiver extends Receiver implements Runnable {
 					}
 				}
 			}while(readBytesOneTime != -1);
+			
+			if(nowOffset-startOffset > 0){
+				segments.add(SegmentProto
+						.newBuilder()
+						.setOffset(startOffset)
+						.setLength(nowOffset-startOffset)
+						.setIndex(-1)
+						.build());
+			}
 			
 			blockIn.close();
 			

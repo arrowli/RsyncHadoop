@@ -40,6 +40,7 @@ import java.util.Random;
 import java.util.concurrent.*;
 
 import javax.net.SocketFactory;
+import javax.swing.text.Segment;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -654,34 +655,12 @@ public class RsyncCopy {
 						List<SegmentProto> segments = segmentsData.getSegmentsList();
 						
 						for(SegmentProto segment : segments){
-							LOG.warn("Chunk index : "+segment.getIndex()+"; Offset : "+Long.toHexString(segment.getLength()));
+							LOG.warn("Chunk index : "+segment.getIndex()+
+									"; Offset : "+Long.toHexString(segment.getOffset())+
+									"; Length : "+Long.toHexString(segment.getLength()));
 						}
 						
-						int chunkSize = 10*1024*1024;
-						for(SegmentProto segment : segments){
-							if(bi.getSegments().isEmpty()) 
-								bi.getSegments().add(
-									SegmentProto.newBuilder()
-									.setIndex(segment.getIndex())
-									.setLength(chunkSize)
-									.build());
-							else{
-								SegmentProto last = bi.getSegments().get(bi.getSegments().size()-1);
-								if(last.getIndex()+last.getLength() < segment.getLength()){
-									bi.addSegment(
-										SegmentProto.newBuilder()
-										.setIndex(last.getIndex()+last.getLength())
-										.setLength(segment.getLength() - (last.getIndex()+last.getLength()))
-										.build());
-								}
-								last = bi.getSegments().get(bi.getSegments().size()-1);
-								bi.getSegments().add(
-										SegmentProto.newBuilder()
-										.setIndex(last.getIndex()+last.getLength())
-										.setLength(chunkSize)
-										.build());
-							}
-						}
+						bi.setSegments(segments);
 						
 						done = true;
 						break;
@@ -697,14 +676,17 @@ public class RsyncCopy {
 				}
 			}
 			
-			//矫正最后一个segment的大小
+			
+			//矫正最后一个segment
 			BlockInfo lastBlock = srcFileInfo.getBlocks().get(srcFileInfo.getBlocks().size()-1);
 			SegmentProto lastSegment = lastBlock.getSegments().get(lastBlock.getSegments().size()-1);
-			lastBlock.getSegments().set(lastBlock.getSegments().size()-1, 
-					SegmentProto.newBuilder()
-					.setIndex(lastSegment.getIndex())
-					.setLength(srcFileInfo.getFileSize()-lastSegment.getIndex())
-					.build());
+			if(lastSegment.getOffset()+lastSegment.getLength() > lastBlock.getLocatedBlock().getBlock().getNumBytes()){
+				lastBlock.getSegments().set(lastBlock.getSegments().size()-1, 
+						SegmentProto.newBuilder()
+						.setIndex(lastSegment.getIndex())
+						.setLength(lastBlock.getLocatedBlock().getBlock().getNumBytes() - lastSegment.getOffset())
+						.setOffset(lastSegment.getOffset()));
+			}
 		}
 		
 		private void sendSegments(){
@@ -733,7 +715,7 @@ public class RsyncCopy {
 							new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
 									bi.getLocatedBlock().getBlockToken(), 
 									clientName, 
-									segment.getIndex(), 
+									segment.getOffset(), 
 									segment.getLength(), true, true,
 									bi.getLocatedBlock().getLocations());
 	
