@@ -700,7 +700,10 @@ public class RsyncCopy {
 
 						boolean noBreak = true;
 						for(SegmentProto segment : bi.getSegments()){
-							// call chooseSegment
+							// call sendSegment
+							LOG.warn("SendSegment index : "+segment.getIndex()+
+									"; offset : "+segment.getOffset()+
+									"; length : "+segment.getLength());
 							new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
 									bi.getLocatedBlock().getBlockToken(), 
 									clientName, 
