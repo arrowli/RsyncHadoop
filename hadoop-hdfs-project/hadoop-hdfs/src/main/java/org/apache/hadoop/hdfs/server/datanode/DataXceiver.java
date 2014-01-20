@@ -1030,6 +1030,7 @@ class DataXceiver extends Receiver implements Runnable {
 			        out.writeLong(length);
 			        out.writeLong(checksum.getValue());
 			        out.write(buffer);
+			        out.flush();
 			        //response 
 			        final BlockOpResponseProto reply = BlockOpResponseProto
 							.parseFrom(PBHelper.vintPrefixed(in));
