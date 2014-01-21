@@ -275,3 +275,7 @@ message OpSendSegmentProto {
   required bool isClient = 5;
   repeated DatanodeInfoProto targets = 6;
 }
+
+message OpUpdateBlockProto { 
+  required BaseHeaderProto header = 1;
+}
