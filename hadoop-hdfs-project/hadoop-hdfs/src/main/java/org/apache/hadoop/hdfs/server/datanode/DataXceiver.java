@@ -1225,7 +1225,7 @@ class DataXceiver extends Receiver implements Runnable {
 		long startOffset = 0;
 		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
 		for(String segmentFile : segmentFiles){
-			File segment = new File(blkPath+"/"+segmentFile);
+			File segment = new File(dfsDataPath+dfsTmpPath+blkPath+"/"+segmentFile);
 			long bytesLeft = segment.length();
 			FileInputStream segmentIn = new FileInputStream(segment);
 			do{
