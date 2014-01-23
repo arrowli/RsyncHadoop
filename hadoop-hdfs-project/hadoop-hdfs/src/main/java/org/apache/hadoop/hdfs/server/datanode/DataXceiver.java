@@ -1223,7 +1223,7 @@ class DataXceiver extends Receiver implements Runnable {
 		requestedChecksum.writeHeader(checksumOut);
 		long blockLength = 0;
 		long startOffset = 0;
-		byte[] lastChecksum = null;
+		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
 		for(String segmentFile : segmentFiles){
 			File segment = new File(dfsDataPath+dfsTmpPath+blkPath+"/"+segmentFile);
 			LOG.warn("Read segment "+segment.getName());
