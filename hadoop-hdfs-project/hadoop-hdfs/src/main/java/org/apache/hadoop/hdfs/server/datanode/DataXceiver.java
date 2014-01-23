@@ -1177,7 +1177,7 @@ class DataXceiver extends Receiver implements Runnable {
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_UPDATE_BLOCK,
 				BlockTokenSecretManager.AccessMode.WRITE);
-		ReplicaInPipelineInterface replicaInfo = datanode.data.append(block, block.getGenerationStamp()+1, block.getNumBytes());
+		//ReplicaInPipelineInterface replicaInfo = datanode.data.append(block, block.getGenerationStamp()+1, block.getNumBytes());
 		
 		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
 		if(dfsDataPath == null){
@@ -1214,13 +1214,13 @@ class DataXceiver extends Receiver implements Runnable {
 		boolean isCreate = true;
 		int bytesPerChecksum = 1024;
 		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32, bytesPerChecksum);
-		ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
+		//ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
 		
-		OutputStream dout = streams.getDataOut();
-		OutputStream cout = streams.getChecksumOut();
-		
-		DataOutputStream checksumOut = new DataOutputStream(
-				new BufferedOutputStream(cout,HdfsConstants.SMALL_BUFFER_SIZE));
+		//OutputStream dout = streams.getDataOut();
+		OutputStream dout = new FileOutputStream(fBlockFile);
+		//OutputStream cout = streams.getChecksumOut();
+		OutputStream cout = new FileOutputStream(fBlockMetaFile);
+		DataOutputStream checksumOut = new DataOutputStream(new BufferedOutputStream(cout,HdfsConstants.SMALL_BUFFER_SIZE));
 		
 		ByteBuffer dataBuf = ByteBuffer.allocate(1024*1024);
 		ByteBuffer checksumBuf = ByteBuffer.allocate(1024*requestedChecksum.getChecksumSize());
@@ -1274,7 +1274,6 @@ class DataXceiver extends Receiver implements Runnable {
 		dout.close();
 		checksumOut.flush();
 		checksumOut.close();
-		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
 		datanode.metrics.incrBytesWritten((int)blockLength);
 		block.setNumBytes(blockLength);
 		datanode.data.finalizeBlock(block);
