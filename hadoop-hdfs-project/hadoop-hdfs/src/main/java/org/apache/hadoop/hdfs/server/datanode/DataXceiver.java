@@ -1192,8 +1192,8 @@ class DataXceiver extends Receiver implements Runnable {
 		String[] segmentFiles = blockDir.list();
 		Arrays.sort(segmentFiles);
 		//删除原有block
-		String blockName = "blk_"+block.getBlockId()+"_"+block.getGenerationStamp();
-		String blockMetaName = blockName+".meta";
+		String blockName = "blk_"+block.getBlockId();
+		String blockMetaName = blockName+"_"+block.getGenerationStamp()+".meta";
 		String finalizedDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/current/finalized";
 		String rbwDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/current/rbw";
 		String tmpDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/tmp";
