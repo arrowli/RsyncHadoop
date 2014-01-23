@@ -1223,7 +1223,7 @@ class DataXceiver extends Receiver implements Runnable {
 		requestedChecksum.writeHeader(checksumOut);
 		long blockLength = 0;
 		long startOffset = 0;
-		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
+		byte[] lastChecksum = null;
 		for(String segmentFile : segmentFiles){
 			File segment = new File(dfsDataPath+dfsTmpPath+blkPath+"/"+segmentFile);
 			LOG.warn("Read segment "+segment.getName());
@@ -1240,6 +1240,7 @@ class DataXceiver extends Receiver implements Runnable {
 					int offset = checksumBuf.capacity()-requestedChecksum.getChecksumSize();
 					int length = requestedChecksum.getChecksumSize();
 					LOG.warn("lastChecksum offset "+offset+" length "+length);
+					System.arraycopy(checksumBuf.array(), offset, lastChecksum, 0, length);
 					checksumBuf.get(lastChecksum,
 							offset,
 							length);
@@ -1259,9 +1260,13 @@ class DataXceiver extends Receiver implements Runnable {
 			dout.write(leftData.array());
 			cout.write(checksumBuf.array(),0,
 					(int)(startOffset+bytesPerChecksum-1)/bytesPerChecksum*requestedChecksum.getChecksumSize());
-			checksumBuf.get(lastChecksum,
-					(int)(startOffset+bytesPerChecksum-1)/bytesPerChecksum*requestedChecksum.getChecksumSize()-requestedChecksum.getChecksumSize(),
-					requestedChecksum.getChecksumSize());
+			
+			int offset = (int)(startOffset+bytesPerChecksum-1)/
+					bytesPerChecksum*requestedChecksum.getChecksumSize()-
+					requestedChecksum.getChecksumSize();
+			int length = requestedChecksum.getChecksumSize();
+			LOG.warn("lastChecksum offset "+offset+" length "+length);
+			System.arraycopy(checksumBuf.array(), offset, lastChecksum, 0, length);
 		}
 		dout.flush();
 		dout.close();
