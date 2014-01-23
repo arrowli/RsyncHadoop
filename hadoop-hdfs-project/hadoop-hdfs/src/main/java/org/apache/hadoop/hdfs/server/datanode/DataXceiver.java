@@ -1237,9 +1237,12 @@ class DataXceiver extends Receiver implements Runnable {
 				bytesLeft -= bytesToRead;
 				if(startOffset == dataBuf.capacity()){//data full, need write to file
 					requestedChecksum.calculateChunkedSums(dataBuf, checksumBuf);
+					int offset = checksumBuf.capacity()-requestedChecksum.getChecksumSize();
+					int length = requestedChecksum.getChecksumSize();
+					LOG.warn("lastChecksum offset "+offset+" length "+length);
 					checksumBuf.get(lastChecksum,
-							checksumBuf.capacity()-requestedChecksum.getChecksumSize(),
-							requestedChecksum.getChecksumSize());
+							offset,
+							length);
 					dout.write(dataBuf.array());
 					checksumOut.write(checksumBuf.array());
 					startOffset = 0;
