@@ -1223,7 +1223,7 @@ class DataXceiver extends Receiver implements Runnable {
 		OutputStream cout = new FileOutputStream(fBlockMetaFile);
 		DataOutputStream checksumOut = new DataOutputStream(new BufferedOutputStream(cout,HdfsConstants.SMALL_BUFFER_SIZE));
 		
-		ByteBuffer dataBuf = ByteBuffer.allocate(1024*1024);
+		ByteBuffer dataBuf = ByteBuffer.allocate(1024*bytesPerChecksum);
 		ByteBuffer checksumBuf = ByteBuffer.allocate(1024*requestedChecksum.getChecksumSize());
 		
 		requestedChecksum.writeHeader(checksumOut);
