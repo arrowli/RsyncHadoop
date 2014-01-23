@@ -45,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -678,7 +679,7 @@ class DataXceiver extends Receiver implements Runnable {
 		OutputStream cout = null;
 		try{
 			ReplicaInPipelineInterface replicaInfo = datanode.data.createTemporary(block);
-			ReplicaOutputStreams streams = replicaInfo.createStreams(true,DataChecksum.newDataChecksum(Type.DEFAULT, 10*1024*1024 /*bytesPerChecksum*/));
+			ReplicaOutputStreams streams = replicaInfo.createStreams(true,DataChecksum.newDataChecksum(Type.DEFAULT, 1024*1024 /*bytesPerChecksum*/));
 			dout = streams.getDataOut(); // to block file at local disk
 			cout = streams.getChecksumOut(); // output stream for checksum file
 
@@ -750,7 +751,7 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = 10*1024*1024;
+			final int bytesPerChunk = 1024*1024;
 			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
 					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			
@@ -852,7 +853,7 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = 10*1024*1024;
+			final int bytesPerChunk = 1024*1024;
 			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
 					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			
@@ -1072,8 +1073,8 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Directory "+dfsDataPath+"does not exist.");
 			}
 			String dfsTmpPath = "/current/rsync_tmp";
-			String blkPath = "/"+blk.getBlockId()+"_"+blk.getGenerationStamp();
-			String segmentPath = "/"+blockOffset+"_"+length;
+			String blkPath = "/"+blk.getBlockId()+"_"+blk.getGenerationStamp(); 
+			String segmentPath = "/"+String.format("%064d", blockOffset)+"_"+String.format("%064d", length);
 			
 			File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
 			File segmentFile = new File(dfsDataPath+dfsTmpPath+blkPath+segmentPath);

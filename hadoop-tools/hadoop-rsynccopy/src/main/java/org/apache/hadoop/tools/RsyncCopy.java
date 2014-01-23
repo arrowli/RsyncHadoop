@@ -919,7 +919,7 @@ public class RsyncCopy {
 								+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + lb.getBlock());
 					}
 					// inflate block
-					new Sender(out).inflateBlock(lb1.getBlock(), lb1.getBlockToken(), clientName, 10*1024*1024, 0);
+					new Sender(out).inflateBlock(lb1.getBlock(), lb1.getBlockToken(), clientName, 1024*1024, 0);
 					//new Sender(out).chunksChecksum(block, lb.getBlockToken());
 
 					final BlockOpResponseProto reply = BlockOpResponseProto
