@@ -42,6 +42,7 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpSendSegmentPro
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpTransferBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpRequestShortCircuitAccessProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.CachingStrategyProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpUpdateBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpWriteBlockProto;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 import org.apache.hadoop.hdfs.security.token.block.BlockTokenIdentifier;
@@ -281,5 +282,16 @@ public class Sender implements DataTransferProtocol {
 				.addAllTargets(PBHelper.convert(targets));
 		
 		send(out,Op.RSYNC_SEND_SEGMENT,proto.build());
+	}
+	
+	@Override
+	public void updateBlock(final ExtendedBlock blk,
+			final Token<BlockTokenIdentifier> blockToken) throws IOException {
+		OpUpdateBlockProto proto = OpUpdateBlockProto
+				.newBuilder()
+				.setHeader(
+						DataTransferProtoUtil.buildBaseHeader(blk, blockToken))
+				.build();
+		send(out, Op.RSYNC_UPDATE_BLOCK, proto);
 	}
 }

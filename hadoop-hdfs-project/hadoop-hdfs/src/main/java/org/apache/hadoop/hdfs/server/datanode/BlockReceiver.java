@@ -78,7 +78,7 @@ class BlockReceiver implements Closeable {
   private boolean needsChecksumTranslation;
   private OutputStream out = null; // to block file at local disk
   private FileDescriptor outFd;
-  private OutputStream cout = null; // output stream for cehcksum file
+  private OutputStream cout = null; // output stream for checksum file
   private DataOutputStream checksumOut = null; // to crc file at local disk
   private int bytesPerChecksum;
   private int checksumSize;

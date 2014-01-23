@@ -40,6 +40,7 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpSendSegmentPro
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpTransferBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpRequestShortCircuitAccessProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.CachingStrategyProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpUpdateBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpWriteBlockProto;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;
@@ -95,6 +96,9 @@ public abstract class Receiver implements DataTransferProtocol {
 			break;
 		case RSYNC_INFLATE_BLOCK:
 			opInflateBlock(in);
+			break;
+		case RSYNC_UPDATE_BLOCK:
+			opUpdateBlock(in);
 			break;
 		case TRANSFER_BLOCK:
 			opTransferBlock(in);
@@ -262,5 +266,14 @@ public abstract class Receiver implements DataTransferProtocol {
 				sendChecksums,
 				isClient,
 				datanodes);
+	}
+	
+	/** Receive OP_RSYNC_UPDATE_BLOCK **/
+	private void opUpdateBlock(DataInputStream in) throws IOException {
+		OpUpdateBlockProto proto = OpUpdateBlockProto
+				.parseFrom(vintPrefixed(in));
+
+		updateBlock(PBHelper.convert(proto.getHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getToken()));
 	}
 }

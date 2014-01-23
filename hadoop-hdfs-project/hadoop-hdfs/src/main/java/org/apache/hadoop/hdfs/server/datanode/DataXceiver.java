@@ -33,6 +33,7 @@ import java.io.EOFException;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -40,6 +41,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -50,6 +52,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.Adler32;
+import java.util.zip.Checksum;
 
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.fs.Path;
@@ -1168,6 +1171,106 @@ class DataXceiver extends Receiver implements Runnable {
 		datanode.metrics.addBlockChecksumOp(elapsed());
 	}
 
+	@Override
+	public void updateBlock(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken) throws IOException {
+		LOG.warn("updateBlock start.");
+		final DataOutputStream out = new DataOutputStream(getOutputStream());
+		checkAccess(out, true, block, blockToken, Op.RSYNC_UPDATE_BLOCK,
+				BlockTokenSecretManager.AccessMode.WRITE);
+		ReplicaInPipelineInterface replicaInfo = datanode.data.createRbw(block);
+		
+		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+		if(dfsDataPath == null){
+			LOG.warn("dfs.datanode.data.dir is not set");
+			return;
+		}
+		
+		String dfsTmpPath = "/current/rsync_tmp";
+		String blkPath = "/"+block.getBlockId()+"_"+block.getGenerationStamp();
+		File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
+
+		String[] segmentFiles = blockDir.list();
+		Arrays.sort(segmentFiles);
+		//删除原有block
+		String blockName = "blk_"+block.getBlockId()+"_"+block.getGenerationStamp();
+		String blockMetaName = blockName+".meta";
+		String finalizedDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/current/finalized";
+		String rbwDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/current/rbw";
+		String tmpDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/tmp";
+		
+		File fBlockFile = new File(finalizedDir+"/"+blockName);
+		File fBlockMetaFile = new File(finalizedDir+"/"+blockMetaName);
+		if(fBlockFile.exists()) fBlockFile.delete();
+		if(fBlockMetaFile.exists()) fBlockMetaFile.delete();
+		
+		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
+		//如果requestedChecksum
+		boolean isCreate = true;
+		int bytesPerChecksum = 1024;
+		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32, bytesPerChecksum);
+		ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
+		
+		OutputStream dout = streams.getDataOut();
+		OutputStream cout = streams.getChecksumOut();
+		
+		DataOutputStream checksumOut = new DataOutputStream(
+				new BufferedOutputStream(cout,HdfsConstants.SMALL_BUFFER_SIZE));
+		
+		ByteBuffer dataBuf = ByteBuffer.allocate(1024*1024);
+		ByteBuffer checksumBuf = ByteBuffer.allocate(1024*requestedChecksum.getChecksumSize());
+		
+		requestedChecksum.writeHeader(checksumOut);
+		long blockLength = 0;
+		long startOffset = 0;
+		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
+		for(String segmentFile : segmentFiles){
+			File segment = new File(blkPath+"/"+segmentFile);
+			long bytesLeft = segment.length();
+			FileInputStream segmentIn = new FileInputStream(segment);
+			do{
+				long bytesToRead = bytesLeft > dataBuf.capacity() - startOffset ? dataBuf.capacity() - startOffset : bytesLeft;
+				assert segmentIn.read(dataBuf.array(), (int)startOffset, (int)bytesToRead) == bytesToRead;
+				startOffset += bytesToRead;
+				bytesLeft -= bytesToRead;
+				if(startOffset == dataBuf.capacity()){//data full, need write to file
+					requestedChecksum.calculateChunkedSums(dataBuf, checksumBuf);
+					checksumBuf.get(lastChecksum,
+							checksumBuf.capacity()-requestedChecksum.getChecksumSize(),
+							requestedChecksum.getChecksumSize());
+					dout.write(dataBuf.array());
+					checksumOut.write(checksumBuf.array());
+					startOffset = 0;
+					blockLength += dataBuf.capacity();
+				}
+			}while(bytesLeft > 0);
+		}
+		
+		if(startOffset > 0){
+			blockLength += startOffset;
+			ByteBuffer leftData = ByteBuffer.allocate((int)startOffset);
+			dataBuf.get(leftData.array(), 0, (int)startOffset);
+			requestedChecksum.calculateChunkedSums(leftData, checksumBuf);
+			dout.write(leftData.array());
+			cout.write(checksumBuf.array(),0,
+					(int)(startOffset+bytesPerChecksum-1)/bytesPerChecksum*requestedChecksum.getChecksumSize());
+			checksumBuf.get(lastChecksum,
+					(int)(startOffset+bytesPerChecksum-1)/bytesPerChecksum*requestedChecksum.getChecksumSize()-requestedChecksum.getChecksumSize(),
+					requestedChecksum.getChecksumSize());
+		}
+		dout.flush();
+		dout.close();
+		checksumOut.flush();
+		checksumOut.close();
+		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
+		datanode.metrics.incrBytesWritten((int)blockLength);
+		block.setNumBytes(blockLength);
+		datanode.data.finalizeBlock(block);
+		datanode.closeBlock(block, "Called from updateBlock");
+		writeResponse(Status.SUCCESS,null,out);
+		datanode.metrics.addBlockChecksumOp(elapsed());
+	}
+	
 	@Override
 	public void copyBlock(final ExtendedBlock block,
 			final Token<BlockTokenIdentifier> blockToken) throws IOException {

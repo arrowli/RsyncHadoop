@@ -221,4 +221,14 @@ public interface DataTransferProtocol {
       final boolean sendChecksum,
       final boolean isClient,
       final DatanodeInfo[] targets) throws IOException;
+  
+  /**
+   * Called by rsync client, use temp segments information to create new block.
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @throws IOException
+   */
+  public void updateBlock(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken) throws IOException;
 }
