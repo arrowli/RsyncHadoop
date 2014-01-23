@@ -1178,7 +1178,7 @@ class DataXceiver extends Receiver implements Runnable {
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_UPDATE_BLOCK,
 				BlockTokenSecretManager.AccessMode.WRITE);
-		ReplicaInPipelineInterface replicaInfo = datanode.data.createRbw(block);
+		ReplicaInPipelineInterface replicaInfo = datanode.data.append(block, block.getGenerationStamp()+1, block.getNumBytes()+1);
 		
 		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
 		if(dfsDataPath == null){
