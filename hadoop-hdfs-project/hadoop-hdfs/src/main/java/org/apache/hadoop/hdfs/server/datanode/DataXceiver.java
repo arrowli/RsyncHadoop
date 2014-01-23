@@ -1213,7 +1213,7 @@ class DataXceiver extends Receiver implements Runnable {
 		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
 		//如果requestedChecksum
 		boolean isCreate = true;
-		int bytesPerChecksum = 1024;
+		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.datanode.data.dir","512"));
 		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32, bytesPerChecksum);
 		//ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
 		
