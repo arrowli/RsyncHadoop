@@ -1226,11 +1226,13 @@ class DataXceiver extends Receiver implements Runnable {
 		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
 		for(String segmentFile : segmentFiles){
 			File segment = new File(dfsDataPath+dfsTmpPath+blkPath+"/"+segmentFile);
+			LOG.warn("Read segment "+segment.getName());
 			long bytesLeft = segment.length();
 			FileInputStream segmentIn = new FileInputStream(segment);
 			do{
 				long bytesToRead = bytesLeft > dataBuf.capacity() - startOffset ? dataBuf.capacity() - startOffset : bytesLeft;
-				assert segmentIn.read(dataBuf.array(), (int)startOffset, (int)bytesToRead) == bytesToRead;
+				LOG.warn("Read "+bytesToRead+" bytes.");
+				segmentIn.read(dataBuf.array(), (int)startOffset, (int)bytesToRead);
 				startOffset += bytesToRead;
 				bytesLeft -= bytesToRead;
 				if(startOffset == dataBuf.capacity()){//data full, need write to file
