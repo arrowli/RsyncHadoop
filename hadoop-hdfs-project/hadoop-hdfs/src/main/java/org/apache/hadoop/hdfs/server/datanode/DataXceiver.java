@@ -1095,7 +1095,6 @@ class DataXceiver extends Receiver implements Runnable {
 				while((bytesSum < bytesToRead)&&					//为什么只通过in.read(buffer) ！= -1不能判断输入结束...
 						((bytesRead = in.read(buffer)) != -1)){
 					bytesSum += bytesRead;
-					LOG.warn("Have read "+bytesSum+" bytes data");
 					outFile.write(buffer,0,bytesRead);
 					if(bytesSum > bytesToRead){
 						LOG.warn("Get more data than expact.");
