@@ -1201,8 +1201,14 @@ class DataXceiver extends Receiver implements Runnable {
 		
 		File fBlockFile = new File(finalizedDir+"/"+blockName);
 		File fBlockMetaFile = new File(finalizedDir+"/"+blockMetaName);
-		if(fBlockFile.exists()) fBlockFile.delete();
-		if(fBlockMetaFile.exists()) fBlockMetaFile.delete();
+		if(fBlockFile.exists()){
+			fBlockFile.delete();
+			fBlockFile.createNewFile();
+		}
+		if(fBlockMetaFile.exists()){
+			fBlockMetaFile.delete();
+			fBlockMetaFile.createNewFile();
+		}
 		
 		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
 		//如果requestedChecksum
