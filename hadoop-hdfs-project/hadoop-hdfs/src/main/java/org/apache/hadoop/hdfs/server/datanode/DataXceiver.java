@@ -1241,9 +1241,6 @@ class DataXceiver extends Receiver implements Runnable {
 					int length = requestedChecksum.getChecksumSize();
 					LOG.warn("lastChecksum offset "+offset+" length "+length);
 					System.arraycopy(checksumBuf.array(), offset, lastChecksum, 0, length);
-					checksumBuf.get(lastChecksum,
-							offset,
-							length);
 					dout.write(dataBuf.array());
 					checksumOut.write(checksumBuf.array());
 					startOffset = 0;
