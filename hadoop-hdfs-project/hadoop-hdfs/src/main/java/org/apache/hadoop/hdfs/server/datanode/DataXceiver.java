@@ -928,7 +928,7 @@ class DataXceiver extends Receiver implements Runnable {
 							
 							readBytesOneTime = blockIn.read(buf);
 							startOffset = nowOffset;
-							nowOffset += readBytesOneTime;
+							nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
 							bufOffset = buf.length;
 							break;
 						}
@@ -941,10 +941,10 @@ class DataXceiver extends Receiver implements Runnable {
 							bufOffset++;
 						}
 						readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
-						nowOffset++;
+						nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
 					}
 				}
-			}while(readBytesOneTime != -1);
+			}while((readBytesOneTime == 1)||(readBytesOneTime == buf.length));
 			
 			if(nowOffset-startOffset > 0){
 				segments.add(SegmentProto
