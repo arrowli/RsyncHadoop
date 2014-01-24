@@ -923,16 +923,16 @@ public class RsyncCopy {
 			LocatedBlock lastBlock = null;
 			for(BlockInfo bi : src.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
-				List<String> datanodesString = new ArrayList<String>();
-				for(DatanodeInfo datanode : datanodes){
-					datanodesString.add(datanode.getName());
+				String[] datanodesString = new String[datanodes.length];
+				for(int i = 0 ; i < datanodes.length ; i++){
+					datanodesString[i] = datanodes[i].getHostName();
 				}
 				lastBlock = dstNamenode.addBlock(filePath, 
 						clientName, 
 						lastBlock != null ? lastBlock.getBlock():null , 
 						(DatanodeInfo[])null, 
 						fileId, 
-						(String[])datanodesString.toArray());
+						datanodesString);
 				ret.getBlocks().add(new BlockInfo(lastBlock));
 			}
 			
