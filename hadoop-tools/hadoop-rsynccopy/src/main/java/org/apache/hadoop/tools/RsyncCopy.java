@@ -920,8 +920,9 @@ public class RsyncCopy {
 		
 		FileInfo createNewFile(String filePath,FileInfo src) throws IOException {
 			FileInfo ret = new FileInfo(filePath);
+			dstDfs.create(new Path(filePath)).close();
 			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
-			//用一次append操作只是为了能够得到lease
+			//TODO:用一次append操作只是为了能够得到lease
 			LocatedBlock lastBlock = srcNamenode.append(filePath, clientName);
 			for(int i = 1 ; i < src.getBlocks().size() ; i++){
 				BlockInfo bi = src.getBlocks().get(i);
