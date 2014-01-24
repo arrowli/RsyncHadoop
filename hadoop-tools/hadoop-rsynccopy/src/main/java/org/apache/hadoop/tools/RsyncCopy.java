@@ -930,9 +930,8 @@ public class RsyncCopy {
 			dstDfs.create(new Path(filePath)).close();
 			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
 			//TODO:用一次append操作只是为了能够得到lease
-			LocatedBlock lastBlock = srcNamenode.append(filePath, clientName);
-			LOG.warn("Add new block "+lastBlock.getBlock());
-			for(int i = 1 ; i < src.getBlocks().size() ; i++){
+			LocatedBlock lastBlock = srcNamenode.append(filePath, clientName);//文件没有内容的时候，append操作返回的是null！！
+			for(int i = 0 ; i < src.getBlocks().size() ; i++){
 				BlockInfo bi = src.getBlocks().get(i);
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				String[] datanodesString = new String[datanodes.length];
