@@ -273,7 +273,8 @@ message OpSendSegmentProto {
   required uint64 length = 3;
   optional bool sendChecksums = 4 [default = true];
   required bool isClient = 5;
-  repeated DatanodeInfoProto targets = 6;
+  required string segmentName = 6;
+  repeated DatanodeInfoProto targets = 7;
 }
 
 message OpUpdateBlockProto { 
