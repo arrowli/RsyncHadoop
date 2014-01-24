@@ -56,6 +56,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.UnresolvedLinkException;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.DFSClient.Conf;
+import org.apache.hadoop.hdfs.LeaseRenewer;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
 import org.apache.hadoop.hdfs.protocol.ClientProtocol;
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
@@ -919,14 +920,15 @@ public class RsyncCopy {
 		
 		FileInfo createNewFile(String filePath,FileInfo src) throws IOException {
 			FileInfo ret = new FileInfo(filePath);
-			FSDataOutputStream newOut = dstDfs.create(new Path(filePath));
 			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
-			LocatedBlock lastBlock = null;
-			for(BlockInfo bi : src.getBlocks()){
+			//用一次append操作只是为了能够得到lease
+			LocatedBlock lastBlock = srcNamenode.append(filePath, clientName);
+			for(int i = 1 ; i < src.getBlocks().size() ; i++){
+				BlockInfo bi = src.getBlocks().get(i);
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				String[] datanodesString = new String[datanodes.length];
-				for(int i = 0 ; i < datanodes.length ; i++){
-					datanodesString[i] = datanodes[i].getHostName();
+				for(int j = 0 ; j < datanodes.length ; j++){
+					datanodesString[j] = datanodes[j].getHostName();
 				}
 				lastBlock = dstNamenode.addBlock(filePath, 
 						clientName, 
@@ -937,7 +939,7 @@ public class RsyncCopy {
 				ret.getBlocks().add(new BlockInfo(lastBlock));
 			}
 		
-			newOut.close();
+			//srcNamenode.complete(filePath, clientName , lastBlock.getBlock() , fileId);
 			return ret;
 		}
 		
