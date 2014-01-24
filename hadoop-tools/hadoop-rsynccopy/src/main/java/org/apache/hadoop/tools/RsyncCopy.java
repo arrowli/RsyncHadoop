@@ -651,7 +651,8 @@ public class RsyncCopy {
 								.getCalculateSegmentsResponse();
 
 						LinkedList<SegmentProto> segments = new LinkedList<SegmentProto>(segmentsData.getSegmentsList());
-						
+						LOG.warn("Block "+bi.getLocatedBlock().getBlock().getBlockName()+
+								" divide into "+segments.size()+" segments.");
 						bi.setSegments(segments);
 						break;
 						
@@ -995,16 +996,8 @@ public class RsyncCopy {
 			for(BlockInfo bi : fileInfo.getBlocks()){
 				LOG.warn("\tblock id : "+bi.getLocatedBlock().getBlock().getBlockId()+
 						"; genstamp : "+bi.getLocatedBlock().getBlock().getGenerationStamp()+
-						"; checksum list :");
-				for(ChecksumPair cp : bi.getChecksums()){
-					MD5Hash md5 = new MD5Hash(cp.getMd5());
-					LOG.warn("\t\tsimple : "+Integer.toHexString(cp.getSimple())+"; MD5 : "+md5);
-				}
-				for(SegmentProto segment : bi.getSegments()){
-					LOG.warn("\t\tindex : "+segment.getIndex()+
-							"; offset : "+Long.toHexString(segment.getOffset())+
-							"; length : "+Long.toHexString(segment.getLength()));
-				}
+						"; checksum size :"+bi.getChecksums().size()+
+						"; segment size : "+bi.getSegments().size());
 			}
 		}
 		
@@ -1013,6 +1006,7 @@ public class RsyncCopy {
 			getSDFileChecksum();
 			calculateSegments();
 			printFileInfo(srcFileInfo);
+			printFileInfo(dstFileInfo);
 			sendSegments();
 			updateBlocks();
 		}
