@@ -679,6 +679,7 @@ public class RsyncCopy {
 		private void sendSegments() throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
 			LOG.warn("sendSegment start.");
 			long blockSize = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getBlockSize();
+			long chunksPerBlock = blockSize/chunkSize;
 			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
 				BlockInfo bi = srcFileInfo.getBlocks().get(i);
 				for(int j = 0 ; j < bi.getSegments().size() ; j++){
@@ -699,20 +700,29 @@ public class RsyncCopy {
 						dstDatanodes = newFileInfo.getBlocks()
 								.get((int)(segment.getOffset()/blockSize))
 								.getLocatedBlock().getLocations();
+						
+						LOG.warn("SendSegment from srcFile "+
+								"index : "+segment.getIndex()+
+								"; offset : "+segment.getOffset()+
+								"; length : "+segment.getLength());
 					}else{
 						srcDatanodes = dstFileInfo.getBlocks()
-								.get((int)segment.getIndex()/bi.getChecksums().size())
+								.get((int)(segment.getIndex()/chunksPerBlock))
 								.getLocatedBlock().getLocations();
 						block = dstFileInfo.getBlocks()
-								.get((int)segment.getIndex()/bi.getChecksums().size())
+								.get((int)(segment.getIndex()/chunksPerBlock))
 								.getLocatedBlock();
-						offset = segment.getIndex()%(blockSize/chunkSize)*chunkSize;
+						offset = segment.getIndex()%chunksPerBlock*chunkSize;
 						length = chunkSize;
 						segmentName = String.format("%064d", segment.getOffset())+"_"+
 								String.format("%064d", segment.getLength());
 						dstDatanodes = newFileInfo.getBlocks()
 								.get((int)(segment.getOffset()/blockSize))
 								.getLocatedBlock().getLocations();
+						LOG.warn("SendSegment from dstFile "+
+								"index : "+segment.getIndex()+
+								"; offset : "+segment.getOffset()+
+								"; length : "+segment.getLength());
 					}
 					
 					final int timeout = 3000 + socketTimeout;
@@ -731,9 +741,6 @@ public class RsyncCopy {
 							in = new DataInputStream(pair.in);
 
 							// call sendSegment
-							LOG.warn("SendSegment index : "+segment.getIndex()+
-									"; offset : "+segment.getOffset()+
-									"; length : "+segment.getLength());
 							new Sender(out).sendSegment(block.getBlock(), 
 									block.getBlockToken(), 
 									clientName, 
@@ -924,6 +931,7 @@ public class RsyncCopy {
 			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
 			//TODO:用一次append操作只是为了能够得到lease
 			LocatedBlock lastBlock = srcNamenode.append(filePath, clientName);
+			LOG.warn("Add new block "+lastBlock.getBlock());
 			for(int i = 1 ; i < src.getBlocks().size() ; i++){
 				BlockInfo bi = src.getBlocks().get(i);
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
@@ -937,6 +945,7 @@ public class RsyncCopy {
 						(DatanodeInfo[])null, 
 						fileId, 
 						datanodesString);
+				LOG.warn("Add new block "+lastBlock.getBlock());
 				ret.getBlocks().add(new BlockInfo(lastBlock));
 			}
 		
