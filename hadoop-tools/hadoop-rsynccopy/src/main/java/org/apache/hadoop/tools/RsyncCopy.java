@@ -53,6 +53,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsServerDefaults;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.UnresolvedLinkException;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.DFSClient.Conf;
 import org.apache.hadoop.hdfs.protocol.AlreadyBeingCreatedException;
 import org.apache.hadoop.hdfs.protocol.ClientProtocol;
@@ -243,6 +244,7 @@ public class RsyncCopy {
 		private volatile FsServerDefaults serverDefaults;
 		private volatile long serverDefaultsLastUpdate;
 		private boolean connectToDnViaHostname;
+		private int chunkSize;
 		
 		private class ChecksumPair{
 			private Integer simple;
@@ -269,6 +271,11 @@ public class RsyncCopy {
 			private LocatedBlock locatedBlock;
 			private LinkedList<ChecksumPair> checksums;
 			private LinkedList<SegmentProto> segments;
+			public BlockInfo(LocatedBlock locatedBlock){
+				this.locatedBlock = locatedBlock;
+				this.checksums = new LinkedList<ChecksumPair>();
+				this.segments = new LinkedList<SegmentProto>();
+			}
 			public BlockInfo(LocatedBlock locatedBlock,LinkedList<ChecksumPair> checksums,LinkedList<SegmentProto> segments){
 				this.locatedBlock = locatedBlock;
 				this.checksums = checksums;
@@ -338,6 +345,7 @@ public class RsyncCopy {
 		
 		private FileInfo srcFileInfo;
 		private FileInfo dstFileInfo;
+		private FileInfo newFileInfo;
 		
 		RsyncCopyFile(ClientProtocol srcNamenode,ProtocolProxy<ClientProtocol> srcNamenodeProtocolProxy,Path srcPath,
 				ClientProtocol dstNamenode,ProtocolProxy<ClientProtocol> dstNamenodeProtocolProxy,Path dstPath,
@@ -373,10 +381,12 @@ public class RsyncCopy {
 			this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 					HdfsServerConstants.READ_TIMEOUT);
 			this.namenodeRPCSocketTimeout = 60 * 1000;
+			this.chunkSize = 1024*1024;
 		}
 		/**
 		 * Get the source file blocks information from NN
 		 * Get the destination file blocks information from NN
+		 * Create the new temp file in dst file system.
 		 */
 		void getSDFileInfo() throws IOException {
 			LocatedBlocks srcLocatedBlocks = callGetBlockLocations(
@@ -403,17 +413,13 @@ public class RsyncCopy {
 			this.dstFileInfo.setFileSize(dstLocatedBlocks.getFileLength());
 			
 			for(LocatedBlock lb : srcLocatedBlocks.getLocatedBlocks()){
-				srcFileInfo.addBlock(
-						new BlockInfo(lb,
-								new LinkedList<ChecksumPair>(),
-								new LinkedList<SegmentProto>()));
+				srcFileInfo.addBlock(new BlockInfo(lb));
 			}
 			for(LocatedBlock lb : dstLocatedBlocks.getLocatedBlocks()){
-				dstFileInfo.addBlock(
-						new BlockInfo(lb,
-								new LinkedList<ChecksumPair>(),
-								new LinkedList<SegmentProto>()));
+				dstFileInfo.addBlock(new BlockInfo(lb));
 			}
+			
+			this.newFileInfo = createNewFile(dstPath.toString()+".rsync",srcFileInfo);
 		}
 		/**
 		 * Get the checksum of a file.
@@ -668,37 +674,71 @@ public class RsyncCopy {
 			}
 		}
 		
-		private void sendSegments(){
+		private void sendSegments() throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
 			LOG.warn("sendSegment start.");
-			for(BlockInfo bi : srcFileInfo.getBlocks()){
-				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
-				final int timeout = 3000 * datanodes.length + socketTimeout;
-				boolean noBreak = true;
-				for (int j = 0; j < datanodes.length; j++) {
-					DataOutputStream out = null;
-					DataInputStream in = null;
-					for(SegmentProto segment : bi.getSegments()){
+			long blockSize = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getBlockSize();
+			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
+				BlockInfo bi = srcFileInfo.getBlocks().get(i);
+				for(int j = 0 ; j < bi.getSegments().size() ; j++){
+					SegmentProto segment = bi.getSegments().get(j);
+					DatanodeInfo[] srcDatanodes = null;
+					DatanodeInfo[] dstDatanodes = null;
+					LocatedBlock block = null;
+					String segmentName = null;
+					long offset = 0;
+					long length = 0;
+					//如果dstFile中没有这个segment
+					if(segment.getIndex() == -1){
+						srcDatanodes = bi.getLocatedBlock().getLocations();
+						block = bi.getLocatedBlock();
+						offset = segment.getOffset();
+						length = segment.getLength();
+						segmentName = String.format("%064d", offset)+"_"+String.format("%064d", length);
+						dstDatanodes = newFileInfo.getBlocks()
+								.get((int)(segment.getOffset()/blockSize))
+								.getLocatedBlock().getLocations();
+					}else{
+						srcDatanodes = dstFileInfo.getBlocks()
+								.get((int)segment.getIndex()/bi.getChecksums().size())
+								.getLocatedBlock().getLocations();
+						block = dstFileInfo.getBlocks()
+								.get((int)segment.getIndex()/bi.getChecksums().size())
+								.getLocatedBlock();
+						offset = segment.getIndex()%(blockSize/chunkSize)*chunkSize;
+						length = chunkSize;
+						segmentName = String.format("%064d", segment.getOffset())+"_"+
+								String.format("%064d", segment.getLength());
+						dstDatanodes = newFileInfo.getBlocks()
+								.get((int)(segment.getOffset()/blockSize))
+								.getLocatedBlock().getLocations();
+					}
+					
+					final int timeout = 3000 + socketTimeout;
+					boolean noBreak = true;
+					for (int k = 0; k < srcDatanodes.length; k++) {
+						DataOutputStream out = null;
+						DataInputStream in = null;
+						
 						try {
 							// connect to a datanode
 							IOStreamPair pair = connectToDN(socketFactory,
 									connectToDnViaHostname, getDataEncryptionKey(),
-									datanodes[j], timeout);
+									srcDatanodes[k], timeout);
 							out = new DataOutputStream(new BufferedOutputStream(
 									pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
 							in = new DataInputStream(pair.in);
-	
-							
-							
+
 							// call sendSegment
 							LOG.warn("SendSegment index : "+segment.getIndex()+
 									"; offset : "+segment.getOffset()+
 									"; length : "+segment.getLength());
-							new Sender(out).sendSegment(bi.getLocatedBlock().getBlock(), 
-									bi.getLocatedBlock().getBlockToken(), 
+							new Sender(out).sendSegment(block.getBlock(), 
+									block.getBlockToken(), 
 									clientName, 
 									segment.getOffset(), 
 									segment.getLength(), true, true,
-									bi.getLocatedBlock().getLocations());
+									segmentName,
+									dstDatanodes);
 	
 							//read reply
 							final BlockOpResponseProto reply = BlockOpResponseProto
@@ -707,8 +747,8 @@ public class RsyncCopy {
 							if (reply.getStatus() != Status.SUCCESS) {
 								LOG.warn("Bad response " + reply
 											+ " for block " + bi.getLocatedBlock().getBlock() + " from datanode "
-											+ datanodes[j]);
-								noBreak = false;
+											+ srcDatanodes[k]);
+							}else{
 								break;
 							}
 							
@@ -722,14 +762,13 @@ public class RsyncCopy {
 						}
 					}
 					
-					if(noBreak) break;
-				}
-			}
+				}//for segment
+			}//for block
 		}
 		
 		private void updateBlocks(){
 			LOG.warn("updateBlock start.");
-			for(BlockInfo bi : dstFileInfo.getBlocks()){
+			for(BlockInfo bi : newFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
 				for (int j = 0; j < datanodes.length; j++) {
@@ -875,6 +914,29 @@ public class RsyncCopy {
 			} finally {
 				IOUtils.cleanup(null, pair.in, pair.out);
 			}
+		}
+		
+		FileInfo createNewFile(String filePath,FileInfo src) throws IOException {
+			FileInfo ret = new FileInfo(filePath);
+			dstDfs.create(new Path(filePath)).close();
+			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
+			LocatedBlock lastBlock = null;
+			for(BlockInfo bi : src.getBlocks()){
+				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
+				List<String> datanodesString = new ArrayList<String>();
+				for(DatanodeInfo datanode : datanodes){
+					datanodesString.add(datanode.getName());
+				}
+				lastBlock = dstNamenode.addBlock(filePath, 
+						clientName, 
+						lastBlock != null ? lastBlock.getBlock():null , 
+						(DatanodeInfo[])null, 
+						fileId, 
+						(String[])datanodesString.toArray());
+				ret.getBlocks().add(new BlockInfo(lastBlock));
+			}
+			
+			return ret;
 		}
 		
 		/* @deprecated */

@@ -256,6 +256,7 @@ public abstract class Receiver implements DataTransferProtocol {
 		boolean isClient = proto.getIsClient();
 		DatanodeInfo[] datanodes = PBHelper.convert(proto.getTargetsList());
 		boolean sendChecksums = proto.getSendChecksums();
+		String segmentName = proto.getSegmentName();
 		
 		sendSegment(
 				PBHelper.convert(proto.getHeader().getBaseHeader().getBlock()),
@@ -265,6 +266,7 @@ public abstract class Receiver implements DataTransferProtocol {
 				length,
 				sendChecksums,
 				isClient,
+				segmentName,
 				datanodes);
 	}
 	

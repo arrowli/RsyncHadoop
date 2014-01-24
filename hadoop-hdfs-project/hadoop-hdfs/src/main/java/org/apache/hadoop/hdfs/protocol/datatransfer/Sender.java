@@ -269,6 +269,7 @@ public class Sender implements DataTransferProtocol {
 		      final long length,
 		      final boolean sendChecksum,
 		      final boolean isClient,
+		      final String segmentName,
 		      final DatanodeInfo[] targets) throws IOException {
 		ClientOperationHeaderProto header = DataTransferProtoUtil
 				.buildClientHeader(blk, clientname, blockToken);
@@ -279,6 +280,7 @@ public class Sender implements DataTransferProtocol {
 				.setLength(length)
 				.setSendChecksums(sendChecksum)
 				.setIsClient(isClient)
+				.setSegmentName(segmentName)
 				.addAllTargets(PBHelper.convert(targets));
 		
 		send(out,Op.RSYNC_SEND_SEGMENT,proto.build());

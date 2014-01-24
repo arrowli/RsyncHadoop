@@ -986,6 +986,7 @@ class DataXceiver extends Receiver implements Runnable {
 		      final long length,
 		      final boolean sendChecksum,
 		      final boolean isClient,
+		      final String segmentName,
 		      final DatanodeInfo[] targets) throws IOException {
 		LOG.warn("sendSegment is called. blk "+blk+
 				",block offset "+Long.toHexString(blockOffset)+
@@ -1017,7 +1018,8 @@ class DataXceiver extends Receiver implements Runnable {
 			            HdfsConstants.SMALL_BUFFER_SIZE));
 			        in = new DataInputStream(unbufIn);
 	
-			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, length, sendChecksum,false,targets);
+			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, 
+			        		length, sendChecksum,false,segmentName,targets);
 	
 			        // send segment data & checksum
 			        Adler32 checksum = new Adler32();
@@ -1069,7 +1071,7 @@ class DataXceiver extends Receiver implements Runnable {
 			}
 			String dfsTmpPath = "/current/rsync_tmp";
 			String blkPath = "/"+blk.getBlockId()+"_"+blk.getGenerationStamp(); 
-			String segmentPath = "/"+String.format("%064d", blockOffset)+"_"+String.format("%064d", length);
+			String segmentPath = "/"+segmentName;
 			
 			File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
 			File segmentFile = new File(dfsDataPath+dfsTmpPath+blkPath+segmentPath);

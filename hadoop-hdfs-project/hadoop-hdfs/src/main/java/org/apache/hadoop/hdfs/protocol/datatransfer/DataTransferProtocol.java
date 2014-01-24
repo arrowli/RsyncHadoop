@@ -220,6 +220,7 @@ public interface DataTransferProtocol {
       final long length,
       final boolean sendChecksum,
       final boolean isClient,
+      final String segmentName,
       final DatanodeInfo[] targets) throws IOException;
   
   /**
