@@ -1191,6 +1191,12 @@ class DataXceiver extends Receiver implements Runnable {
 		File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);
 
 		String[] segmentFiles = blockDir.list();
+		if(segmentFiles == null){
+			LOG.warn(dfsDataPath+dfsTmpPath+blkPath+"is not exist or has no files.");
+			writeResponse(Status.ERROR_EXISTS,null,out);
+			out.close();
+			return;
+		}
 		Arrays.sort(segmentFiles);
 		//删除原有block
 		String blockName = "blk_"+block.getBlockId();

@@ -614,8 +614,7 @@ public class RsyncCopy {
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
-				boolean done = false;
-				for (int j = 0; !done && j < datanodes.length; j++) {
+				for (int j = 0; j < datanodes.length; j++) {
 					DataOutputStream out = null;
 					DataInputStream in = null;
 
@@ -654,8 +653,6 @@ public class RsyncCopy {
 						LinkedList<SegmentProto> segments = new LinkedList<SegmentProto>(segmentsData.getSegmentsList());
 						
 						bi.setSegments(segments);
-						
-						done = true;
 						break;
 						
 					} catch (InvalidBlockTokenException ibte) {
