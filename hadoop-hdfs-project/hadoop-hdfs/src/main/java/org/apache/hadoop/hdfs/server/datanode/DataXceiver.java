@@ -1214,7 +1214,7 @@ class DataXceiver extends Receiver implements Runnable {
 		//如果requestedChecksum
 		boolean isCreate = true;
 		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.bytes-per-checksum","512"));
-		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32, bytesPerChecksum);
+		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32C, bytesPerChecksum);
 		//ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
 		
 		//OutputStream dout = streams.getDataOut();
