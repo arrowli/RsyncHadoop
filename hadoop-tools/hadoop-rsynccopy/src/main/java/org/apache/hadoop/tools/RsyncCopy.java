@@ -607,6 +607,10 @@ public class RsyncCopy {
 				}
 			}
 			
+			//去掉最后一个chunk的checksum，防止其未达到chunksize
+			simples.remove(simples.size()-1);
+			md5s.remove(md5s.size()-1);
+			
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
@@ -663,19 +667,6 @@ public class RsyncCopy {
 						IOUtils.closeStream(out);
 					}
 				}
-			}
-			
-			
-			//矫正最后一个segment
-			BlockInfo lastBlock = srcFileInfo.getBlocks().get(srcFileInfo.getBlocks().size()-1);
-			SegmentProto lastSegment = lastBlock.getSegments().get(lastBlock.getSegments().size()-1);
-			if(lastSegment.getOffset()+lastSegment.getLength() > lastBlock.getLocatedBlock().getBlock().getNumBytes()){
-				lastBlock.getSegments().set(lastBlock.getSegments().size()-1, 
-						SegmentProto.newBuilder()
-						.setIndex(lastSegment.getIndex())
-						.setLength(lastBlock.getLocatedBlock().getBlock().getNumBytes() - lastSegment.getOffset())
-						.setOffset(lastSegment.getOffset())
-						.build());
 			}
 		}
 		

@@ -1226,7 +1226,7 @@ class DataXceiver extends Receiver implements Runnable {
 		ByteBuffer dataBuf = ByteBuffer.allocate(1024*bytesPerChecksum);
 		ByteBuffer checksumBuf = ByteBuffer.allocate(1024*requestedChecksum.getChecksumSize());
 		
-		requestedChecksum.writeHeader(checksumOut);
+		BlockMetadataHeader.writeHeader(checksumOut, requestedChecksum);
 		long blockLength = 0;
 		long startOffset = 0;
 		byte[] lastChecksum = new byte[requestedChecksum.getChecksumSize()];
