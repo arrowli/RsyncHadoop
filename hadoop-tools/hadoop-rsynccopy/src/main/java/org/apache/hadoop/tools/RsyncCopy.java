@@ -881,7 +881,6 @@ public class RsyncCopy {
 			HdfsFileStatus fileInfo = srcNamenode.getFileInfo(src);
 			LocatedBlock lb = srcNamenode.append(src, clientName);
 			LocatedBlock lb1 = srcNamenode.addBlock(src , clientName , lb.getBlock() , null, fileInfo.getFileId() , null);
-			
 			final DatanodeInfo[] datanodes = lb1.getLocations();
 
 			// try each datanode location of the block

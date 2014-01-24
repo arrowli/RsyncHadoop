@@ -821,6 +821,9 @@ class DataXceiver extends Receiver implements Runnable {
 		      final String clientname,
 		      final List<Integer> simples,
 		      final List<byte[]> md5s) throws IOException{
+		LOG.warn("CalculateSegments is called.");
+		LOG.warn("Client name : "+clientname);
+		LOG.warn("Chunk checksum list size : "+simples.size());
 		MessageDigest mdInst = null;
 		try{
 			mdInst = MessageDigest.getInstance("MD5");
@@ -828,15 +831,6 @@ class DataXceiver extends Receiver implements Runnable {
 			LOG.warn("no such algorithm : "+e); 
 		}
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
-		LOG.warn("CalculateSegments is called.");
-		LOG.warn("Client name : "+clientname);
-		for(Integer i : simples){
-			LOG.warn(Integer.toHexString(i));
-		}
-		for(byte[] bs : md5s){
-			MD5Hash md5 = new MD5Hash(bs);
-			LOG.warn(md5);
-		}
 		
 		final LengthInputStream metadataIn = datanode.data
 				.getMetaDataInputStream(blk);
@@ -854,8 +848,8 @@ class DataXceiver extends Receiver implements Runnable {
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
 			final int bytesPerChunk = 1024*1024;
-			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
-					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
+			//final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
+			//		.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			
 			//Initialize dst file checksum hashtable
 			class ChecksumPair{
@@ -924,6 +918,7 @@ class DataXceiver extends Receiver implements Runnable {
 										.build());
 							}
 							
+							LOG.warn("found a chunk : index "+cp.index+" offset "+Long.toHexString(nowOffset-bytesPerChunk));
 							segments.add(SegmentProto
 									.newBuilder()
 									.setOffset(nowOffset-bytesPerChunk > 0 ? nowOffset - bytesPerChunk : 0)
@@ -1209,12 +1204,12 @@ class DataXceiver extends Receiver implements Runnable {
 		File fBlockMetaFile = new File(finalizedDir+"/"+blockMetaName);
 		if(fBlockFile.exists()){
 			fBlockFile.delete();
-			fBlockFile.createNewFile();
 		}
+		fBlockFile.createNewFile();
 		if(fBlockMetaFile.exists()){
 			fBlockMetaFile.delete();
-			fBlockMetaFile.createNewFile();
 		}
+		fBlockMetaFile.createNewFile();
 		
 		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
 		//如果requestedChecksum
