@@ -49,6 +49,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsServerDefaults;
 import org.apache.hadoop.fs.Path;
@@ -918,7 +919,7 @@ public class RsyncCopy {
 		
 		FileInfo createNewFile(String filePath,FileInfo src) throws IOException {
 			FileInfo ret = new FileInfo(filePath);
-			dstDfs.create(new Path(filePath)).close();
+			FSDataOutputStream newOut = dstDfs.create(new Path(filePath));
 			long fileId = dstNamenode.getFileInfo(filePath).getFileId();
 			LocatedBlock lastBlock = null;
 			for(BlockInfo bi : src.getBlocks()){
@@ -935,7 +936,8 @@ public class RsyncCopy {
 						datanodesString);
 				ret.getBlocks().add(new BlockInfo(lastBlock));
 			}
-			
+		
+			newOut.close();
 			return ret;
 		}
 		
