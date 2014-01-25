@@ -1176,8 +1176,18 @@ class DataXceiver extends Receiver implements Runnable {
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_UPDATE_BLOCK,
 				BlockTokenSecretManager.AccessMode.WRITE);
-		//ReplicaInPipelineInterface replicaInfo = datanode.data.append(block, block.getGenerationStamp()+1, block.getNumBytes());
 		
+		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
+		//如果requestedChecksum
+		boolean isCreate = true;
+		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.bytes-per-checksum","512"));
+		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32C, bytesPerChecksum);
+		ReplicaInPipelineInterface replicaInfo = datanode.data.createRbw(block);
+		ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
+		OutputStream cout = streams.getChecksumOut();
+		OutputStream dout = streams.getDataOut();
+		
+		//get segments file path
 		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
 		if(dfsDataPath == null){
 			LOG.warn("dfs.datanode.data.dir is not set");
@@ -1197,6 +1207,7 @@ class DataXceiver extends Receiver implements Runnable {
 		}
 		Arrays.sort(segmentFiles);
 		//删除原有block
+		/*
 		String blockName = "blk_"+block.getBlockId();
 		String blockMetaName = blockName+"_"+block.getGenerationStamp()+".meta";
 		String finalizedDir = dfsDataPath+"/current/"+block.getBlockPoolId()+"/current/finalized";
@@ -1213,18 +1224,9 @@ class DataXceiver extends Receiver implements Runnable {
 			fBlockMetaFile.delete();
 		}
 		fBlockMetaFile.createNewFile();
-		
-		//如果isCreate为false的话，需要检查已存在的block的信息是否完整，所以应当置为true，同时如果原block存在的话，应当删除
-		//如果requestedChecksum
-		boolean isCreate = true;
-		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.bytes-per-checksum","512"));
-		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32C, bytesPerChecksum);
-		//ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
-		
-		//OutputStream dout = streams.getDataOut();
 		OutputStream dout = new FileOutputStream(fBlockFile);
-		//OutputStream cout = streams.getChecksumOut();
 		OutputStream cout = new FileOutputStream(fBlockMetaFile);
+		*/
 		DataOutputStream checksumOut = new DataOutputStream(new BufferedOutputStream(cout,HdfsConstants.SMALL_BUFFER_SIZE));
 		
 		ByteBuffer dataBuf = ByteBuffer.allocate(1024*bytesPerChecksum);
@@ -1281,7 +1283,9 @@ class DataXceiver extends Receiver implements Runnable {
 		checksumOut.close();
 		datanode.metrics.incrBytesWritten((int)blockLength);
 		block.setNumBytes(blockLength);
-		//datanode.data.finalizeBlock(block);
+		datanode.data.finalizeBlock(block);
+		//datanode.getActiveNamenodeForBP(block.getBlockPoolId())
+		//	.blockReceivedAndDeleted(registration, poolId, receivedAndDeletedBlocks);
 		datanode.closeBlock(block, "Called from updateBlock");
 		writeResponse(Status.SUCCESS,null,out);
 		datanode.metrics.addBlockChecksumOp(elapsed());
