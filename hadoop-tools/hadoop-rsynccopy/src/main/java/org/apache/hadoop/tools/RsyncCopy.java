@@ -752,6 +752,7 @@ public class RsyncCopy {
 									segment.getOffset(), 
 									segment.getLength(), true, true,
 									segmentName,
+									blockDirName,
 									dstDatanodes);
 	
 							//read reply
