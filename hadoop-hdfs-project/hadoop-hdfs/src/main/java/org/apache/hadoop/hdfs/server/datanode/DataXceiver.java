@@ -1281,7 +1281,7 @@ class DataXceiver extends Receiver implements Runnable {
 		checksumOut.close();
 		datanode.metrics.incrBytesWritten((int)blockLength);
 		block.setNumBytes(blockLength);
-		datanode.data.finalizeBlock(block);
+		//datanode.data.finalizeBlock(block);
 		datanode.closeBlock(block, "Called from updateBlock");
 		writeResponse(Status.SUCCESS,null,out);
 		datanode.metrics.addBlockChecksumOp(elapsed());

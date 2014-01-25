@@ -22389,27 +22389,57 @@ public final class DataTransferProtos {
      */
     boolean getIsClient();
 
-    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
+    // required string segmentName = 6;
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>required string segmentName = 6;</code>
+     */
+    boolean hasSegmentName();
+    /**
+     * <code>required string segmentName = 6;</code>
+     */
+    java.lang.String getSegmentName();
+    /**
+     * <code>required string segmentName = 6;</code>
+     */
+    com.google.protobuf.ByteString
+        getSegmentNameBytes();
+
+    // required string blockDirName = 7;
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    boolean hasBlockDirName();
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    java.lang.String getBlockDirName();
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    com.google.protobuf.ByteString
+        getBlockDirNameBytes();
+
+    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;
+    /**
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> 
         getTargetsList();
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index);
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     int getTargetsCount();
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
         getTargetsOrBuilderList();
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
         int index);
@@ -22499,9 +22529,19 @@ public final class DataTransferProtos {
               break;
             }
             case 50: {
-              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+              bitField0_ |= 0x00000020;
+              segmentName_ = input.readBytes();
+              break;
+            }
+            case 58: {
+              bitField0_ |= 0x00000040;
+              blockDirName_ = input.readBytes();
+              break;
+            }
+            case 66: {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
                 targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>();
-                mutable_bitField0_ |= 0x00000020;
+                mutable_bitField0_ |= 0x00000080;
               }
               targets_.add(input.readMessage(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.PARSER, extensionRegistry));
               break;
@@ -22514,7 +22554,7 @@ public final class DataTransferProtos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
           targets_ = java.util.Collections.unmodifiableList(targets_);
         }
         this.unknownFields = unknownFields.build();
@@ -22635,36 +22675,122 @@ public final class DataTransferProtos {
       return isClient_;
     }
 
-    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
-    public static final int TARGETS_FIELD_NUMBER = 6;
+    // required string segmentName = 6;
+    public static final int SEGMENTNAME_FIELD_NUMBER = 6;
+    private java.lang.Object segmentName_;
+    /**
+     * <code>required string segmentName = 6;</code>
+     */
+    public boolean hasSegmentName() {
+      return ((bitField0_ & 0x00000020) == 0x00000020);
+    }
+    /**
+     * <code>required string segmentName = 6;</code>
+     */
+    public java.lang.String getSegmentName() {
+      java.lang.Object ref = segmentName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          segmentName_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string segmentName = 6;</code>
+     */
+    public com.google.protobuf.ByteString
+        getSegmentNameBytes() {
+      java.lang.Object ref = segmentName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        segmentName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // required string blockDirName = 7;
+    public static final int BLOCKDIRNAME_FIELD_NUMBER = 7;
+    private java.lang.Object blockDirName_;
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    public boolean hasBlockDirName() {
+      return ((bitField0_ & 0x00000040) == 0x00000040);
+    }
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    public java.lang.String getBlockDirName() {
+      java.lang.Object ref = blockDirName_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        if (bs.isValidUtf8()) {
+          blockDirName_ = s;
+        }
+        return s;
+      }
+    }
+    /**
+     * <code>required string blockDirName = 7;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBlockDirNameBytes() {
+      java.lang.Object ref = blockDirName_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        blockDirName_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    // repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;
+    public static final int TARGETS_FIELD_NUMBER = 8;
     private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_;
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
       return targets_;
     }
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
         getTargetsOrBuilderList() {
       return targets_;
     }
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     public int getTargetsCount() {
       return targets_.size();
     }
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
       return targets_.get(index);
     }
     /**
-     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+     * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
      */
     public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
         int index) {
@@ -22677,6 +22803,8 @@ public final class DataTransferProtos {
       length_ = 0L;
       sendChecksums_ = true;
       isClient_ = false;
+      segmentName_ = "";
+      blockDirName_ = "";
       targets_ = java.util.Collections.emptyList();
     }
     private byte memoizedIsInitialized = -1;
@@ -22697,6 +22825,14 @@ public final class DataTransferProtos {
         return false;
       }
       if (!hasIsClient()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasSegmentName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasBlockDirName()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -22732,8 +22868,14 @@ public final class DataTransferProtos {
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBool(5, isClient_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getSegmentNameBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        output.writeBytes(7, getBlockDirNameBytes());
+      }
       for (int i = 0; i < targets_.size(); i++) {
-        output.writeMessage(6, targets_.get(i));
+        output.writeMessage(8, targets_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -22764,9 +22906,17 @@ public final class DataTransferProtos {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(5, isClient_);
       }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getSegmentNameBytes());
+      }
+      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(7, getBlockDirNameBytes());
+      }
       for (int i = 0; i < targets_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, targets_.get(i));
+          .computeMessageSize(8, targets_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -22816,6 +22966,16 @@ public final class DataTransferProtos {
         result = result && (getIsClient()
             == other.getIsClient());
       }
+      result = result && (hasSegmentName() == other.hasSegmentName());
+      if (hasSegmentName()) {
+        result = result && getSegmentName()
+            .equals(other.getSegmentName());
+      }
+      result = result && (hasBlockDirName() == other.hasBlockDirName());
+      if (hasBlockDirName()) {
+        result = result && getBlockDirName()
+            .equals(other.getBlockDirName());
+      }
       result = result && getTargetsList()
           .equals(other.getTargetsList());
       result = result &&
@@ -22850,6 +23010,14 @@ public final class DataTransferProtos {
       if (hasIsClient()) {
         hash = (37 * hash) + ISCLIENT_FIELD_NUMBER;
         hash = (53 * hash) + hashBoolean(getIsClient());
+      }
+      if (hasSegmentName()) {
+        hash = (37 * hash) + SEGMENTNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getSegmentName().hashCode();
+      }
+      if (hasBlockDirName()) {
+        hash = (37 * hash) + BLOCKDIRNAME_FIELD_NUMBER;
+        hash = (53 * hash) + getBlockDirName().hashCode();
       }
       if (getTargetsCount() > 0) {
         hash = (37 * hash) + TARGETS_FIELD_NUMBER;
@@ -22980,9 +23148,13 @@ public final class DataTransferProtos {
         bitField0_ = (bitField0_ & ~0x00000008);
         isClient_ = false;
         bitField0_ = (bitField0_ & ~0x00000010);
+        segmentName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
+        blockDirName_ = "";
+        bitField0_ = (bitField0_ & ~0x00000040);
         if (targetsBuilder_ == null) {
           targets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000080);
         } else {
           targetsBuilder_.clear();
         }
@@ -23038,10 +23210,18 @@ public final class DataTransferProtos {
           to_bitField0_ |= 0x00000010;
         }
         result.isClient_ = isClient_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
+        }
+        result.segmentName_ = segmentName_;
+        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+          to_bitField0_ |= 0x00000040;
+        }
+        result.blockDirName_ = blockDirName_;
         if (targetsBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
             targets_ = java.util.Collections.unmodifiableList(targets_);
-            bitField0_ = (bitField0_ & ~0x00000020);
+            bitField0_ = (bitField0_ & ~0x00000080);
           }
           result.targets_ = targets_;
         } else {
@@ -23078,11 +23258,21 @@ public final class DataTransferProtos {
         if (other.hasIsClient()) {
           setIsClient(other.getIsClient());
         }
+        if (other.hasSegmentName()) {
+          bitField0_ |= 0x00000020;
+          segmentName_ = other.segmentName_;
+          onChanged();
+        }
+        if (other.hasBlockDirName()) {
+          bitField0_ |= 0x00000040;
+          blockDirName_ = other.blockDirName_;
+          onChanged();
+        }
         if (targetsBuilder_ == null) {
           if (!other.targets_.isEmpty()) {
             if (targets_.isEmpty()) {
               targets_ = other.targets_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000080);
             } else {
               ensureTargetsIsMutable();
               targets_.addAll(other.targets_);
@@ -23095,7 +23285,7 @@ public final class DataTransferProtos {
               targetsBuilder_.dispose();
               targetsBuilder_ = null;
               targets_ = other.targets_;
-              bitField0_ = (bitField0_ & ~0x00000020);
+              bitField0_ = (bitField0_ & ~0x00000080);
               targetsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getTargetsFieldBuilder() : null;
@@ -23122,6 +23312,14 @@ public final class DataTransferProtos {
           return false;
         }
         if (!hasIsClient()) {
+          
+          return false;
+        }
+        if (!hasSegmentName()) {
+          
+          return false;
+        }
+        if (!hasBlockDirName()) {
           
           return false;
         }
@@ -23406,13 +23604,161 @@ public final class DataTransferProtos {
         return this;
       }
 
-      // repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;
+      // required string segmentName = 6;
+      private java.lang.Object segmentName_ = "";
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public boolean hasSegmentName() {
+        return ((bitField0_ & 0x00000020) == 0x00000020);
+      }
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public java.lang.String getSegmentName() {
+        java.lang.Object ref = segmentName_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          segmentName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public com.google.protobuf.ByteString
+          getSegmentNameBytes() {
+        java.lang.Object ref = segmentName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          segmentName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public Builder setSegmentName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        segmentName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public Builder clearSegmentName() {
+        bitField0_ = (bitField0_ & ~0x00000020);
+        segmentName_ = getDefaultInstance().getSegmentName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string segmentName = 6;</code>
+       */
+      public Builder setSegmentNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000020;
+        segmentName_ = value;
+        onChanged();
+        return this;
+      }
+
+      // required string blockDirName = 7;
+      private java.lang.Object blockDirName_ = "";
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public boolean hasBlockDirName() {
+        return ((bitField0_ & 0x00000040) == 0x00000040);
+      }
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public java.lang.String getBlockDirName() {
+        java.lang.Object ref = blockDirName_;
+        if (!(ref instanceof java.lang.String)) {
+          java.lang.String s = ((com.google.protobuf.ByteString) ref)
+              .toStringUtf8();
+          blockDirName_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public com.google.protobuf.ByteString
+          getBlockDirNameBytes() {
+        java.lang.Object ref = blockDirName_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          blockDirName_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public Builder setBlockDirName(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        blockDirName_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public Builder clearBlockDirName() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        blockDirName_ = getDefaultInstance().getBlockDirName();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required string blockDirName = 7;</code>
+       */
+      public Builder setBlockDirNameBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000040;
+        blockDirName_ = value;
+        onChanged();
+        return this;
+      }
+
+      // repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;
       private java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> targets_ =
         java.util.Collections.emptyList();
       private void ensureTargetsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
           targets_ = new java.util.ArrayList<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto>(targets_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000080;
          }
       }
 
@@ -23420,7 +23766,7 @@ public final class DataTransferProtos {
           org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> targetsBuilder_;
 
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> getTargetsList() {
         if (targetsBuilder_ == null) {
@@ -23430,7 +23776,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public int getTargetsCount() {
         if (targetsBuilder_ == null) {
@@ -23440,7 +23786,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto getTargets(int index) {
         if (targetsBuilder_ == null) {
@@ -23450,7 +23796,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder setTargets(
           int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
@@ -23467,7 +23813,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder setTargets(
           int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
@@ -23481,7 +23827,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder addTargets(org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
         if (targetsBuilder_ == null) {
@@ -23497,7 +23843,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder addTargets(
           int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto value) {
@@ -23514,7 +23860,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder addTargets(
           org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
@@ -23528,7 +23874,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder addTargets(
           int index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder builderForValue) {
@@ -23542,7 +23888,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder addAllTargets(
           java.lang.Iterable<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto> values) {
@@ -23556,12 +23902,12 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder clearTargets() {
         if (targetsBuilder_ == null) {
           targets_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000080);
           onChanged();
         } else {
           targetsBuilder_.clear();
@@ -23569,7 +23915,7 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public Builder removeTargets(int index) {
         if (targetsBuilder_ == null) {
@@ -23582,14 +23928,14 @@ public final class DataTransferProtos {
         return this;
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder getTargetsBuilder(
           int index) {
         return getTargetsFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder getTargetsOrBuilder(
           int index) {
@@ -23599,7 +23945,7 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public java.util.List<? extends org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder> 
            getTargetsOrBuilderList() {
@@ -23610,14 +23956,14 @@ public final class DataTransferProtos {
         }
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder() {
         return getTargetsFieldBuilder().addBuilder(
             org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder addTargetsBuilder(
           int index) {
@@ -23625,7 +23971,7 @@ public final class DataTransferProtos {
             index, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.getDefaultInstance());
       }
       /**
-       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 6;</code>
+       * <code>repeated .hadoop.hdfs.DatanodeInfoProto targets = 8;</code>
        */
       public java.util.List<org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder> 
            getTargetsBuilderList() {
@@ -23638,7 +23984,7 @@ public final class DataTransferProtos {
           targetsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProto.Builder, org.apache.hadoop.hdfs.protocol.proto.HdfsProtos.DatanodeInfoProtoOrBuilder>(
                   targets_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
+                  ((bitField0_ & 0x00000080) == 0x00000080),
                   getParentForChildren(),
                   isClean());
           targets_ = null;
@@ -24466,20 +24812,21 @@ public final class DataTransferProtos {
       "\022\016\n\006offset\030\001 \002(\004\022\016\n\006length\030\002 \002(\004\022\r\n\005inde" +
       "x\030\003 \002(\004\"d\n OpCalculateSegmentsResponsePr" +
       "oto\022\023\n\013numSegments\030\001 \002(\004\022+\n\010segments\030\002 \003" +
-      "(\0132\031.hadoop.hdfs.SegmentProto\"\322\001\n\022OpSend",
+      "(\0132\031.hadoop.hdfs.SegmentProto\"\375\001\n\022OpSend",
       "SegmentProto\0227\n\006header\030\001 \002(\0132\'.hadoop.hd" +
       "fs.ClientOperationHeaderProto\022\023\n\013blockOf" +
       "fset\030\002 \002(\004\022\016\n\006length\030\003 \002(\004\022\033\n\rsendChecks" +
-      "ums\030\004 \001(\010:\004true\022\020\n\010isClient\030\005 \002(\010\022/\n\007tar" +
-      "gets\030\006 \003(\0132\036.hadoop.hdfs.DatanodeInfoPro" +
-      "to\"B\n\022OpUpdateBlockProto\022,\n\006header\030\001 \002(\013" +
-      "2\034.hadoop.hdfs.BaseHeaderProto*\231\001\n\006Statu" +
-      "s\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CHECK" +
-      "SUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXISTS" +
-      "\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSUM_O",
-      "K\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apache" +
-      ".hadoop.hdfs.protocol.protoB\022DataTransfe" +
-      "rProtos\240\001\001"
+      "ums\030\004 \001(\010:\004true\022\020\n\010isClient\030\005 \002(\010\022\023\n\013seg" +
+      "mentName\030\006 \002(\t\022\024\n\014blockDirName\030\007 \002(\t\022/\n\007" +
+      "targets\030\010 \003(\0132\036.hadoop.hdfs.DatanodeInfo" +
+      "Proto\"B\n\022OpUpdateBlockProto\022,\n\006header\030\001 " +
+      "\002(\0132\034.hadoop.hdfs.BaseHeaderProto*\231\001\n\006St" +
+      "atus\022\013\n\007SUCCESS\020\000\022\t\n\005ERROR\020\001\022\022\n\016ERROR_CH" +
+      "ECKSUM\020\002\022\021\n\rERROR_INVALID\020\003\022\020\n\014ERROR_EXI",
+      "STS\020\004\022\026\n\022ERROR_ACCESS_TOKEN\020\005\022\017\n\013CHECKSU" +
+      "M_OK\020\006\022\025\n\021ERROR_UNSUPPORTED\020\007B>\n%org.apa" +
+      "che.hadoop.hdfs.protocol.protoB\022DataTran" +
+      "sferProtos\240\001\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -24647,7 +24994,7 @@ public final class DataTransferProtos {
           internal_static_hadoop_hdfs_OpSendSegmentProto_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_hadoop_hdfs_OpSendSegmentProto_descriptor,
-              new java.lang.String[] { "Header", "BlockOffset", "Length", "SendChecksums", "IsClient", "Targets", });
+              new java.lang.String[] { "Header", "BlockOffset", "Length", "SendChecksums", "IsClient", "SegmentName", "BlockDirName", "Targets", });
           internal_static_hadoop_hdfs_OpUpdateBlockProto_descriptor =
             getDescriptor().getMessageTypes().get(27);
           internal_static_hadoop_hdfs_OpUpdateBlockProto_fieldAccessorTable = new

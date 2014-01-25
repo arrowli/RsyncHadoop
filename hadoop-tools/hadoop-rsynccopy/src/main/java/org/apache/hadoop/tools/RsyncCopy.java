@@ -781,7 +781,7 @@ public class RsyncCopy {
 			}//for block
 		}
 		
-		private void updateBlocks(){
+		private void updateBlocks() throws IOException {
 			LOG.warn("updateBlock start.");
 			for(BlockInfo bi : newFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
@@ -826,6 +826,12 @@ public class RsyncCopy {
 					}
 				}
 			}
+			
+			long fileId = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getFileId();
+			ExtendedBlock last = newFileInfo.getBlocks()
+					.get(newFileInfo.getBlocks().size()-1)
+					.getLocatedBlock().getBlock();
+			dstNamenode.complete(newFileInfo.getFilepath(), clientName, last, fileId);
 		}
 		
 		private LocatedBlocks callGetBlockLocations(ClientProtocol namenode,
