@@ -274,7 +274,8 @@ message OpSendSegmentProto {
   optional bool sendChecksums = 4 [default = true];
   required bool isClient = 5;
   required string segmentName = 6;
-  repeated DatanodeInfoProto targets = 7;
+  required string blockDirName = 7;
+  repeated DatanodeInfoProto targets = 8;
 }
 
 message OpUpdateBlockProto { 

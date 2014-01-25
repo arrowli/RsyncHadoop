@@ -680,6 +680,9 @@ public class RsyncCopy {
 			LOG.warn("sendSegment start.");
 			long blockSize = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getBlockSize();
 			long chunksPerBlock = blockSize/chunkSize;
+			if(newFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
+				throw new IOException("newFileInfo size not match srcFileInfo.");
+			}
 			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
 				BlockInfo bi = srcFileInfo.getBlocks().get(i);
 				for(int j = 0 ; j < bi.getSegments().size() ; j++){
@@ -688,6 +691,8 @@ public class RsyncCopy {
 					DatanodeInfo[] dstDatanodes = null;
 					LocatedBlock block = null;
 					String segmentName = null;
+					String blockDirName = newFileInfo.getBlocks().get(i).getLocatedBlock().getBlock().getBlockId()
+							+"_"+newFileInfo.getBlocks().get(i).getLocatedBlock().getBlock().getGenerationStamp();
 					long offset = 0;
 					long length = 0;
 					//如果dstFile中没有这个segment

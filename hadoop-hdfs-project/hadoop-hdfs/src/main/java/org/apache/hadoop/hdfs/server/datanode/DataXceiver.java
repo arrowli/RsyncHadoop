@@ -987,6 +987,7 @@ class DataXceiver extends Receiver implements Runnable {
 		      final boolean sendChecksum,
 		      final boolean isClient,
 		      final String segmentName,
+		      final String blockDirName,
 		      final DatanodeInfo[] targets) throws IOException {
 		LOG.warn("sendSegment is called. blk "+blk+
 				",block offset "+Long.toHexString(blockOffset)+
@@ -1019,7 +1020,7 @@ class DataXceiver extends Receiver implements Runnable {
 			        in = new DataInputStream(unbufIn);
 	
 			        new Sender(out).sendSegment(blk, blockToken, clientname, blockOffset, 
-			        		length, sendChecksum,false,segmentName,targets);
+			        		length, sendChecksum,false,segmentName,blockDirName,targets);
 	
 			        // send segment data & checksum
 			        Adler32 checksum = new Adler32();
@@ -1070,7 +1071,7 @@ class DataXceiver extends Receiver implements Runnable {
 				LOG.warn("Directory "+dfsDataPath+"does not exist.");
 			}
 			String dfsTmpPath = "/current/rsync_tmp";
-			String blkPath = "/"+blk.getBlockId()+"_"+blk.getGenerationStamp(); 
+			String blkPath = "/"+blockDirName;//blk.getBlockId()+"_"+blk.getGenerationStamp(); 
 			String segmentPath = "/"+segmentName;
 			
 			File blockDir = new File(dfsDataPath+dfsTmpPath+blkPath);

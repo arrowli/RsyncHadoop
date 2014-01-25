@@ -221,6 +221,7 @@ public interface DataTransferProtocol {
       final boolean sendChecksum,
       final boolean isClient,
       final String segmentName,
+      final String blockDirName,
       final DatanodeInfo[] targets) throws IOException;
   
   /**
