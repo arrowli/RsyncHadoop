@@ -688,9 +688,9 @@ public class RsyncCopy {
 		private void sendSegments(BlockInfo blockInfo,LocatedBlock addedBlock) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
 			LOG.warn("sendSegments for block "+blockInfo.getLocatedBlock().getBlock()+" start.");
 
-			long blockSize = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getBlockSize();
+			long blockSize = dstNamenode.getFileInfo(dstFileInfo.getFilepath()).getBlockSize();
 			long chunksPerBlock = blockSize/chunkSize;
-			if(newFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
+			if(dstFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
 				throw new IOException("newFileInfo size not match srcFileInfo.");
 			}
 
@@ -711,9 +711,7 @@ public class RsyncCopy {
 					offset = segment.getOffset();
 					length = segment.getLength();
 					segmentName = String.format("%064d", offset)+"_"+String.format("%064d", length);
-					dstDatanodes = newFileInfo.getBlocks()
-							.get((int)(segment.getOffset()/blockSize))
-							.getLocatedBlock().getLocations();
+					dstDatanodes = addedBlock.getLocations();
 					
 					LOG.warn("SendSegment from srcFile "+
 							"index : "+segment.getIndex()+
@@ -730,9 +728,7 @@ public class RsyncCopy {
 					length = chunkSize;
 					segmentName = String.format("%064d", segment.getOffset())+"_"+
 							String.format("%064d", segment.getLength());
-					dstDatanodes = newFileInfo.getBlocks()
-							.get((int)(segment.getOffset()/blockSize))
-							.getLocatedBlock().getLocations();
+					dstDatanodes = addedBlock.getLocations();
 					LOG.warn("SendSegment from dstFile "+
 							"index : "+segment.getIndex()+
 							"; offset : "+segment.getOffset()+
@@ -840,12 +836,6 @@ public class RsyncCopy {
 					IOUtils.closeStream(out);
 				}
 			}
-			
-			long fileId = dstNamenode.getFileInfo(newFileInfo.getFilepath()).getFileId();
-			ExtendedBlock last = newFileInfo.getBlocks()
-					.get(newFileInfo.getBlocks().size()-1)
-					.getLocatedBlock().getBlock();
-			dstNamenode.complete(newFileInfo.getFilepath(), clientName, last, fileId);
 		}
 		
 		private LocatedBlocks callGetBlockLocations(ClientProtocol namenode,
