@@ -1077,7 +1077,7 @@ public class RsyncCopy {
 			}
 		}
 		
-		public void run() throws IOException {
+		public void run() throws IOException, InterruptedException {
 			getSDFileInfo();
 			getSDFileChecksum();
 			calculateSegments();
@@ -1121,7 +1121,7 @@ public class RsyncCopy {
 	}
 
 	
-	public void run() throws IOException {
+	public void run() throws IOException, InterruptedException {
 		getNameNode();
 		long uniqueId = 0;
 		RsyncCopyFile testCopyFile = new RsyncCopyFile(
