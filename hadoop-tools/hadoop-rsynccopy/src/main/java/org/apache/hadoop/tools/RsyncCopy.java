@@ -993,6 +993,8 @@ public class RsyncCopy {
 			long fileId = dstNamenode.getFileInfo(tmpFilePath).getFileId();
 			//TODO:用一次append操作只是为了能够得到lease
 			LocatedBlock lastBlock = srcNamenode.append(tmpFilePath, clientName);//文件没有内容的时候，append操作返回的是null！！
+			if(lastBlock != null) LOG.warn("append empty file return " + lastBlock.getBlock());
+			else LOG.warn("append empty file return null");
 			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
 				lastBlock = dstNamenode.addBlock(tmpFilePath, 
 						clientName, 
@@ -1081,8 +1083,8 @@ public class RsyncCopy {
 			getSDFileInfo();
 			getSDFileChecksum();
 			calculateSegments();
-			printFileInfo(srcFileInfo);
-			printFileInfo(dstFileInfo);
+			//printFileInfo(srcFileInfo);
+			//printFileInfo(dstFileInfo);
 			updateDstFile();
 		}
 		
