@@ -1183,6 +1183,8 @@ class DataXceiver extends Receiver implements Runnable {
 		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.bytes-per-checksum","512"));
 		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32C, bytesPerChecksum);
 		
+		block.setNumBytes(dataXceiverServer.estimateBlockSize);
+		
 		ReplicaInPipelineInterface replicaInfo = datanode.data.createRbw(block);
 		datanode.notifyNamenodeReceivingBlock(block);
 		
