@@ -1294,7 +1294,7 @@ class DataXceiver extends Receiver implements Runnable {
 		datanode.data.finalizeBlock(block);
 		//datanode.getActiveNamenodeForBP(block.getBlockPoolId())
 		//	.blockReceivedAndDeleted(registration, poolId, receivedAndDeletedBlocks);
-		//datanode.closeBlock(block, DataNode.EMPTY_DEL_HINT);
+		datanode.closeBlock(block, DataNode.EMPTY_DEL_HINT);
 		writeResponse(Status.SUCCESS,null,out);
 		
 		datanode.metrics.incrBytesWritten((int)blockLength);
