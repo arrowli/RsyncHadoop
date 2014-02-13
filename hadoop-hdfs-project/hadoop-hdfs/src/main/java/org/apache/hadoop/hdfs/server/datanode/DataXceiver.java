@@ -1182,7 +1182,10 @@ class DataXceiver extends Receiver implements Runnable {
 		boolean isCreate = true;
 		int bytesPerChecksum = Integer.parseInt(datanode.getConf().get("dfs.bytes-per-checksum","512"));
 		DataChecksum requestedChecksum = DataChecksum.newDataChecksum(Type.CRC32C, bytesPerChecksum);
+		
 		ReplicaInPipelineInterface replicaInfo = datanode.data.createRbw(block);
+		datanode.notifyNamenodeReceivingBlock(block);
+		
 		ReplicaOutputStreams streams = replicaInfo.createStreams(isCreate, requestedChecksum);
 		OutputStream cout = streams.getChecksumOut();
 		OutputStream dout = streams.getDataOut();
@@ -1284,13 +1287,15 @@ class DataXceiver extends Receiver implements Runnable {
 		replicaInfo.setNumBytes(blockLength);
 		replicaInfo.setBytesAcked(blockLength);
 		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
-		datanode.metrics.incrBytesWritten((int)blockLength);
-		block.setNumBytes(blockLength);
+		
+		block.setNumBytes(replicaInfo.getNumBytes());
 		datanode.data.finalizeBlock(block);
 		//datanode.getActiveNamenodeForBP(block.getBlockPoolId())
 		//	.blockReceivedAndDeleted(registration, poolId, receivedAndDeletedBlocks);
-		datanode.closeBlock(block, "Called from updateBlock");
+		datanode.closeBlock(block, " Called from updateBlock");
 		writeResponse(Status.SUCCESS,null,out);
+		
+		datanode.metrics.incrBytesWritten((int)blockLength);
 		datanode.metrics.addBlockChecksumOp(elapsed());
 	}
 	
