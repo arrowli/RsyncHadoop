@@ -1281,6 +1281,9 @@ class DataXceiver extends Receiver implements Runnable {
 		dout.close();
 		checksumOut.flush();
 		checksumOut.close();
+		replicaInfo.setNumBytes(blockLength);
+		replicaInfo.setBytesAcked(blockLength);
+		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
 		datanode.metrics.incrBytesWritten((int)blockLength);
 		block.setNumBytes(blockLength);
 		datanode.data.finalizeBlock(block);
