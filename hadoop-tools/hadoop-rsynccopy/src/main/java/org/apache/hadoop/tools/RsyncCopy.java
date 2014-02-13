@@ -163,6 +163,7 @@ public class RsyncCopy {
 	private volatile FsServerDefaults serverDefaults;
 	private volatile long serverDefaultsLastUpdate;
 	private boolean connectToDnViaHostname;
+	private LeaseRenewer renewer;
 
 	public RsyncCopy(String srcPath,String dstPath) throws IOException {
 		conf = new Configuration();
@@ -212,6 +213,43 @@ public class RsyncCopy {
 		this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 				HdfsServerConstants.READ_TIMEOUT);
 		this.namenodeRPCSocketTimeout = 60 * 1000;
+		
+		renewer = new LeaseRenewer();
+		renewer.setClientName(clientName);
+		renewer.setNamenode(dstNamenode);		//只需要更新dstNamenode的lease就可以了，因为并没有更改src的文件内容
+		Thread renewerThread = new Thread(renewer);
+		renewerThread.start();
+	}
+	
+	private class LeaseRenewer implements Runnable {
+		private long lastRenewalTime;
+		/** A fixed lease renewal time period in milliseconds */
+		private long renewal = HdfsConstants.LEASE_SOFTLIMIT_PERIOD/2;
+		private String clientName;
+		private ClientProtocol namenode;
+		
+		public void setClientName(String clientName){
+			this.clientName = clientName;
+			lastRenewalTime = Time.now();
+		}
+		
+		public void setNamenode(ClientProtocol namenode){
+			this.namenode = namenode;
+		}
+		
+		public void run(){
+			try{
+				while(true){
+					namenode.renewLease(clientName);
+					Thread.sleep(renewal);
+				}
+			}catch(IOException e){
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private class RsyncCopyFile{
@@ -947,8 +985,9 @@ public class RsyncCopy {
 		 * @param src
 		 * @throws IOException
 		 * TODO:应该让重建的所有block尽量存放在dstFile对应block所在datanode上
+		 * @throws InterruptedException 
 		 */
-		private void updateDstFile() throws IOException {
+		private void updateDstFile() throws IOException, InterruptedException {
 			String tmpFilePath = dstFileInfo.getFilepath()+".rsync";
 			dstDfs.create(new Path(tmpFilePath)).close();
 			long fileId = dstNamenode.getFileInfo(tmpFilePath).getFileId();
@@ -968,7 +1007,14 @@ public class RsyncCopy {
 				updateBlock(lastBlock);
 			}
 			
-			boolean completed = dstNamenode.complete(tmpFilePath, clientName, lastBlock.getBlock(), fileId);
+			int count = 0;
+			boolean completed = false;
+			while((completed = dstNamenode.complete(tmpFilePath, clientName, lastBlock.getBlock(), fileId)) != true
+					&& count < 10){
+				LOG.warn("File "+tmpFilePath+" can not complete");
+				count++;
+				Thread.sleep(1000);
+			}
 			LOG.warn("File "+tmpFilePath+" complete "+completed);
 		}
 		

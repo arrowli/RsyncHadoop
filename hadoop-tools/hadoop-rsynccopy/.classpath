@@ -89,7 +89,7 @@
 	<classpathentry kind="src" path="/hadoop-mapreduce-client-jobclient"/>
 	<classpathentry kind="src" path="/hadoop-hdfs"/>
 	<classpathentry kind="var" path="M2_REPO/commons-daemon/commons-daemon/1.0.13/commons-daemon-1.0.13.jar" sourcepath="M2_REPO/commons-daemon/commons-daemon/1.0.13/commons-daemon-1.0.13-sources.jar"/>
-	<classpathentry kind="lib" path="E:/ryneli/eclipse_32/projects/lib/add/apache-commons-logging.jar"/>
-	<classpathentry kind="lib" path="E:/ryneli/eclipse_32/projects/lib/commons-cli-2.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="D:/ryneli/eclipse/git/lib/add/apache-commons-logging.jar"/>
+	<classpathentry kind="lib" path="D:/ryneli/eclipse/git/lib/commons-cli-2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
