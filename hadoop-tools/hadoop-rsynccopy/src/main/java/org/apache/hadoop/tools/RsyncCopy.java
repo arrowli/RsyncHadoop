@@ -32,6 +32,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.CreateFlag;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FsServerDefaults;
@@ -72,6 +74,7 @@ import org.apache.hadoop.hdfs.server.datanode.BlockMetadataHeader;
 import org.apache.hadoop.hdfs.server.datanode.CachingStrategy;
 import org.apache.hadoop.hdfs.server.namenode.NameNode;
 import org.apache.hadoop.io.DataOutputBuffer;
+import org.apache.hadoop.io.EnumSetWritable;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.MD5Hash;
 import org.apache.hadoop.io.retry.RetryPolicies;
@@ -989,7 +992,19 @@ public class RsyncCopy {
 		 */
 		private void updateDstFile() throws IOException, InterruptedException {
 			String tmpFilePath = dstFileInfo.getFilepath()+".rsync";
-			dstDfs.create(new Path(tmpFilePath)).close();
+			//dstDfs.create(new Path(tmpFilePath)).close();
+			short replication = Short.parseShort(conf.get("dfs.replication","1"));
+			long blockSize = Long.parseLong(conf.get("dfs.blocksize","134217728"));
+			EnumSetWritable<CreateFlag> flag = new EnumSetWritable<CreateFlag>(EnumSet.of(CreateFlag.CREATE,CreateFlag.OVERWRITE));
+			HdfsFileStatus status = dstNamenode.create(
+					tmpFilePath, 
+					FsPermission.getFileDefault(), 
+					clientName, 
+					flag, 
+					true/*createParent*/, 
+					replication, 
+					blockSize);
+
 			long fileId = dstNamenode.getFileInfo(tmpFilePath).getFileId();
 			//TODO:用一次append操作只是为了能够得到lease
 			LocatedBlock lastBlock = srcNamenode.append(tmpFilePath, clientName);//文件没有内容的时候，append操作返回的是null！！
