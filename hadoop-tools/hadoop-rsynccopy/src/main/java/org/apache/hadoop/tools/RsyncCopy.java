@@ -1005,29 +1005,30 @@ public class RsyncCopy {
 					replication, 
 					blockSize);
 
-			long fileId = dstNamenode.getFileInfo(tmpFilePath).getFileId();
+			long fileId = status.getFileId();
 			//TODO:用一次append操作只是为了能够得到lease
 			//LocatedBlock lastBlock = srcNamenode.append(tmpFilePath, clientName);//文件没有内容的时候，append操作返回的是null！！
 			//if(lastBlock != null) LOG.warn("append empty file return " + lastBlock.getBlock());
 			//else LOG.warn("append empty file return null");
-			LocatedBlock lastBlock = null;
+			ExtendedBlock lastBlock = null;
 			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
-				lastBlock = dstNamenode.addBlock(tmpFilePath, 
+				LocatedBlock currentBlock = dstNamenode.addBlock(tmpFilePath, 
 						clientName, 
-						lastBlock != null ? lastBlock.getBlock():null , 
+						lastBlock, 
 						(DatanodeInfo[])null, 
 						fileId, 
 						(String[])null);
-				LOG.warn("Add new block "+lastBlock.getBlock());
+				LOG.warn("Add new block "+currentBlock.getBlock());
 
 				//sendSegments and updateBlock
-				sendSegments(srcFileInfo.getBlocks().get(i),lastBlock);
-				updateBlock(lastBlock);
+				sendSegments(srcFileInfo.getBlocks().get(i),currentBlock);
+				updateBlock(currentBlock);
+				lastBlock = currentBlock.getBlock();
 			}
 			
 			int count = 0;
 			boolean completed = false;
-			while((completed = dstNamenode.complete(tmpFilePath, clientName, lastBlock.getBlock(), fileId)) != true
+			while((completed = dstNamenode.complete(tmpFilePath, clientName, lastBlock, fileId)) != true
 					&& count < 10){
 				LOG.warn("File "+tmpFilePath+" can not complete");
 				count++;
