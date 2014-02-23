@@ -1286,6 +1286,7 @@ class DataXceiver extends Receiver implements Runnable {
 		dout.close();
 		checksumOut.flush();
 		checksumOut.close();
+		LOG.warn("block length is "+blockLength);
 		replicaInfo.setNumBytes(blockLength);
 		replicaInfo.setBytesAcked(blockLength);
 		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
