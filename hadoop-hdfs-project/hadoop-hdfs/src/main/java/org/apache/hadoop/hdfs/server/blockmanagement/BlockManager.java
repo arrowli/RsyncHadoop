@@ -2618,6 +2618,8 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     //
     // Modify the blocks->datanode map and node's map.
     //
+    blockLog.debug("BLOCK* addBlock { name="+block.getBlockName()+
+    		";size="+block.getNumBytes()+"}");
     pendingReplications.decrement(block, node);
     processAndHandleReportedBlock(node, block, ReplicaState.FINALIZED,
         delHintNode);

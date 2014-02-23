@@ -1291,7 +1291,7 @@ class DataXceiver extends Receiver implements Runnable {
 		replicaInfo.setBytesAcked(blockLength);
 		replicaInfo.setLastChecksumAndDataLen(blockLength, lastChecksum);
 		
-		block.setNumBytes(replicaInfo.getNumBytes());
+		block.setNumBytes(blockLength);
 		datanode.data.finalizeBlock(block);
 		//datanode.getActiveNamenodeForBP(block.getBlockPoolId())
 		//	.blockReceivedAndDeleted(registration, poolId, receivedAndDeletedBlocks);
