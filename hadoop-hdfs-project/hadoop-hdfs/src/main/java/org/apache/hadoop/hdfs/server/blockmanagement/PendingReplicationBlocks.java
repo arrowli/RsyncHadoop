@@ -107,9 +107,7 @@ class PendingReplicationBlocks {
           pendingReplications.remove(block);
         }
       } else {
-		  	if(LOG.isDebugEnabled()) {
-	          LOG.debug("block " + block +"can not be found in pendingReplication");
-	        }
+	      LOG.debug("block " + block +"can not be found in pendingReplication");
       }
     }
   }

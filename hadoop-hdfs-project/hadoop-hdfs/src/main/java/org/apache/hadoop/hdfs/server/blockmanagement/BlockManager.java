@@ -2137,6 +2137,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
                                boolean logEveryBlock)
   throws IOException {
     assert block != null && namesystem.hasWriteLock();
+    blockLog.debug("block "+block+" size "+block.getNumBytes());
     BlockInfo storedBlock;
     if (block instanceof BlockInfoUnderConstruction) {
       //refresh our copy in case the block got completed in another thread
@@ -2646,10 +2647,12 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     assert toUC.size() + toAdd.size() + toInvalidate.size() + toCorrupt.size() <= 1
       : "The block should be only in one of the lists.";
 
-    for (StatefulBlockInfo b : toUC) { 
+    for (StatefulBlockInfo b : toUC) {
+    	blockLog.debug("block "+block+" add to addStoredBlockUnderConstruction");
       addStoredBlockUnderConstruction(b.storedBlock, node, b.reportedState);
     }
     for (BlockInfo b : toAdd) {
+    	blockLog.debug("block "+block+" add to addStoredBlock");
       addStoredBlock(b, node, delHintNode, true);
     }
     for (Block b : toInvalidate) {
@@ -2659,6 +2662,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
       addToInvalidates(b, node);
     }
     for (BlockToMarkCorrupt b : toCorrupt) {
+    	blockLog.debug("block "+block+" add to markBlockAsCorrupt");
       markBlockAsCorrupt(b, node);
     }
   }
