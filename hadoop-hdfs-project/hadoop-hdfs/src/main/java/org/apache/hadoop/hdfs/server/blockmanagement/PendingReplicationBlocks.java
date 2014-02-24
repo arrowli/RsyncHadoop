@@ -106,6 +106,10 @@ class PendingReplicationBlocks {
         if (found.getNumReplicas() <= 0) {
           pendingReplications.remove(block);
         }
+      } else {
+		  	if(LOG.isDebugEnabled()) {
+	          LOG.debug("block " + block +"can not be found in pendingReplication");
+	        }
       }
     }
   }

@@ -1857,6 +1857,10 @@ public class BlockManager {
           + " on " + dn + " size " + block.getNumBytes()
           + " replicaState = " + reportedState);
     }
+    
+    LOG.debug("Reported block " + block
+            + " on " + dn + " size " + block.getNumBytes()
+            + " replicaState = " + reportedState);
   
     if (shouldPostponeBlocksFromFuture &&
         namesystem.isGenStampInFuture(block)) {
