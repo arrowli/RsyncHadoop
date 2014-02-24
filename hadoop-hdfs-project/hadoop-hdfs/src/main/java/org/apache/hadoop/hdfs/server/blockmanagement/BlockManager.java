@@ -2723,6 +2723,11 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     blockLog.debug("*BLOCK* NameNode.processIncrementalBlockReport: " + "from "
         + nodeID + " receiving: " + receiving + ", " + " received: " + received
         + ", " + " deleted: " + deleted);
+    
+    blockLog.debug("blocksMap list ["+blocksMap.size()+"] :");
+    for(BlockInfo blockInfo : blocksMap.getBlocks()){
+    	blockLog.debug("\tname"+blockInfo.getBlockName()+" size "+blockInfo.getNumBytes());
+    }
   }
 
   /**
