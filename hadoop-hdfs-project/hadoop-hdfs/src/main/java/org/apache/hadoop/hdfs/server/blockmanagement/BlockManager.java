@@ -530,7 +530,7 @@ public class BlockManager {
     assert block.getNumBytes() <= commitBlock.getNumBytes() :
       "commitBlock length is less than the stored one "
       + commitBlock.getNumBytes() + " vs. " + block.getNumBytes();
-    blockLog.debug("commitBlock name "+block.getBlockName()+" size "+block.getNumBytes());
+    blockLog.debug("commitBlock name "+block.getBlockName()+" size "+commitBlock.getNumBytes());
     block.commitBlock(commitBlock);
     return true;
   }
@@ -561,6 +561,7 @@ public class BlockManager {
       return false; // already completed (e.g. by syncBlock)
     }
     
+    blockLog.debug("commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
     final boolean b = commitBlock((BlockInfoUnderConstruction)lastBlock, commitBlock);
     if(countNodes(lastBlock).liveReplicas() >= minReplication)
       completeBlock(bc, bc.numBlocks()-1, false);
