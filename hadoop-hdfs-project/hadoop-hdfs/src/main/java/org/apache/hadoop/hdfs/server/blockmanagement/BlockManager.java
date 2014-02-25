@@ -576,8 +576,10 @@ public class BlockManager {
    */
   private BlockInfo completeBlock(final MutableBlockCollection bc,
       final int blkIndex, boolean force) throws IOException {
-    if(blkIndex < 0)
+    if(blkIndex < 0){
+    	blockLog.debug("completeBlock blkIndex is "+blkIndex+" < 0");
       return null;
+    }
     BlockInfo curBlock = bc.getBlocks()[blkIndex];
     if(curBlock.isComplete())
       return curBlock;
