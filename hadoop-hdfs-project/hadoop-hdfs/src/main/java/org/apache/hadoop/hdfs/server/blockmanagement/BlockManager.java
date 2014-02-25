@@ -530,6 +530,7 @@ public class BlockManager {
     assert block.getNumBytes() <= commitBlock.getNumBytes() :
       "commitBlock length is less than the stored one "
       + commitBlock.getNumBytes() + " vs. " + block.getNumBytes();
+    blockLog.debug("commitBlock name "+block.getBlockName()+" size "+block.getNumBytes());
     block.commitBlock(commitBlock);
     return true;
   }
@@ -546,13 +547,19 @@ public class BlockManager {
    */
   public boolean commitOrCompleteLastBlock(MutableBlockCollection bc, 
       Block commitBlock) throws IOException {
-    if(commitBlock == null)
+    if(commitBlock == null){
+    	blockLog.debug("commitOrCompleteLastBlock commitBlock is null");
       return false; // not committing, this is a block allocation retry
+    }
     BlockInfo lastBlock = bc.getLastBlock();
-    if(lastBlock == null)
+    if(lastBlock == null){
+    	blockLog.debug("commitOrCompleteLastBlock lastBlock is null");
       return false; // no blocks in file yet
-    if(lastBlock.isComplete())
+    }
+    if(lastBlock.isComplete()){
+    	blockLog.debug("commitOrCompleteLastBlock lastBlock.isComplete() is true");
       return false; // already completed (e.g. by syncBlock)
+    }
     
     final boolean b = commitBlock((BlockInfoUnderConstruction)lastBlock, commitBlock);
     if(countNodes(lastBlock).liveReplicas() >= minReplication)
@@ -2690,7 +2697,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
       throw new IOException(
           "Got incremental block report from unregistered or dead node");
     }
-
+    
     for (ReceivedDeletedBlockInfo rdbi : blockInfos) {
       switch (rdbi.getStatus()) {
       case DELETED_BLOCK:
@@ -2726,7 +2733,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     
     blockLog.debug("blocksMap list ["+blocksMap.size()+"] :");
     for(BlockInfo blockInfo : blocksMap.getBlocks()){
-    	blockLog.debug("\tname"+blockInfo.getBlockName()+" size "+blockInfo.getNumBytes());
+    	blockLog.debug("\tname "+blockInfo.getBlockName()+" size "+blockInfo.getNumBytes());
     }
   }
 
