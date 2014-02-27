@@ -561,7 +561,7 @@ public class BlockManager {
       return false; // already completed (e.g. by syncBlock)
     }
     
-    blockLog.debug("commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
+    blockLog.debug("BlockManager.commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
     final boolean b = commitBlock((BlockInfoUnderConstruction)lastBlock, commitBlock);
     if(countNodes(lastBlock).liveReplicas() >= minReplication)
       completeBlock(bc, bc.numBlocks()-1, false);

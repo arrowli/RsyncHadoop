@@ -2499,6 +2499,8 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
         return onRetryBlock[0];
       }
 
+      LOG.debug("FSNamesystem.getAdditionalBlock previous "+ExtendedBlock.getLocalBlock(previous).getBlockName()+
+    		  " size "+ExtendedBlock.getLocalBlock(previous).getNumBytes());
       // commit the last block and complete it if it has minimum replicas
       commitOrCompleteLastBlock(pendingFile,
                                 ExtendedBlock.getLocalBlock(previous));
@@ -2821,6 +2823,8 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
       }
       throw lee;
     }
+    
+    LOG.debug("FSNamesystem.completeFileInternal last "+last.getBlockName()+" size "+last.getNumBytes());
     // commit the last block and complete it if it has minimum replicas
     commitOrCompleteLastBlock(pendingFile, last);
 
@@ -3625,6 +3629,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
   private void commitOrCompleteLastBlock(final INodeFileUnderConstruction fileINode,
       final Block commitBlock) throws IOException {
     assert hasWriteLock();
+    LOG.debug("FSNamesystem.commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
     if (!blockManager.commitOrCompleteLastBlock(fileINode, commitBlock)) {
       return;
     }
@@ -3691,6 +3696,10 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
           "Cannot commitBlockSynchronization while in safe mode",
           safeMode);
       }
+      
+      LOG.debug("FSNamesystem.commitBlockSynchronization lastblock "+lastblock.getBlockName()+
+    		  " size "+lastblock.getNumBytes());
+      
       final BlockInfo storedBlock = getStoredBlock(
           ExtendedBlock.getLocalBlock(lastblock));
       if (storedBlock == null) {
@@ -3803,6 +3812,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
 
     String src = leaseManager.findPath(pendingFile);
 
+    LOG.debug("FSNamesystem.closeFileCommitBlocks storedBlock "+storedBlock.getBlockName()+" size "+storedBlock.getNumBytes());
     // commit the last block and complete it if it has minimum replicas
     commitOrCompleteLastBlock(pendingFile, storedBlock);
 
