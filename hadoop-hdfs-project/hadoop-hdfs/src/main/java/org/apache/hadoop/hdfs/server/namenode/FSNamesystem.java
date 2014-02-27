@@ -2499,8 +2499,10 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
         return onRetryBlock[0];
       }
 
-      LOG.debug("FSNamesystem.getAdditionalBlock previous "+ExtendedBlock.getLocalBlock(previous).getBlockName()+
-    		  " size "+ExtendedBlock.getLocalBlock(previous).getNumBytes());
+      if(ExtendedBlock.getLocalBlock(previous) != null){
+	      LOG.debug("FSNamesystem.getAdditionalBlock previous "+ExtendedBlock.getLocalBlock(previous).getBlockName()+
+	    		  " size "+ExtendedBlock.getLocalBlock(previous).getNumBytes());
+      }
       // commit the last block and complete it if it has minimum replicas
       commitOrCompleteLastBlock(pendingFile,
                                 ExtendedBlock.getLocalBlock(previous));
@@ -3629,7 +3631,8 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
   private void commitOrCompleteLastBlock(final INodeFileUnderConstruction fileINode,
       final Block commitBlock) throws IOException {
     assert hasWriteLock();
-    LOG.debug("FSNamesystem.commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
+    if(commitBlock != null)
+    	LOG.debug("FSNamesystem.commitOrCompleteLastBlock commitBlock "+commitBlock.getBlockName()+" size "+commitBlock.getNumBytes());
     if (!blockManager.commitOrCompleteLastBlock(fileINode, commitBlock)) {
       return;
     }
