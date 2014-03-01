@@ -1023,7 +1023,8 @@ public class RsyncCopy {
 				//sendSegments and updateBlock
 				sendSegments(srcFileInfo.getBlocks().get(i),currentBlock);
 				updateBlock(currentBlock);
-				lastBlock = currentBlock.getBlock();
+				lastBlock = dstNamenode.getBlockLocations(tmpFilePath,i*blockSize, 1).get(0).getBlock();
+				LOG.warn("lastBlock "+lastBlock.getBlockName()+" size "+lastBlock.getNumBytes());
 			}
 			
 			int count = 0;
