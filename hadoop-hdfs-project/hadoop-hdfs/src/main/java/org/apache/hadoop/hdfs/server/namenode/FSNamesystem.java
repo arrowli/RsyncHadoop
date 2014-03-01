@@ -2433,6 +2433,11 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
       throws LeaseExpiredException, NotReplicatedYetException,
       QuotaExceededException, SafeModeException, UnresolvedLinkException,
       IOException {
+	  if(previous != null){
+		  LOG.debug("FSNamesystem.getAdditionalBlock previous "+previous.getBlockName()+" size "+previous.getNumBytes());
+	  }else{
+		  LOG.debug("FSNamesystem.getAdditionalBlock previous is null");
+	  }
     long blockSize;
     int replication;
     DatanodeDescriptor clientNode = null;
