@@ -2509,6 +2509,7 @@ public class FSNamesystem implements Namesystem, FSClusterStats,
 
       // allocate new block, record block locations in INode.
       newBlock = createNewBlock();
+      
       saveAllocatedBlock(src, inodesInPath, newBlock, targets);
 
       dir.persistBlocks(src, pendingFile, false);

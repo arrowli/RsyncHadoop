@@ -582,7 +582,9 @@ public class BlockManager {
     	blockLog.debug("completeBlock blkIndex is "+blkIndex+" < 0");
       return null;
     }
+    
     BlockInfo curBlock = bc.getBlocks()[blkIndex];
+    blockLog.debug("BlockManager.completeBlock curBlock "+curBlock.getBlockName()+" size "+curBlock.getNumBytes());
     if(curBlock.isComplete())
       return curBlock;
     BlockInfoUnderConstruction ucBlock = (BlockInfoUnderConstruction)curBlock;
@@ -1883,6 +1885,7 @@ public class BlockManager {
     // find block by blockId
     BlockInfo storedBlock = blocksMap.getStoredBlock(block);
     if(storedBlock == null) {
+    	blockLog.debug("block "+block.getBlockName()+" not exist.");
       // If blocksMap does not contain reported block id,
       // the replica should be removed from the data-node.
       toInvalidate.add(new Block(block));
@@ -1890,6 +1893,7 @@ public class BlockManager {
     }
     BlockUCState ucState = storedBlock.getBlockUCState();
     
+    blockLog.debug("Block "+storedBlock.getBlockName()+" in memory blockUCState = "+ucState);
     // Block is on the NN
     if(LOG.isDebugEnabled()) {
       LOG.debug("In memory blockUCState = " + ucState);
@@ -1900,12 +1904,14 @@ public class BlockManager {
 /*  TODO: following assertion is incorrect, see HDFS-2668
 assert storedBlock.findDatanode(dn) < 0 : "Block " + block
         + " in recentInvalidatesSet should not appear in DN " + dn; */
+    	blockLog.debug("Block "+storedBlock.getBlockName()+" is in invalidateBlocks");
       return storedBlock;
     }
 
     BlockToMarkCorrupt c = checkReplicaCorrupt(
         block, reportedState, storedBlock, ucState, dn);
     if (c != null) {
+    	blockLog.debug("Block "+storedBlock.getBlockName()+" is in BlockToMarkCorrupt");
       if (shouldPostponeBlocksFromFuture) {
         // If the block is an out-of-date generation stamp or state,
         // but we're the standby, we shouldn't treat it as corrupt,
@@ -1919,6 +1925,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     }
 
     if (isBlockUnderConstruction(storedBlock, ucState, reportedState)) {
+    	blockLog.debug("Block "+storedBlock.getBlockName() + "is in isBlockUnderConstruction");
       toUC.add(new StatefulBlockInfo(
           (BlockInfoUnderConstruction)storedBlock, reportedState));
       return storedBlock;
@@ -1927,6 +1934,7 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     //add replica if appropriate
     if (reportedState == ReplicaState.FINALIZED
         && storedBlock.findDatanode(dn) < 0) {
+    	blockLog.debug("Block "+storedBlock.getBlockName() + "is finalized");
       toAdd.add(storedBlock);
     }
     return storedBlock;
@@ -2152,8 +2160,10 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
     BlockInfo storedBlock;
     if (block instanceof BlockInfoUnderConstruction) {
       //refresh our copy in case the block got completed in another thread
+    	blockLog.debug("BlockManager.addStoredBlock storedBlock = blocksMap.getStoredBlock(block)");
       storedBlock = blocksMap.getStoredBlock(block);
     } else {
+    	blockLog.debug("BlockManager.addStoredBlock storedBlock = block");
       storedBlock = block;
     }
     if (storedBlock == null || storedBlock.getBlockCollection() == null) {
@@ -2193,23 +2203,30 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
 
     if(storedBlock.getBlockUCState() == BlockUCState.COMMITTED &&
         numLiveReplicas >= minReplication) {
+    	blockLog.debug("BlockManager.addStoredBlock storedBlock = "+
+    			"completeBlock((MutableBlockCollection)bc, storedBlock, false);" + 
+    			" storedBlock "+storedBlock.getBlockName() + " size "+storedBlock.getNumBytes());
       storedBlock = completeBlock((MutableBlockCollection)bc, storedBlock, false);
+      	blockLog.debug("BlockManager.addStoredBlock " + " storedBlock "+storedBlock.getBlockName() + " size "+storedBlock.getNumBytes());
     } else if (storedBlock.isComplete()) {
       // check whether safe replication is reached for the block
       // only complete blocks are counted towards that
       // Is no-op if not in safe mode.
       // In the case that the block just became complete above, completeBlock()
       // handles the safe block count maintenance.
+    	blockLog.debug("BlockManager.addStoredBlock storedBlock is complete");
       namesystem.incrementSafeBlockCount(numCurrentReplica);
     }
     
     // if file is under construction, then done for now
     if (bc instanceof MutableBlockCollection) {
+    	blockLog.debug("bc instanceof MutableBlockCollection;return");
       return storedBlock;
     }
 
     // do not try to handle over/under-replicated blocks during first safe mode
     if (!namesystem.isPopulatingReplQueues()) {
+    	blockLog.debug("!namesystem.isPopulatingReplQueues();return");
       return storedBlock;
     }
 
@@ -2700,6 +2717,12 @@ assert storedBlock.findDatanode(dn) < 0 : "Block " + block
               + nodeID);
       throw new IOException(
           "Got incremental block report from unregistered or dead node");
+    }
+    
+    for (ReceivedDeletedBlockInfo rdbi : blockInfos) {
+    	blockLog.debug("\tblock name "+rdbi.getBlock().getBlockName()+
+    			" size "+rdbi.getBlock().getNumBytes() +
+    			" statue "+rdbi.getStatus());
     }
     
     for (ReceivedDeletedBlockInfo rdbi : blockInfos) {
