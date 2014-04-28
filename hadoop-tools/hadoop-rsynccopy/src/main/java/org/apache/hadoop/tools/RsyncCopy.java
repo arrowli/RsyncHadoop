@@ -564,8 +564,8 @@ public class RsyncCopy {
 
 						final List<ChecksumPairProto> checksums = checksumData.getChecksumsList();
 						
-						LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
-						LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
+						//LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
+						//LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
 						LOG.warn("checksum list:");
 						for(ChecksumPairProto cs : checksums){
 							final MD5Hash md5s = new MD5Hash(cs.getMd5().toByteArray());
