@@ -188,7 +188,7 @@ message BlockOpResponseProto {
   optional ReadOpChecksumInfoProto readOpChecksumInfo = 4;
   optional OpChunksChecksumResponseProto chunksChecksumResponse = 5;
   optional OpCalculateSegmentsResponseProto calculateSegmentsResponse = 6;
-  optional OpChunksAdaptiveChecksumResponseProto chunksChecksumResponse = 7;
+  optional OpChunksAdaptiveChecksumResponseProto chunksAdaptiveChecksumResponse = 7;
 
   /** explanatory text which may be useful to log on the client side */
   optional string message = 8;
