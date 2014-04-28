@@ -895,7 +895,8 @@ class DataXceiver extends Receiver implements Runnable {
 							.setIndex(index)
 							.setLength(absLen)
 							.setOffset(bufChecksumOffset)
-							.setMd5(ByteString.copyFrom(mdInst.digest())));
+							.setMd5(ByteString.copyFrom(mdInst.digest()))
+							.build());
 					index++;
 					bufChecksumOffset = bufOffset;
 					bufOffset += (bmin-bytesPerChunk);
