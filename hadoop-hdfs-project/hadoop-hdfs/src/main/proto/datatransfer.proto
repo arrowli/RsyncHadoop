@@ -295,7 +295,7 @@ message ChecksumStrongProto{
   required bytes md5 = 4;
 }
 
-message OpChunksAdaptive ChecksumResponseProto{
+message OpChunksAdaptiveChecksumResponseProto{
   required uint32 bytesPerCrc = 1;
   required uint64 crcPerBlock = 2;
   required uint64 chunksInBlock = 3;
