@@ -225,6 +225,7 @@ message OpBlockChecksumResponseProto {
 
 message OpChunksChecksumProto { 
   required BaseHeaderProto header = 1;
+  required uint32 bytesPerChunk = 2;
 }
 
 message ChecksumPairProto {
@@ -235,11 +236,9 @@ message ChecksumPairProto {
 message OpChunksChecksumResponseProto {
   required uint32 bytesPerCrc = 1;
   required uint64 crcPerBlock = 2;
-  required uint32 bytesPerChunk = 3;
-  required uint64 chunksPerBlock = 4;
-  repeated ChecksumPairProto checksums = 5;
-  required bytes md5 = 6;
-  optional ChecksumTypeProto crcType = 7;
+  repeated ChecksumPairProto checksums = 3;
+  required bytes md5 = 4;
+  optional ChecksumTypeProto crcType = 5;
 }
 
 message OpInflateBlockProto {
@@ -280,4 +279,27 @@ message OpSendSegmentProto {
 
 message OpUpdateBlockProto { 
   required BaseHeaderProto header = 1;
+}
+
+message OpChunksAdaptiveChecksumProto{
+  required BaseHeaderProto header = 1;
+  required uint32 bytesPerChunk = 2;
+  required uint32 bmin = 3;
+  required uint32 bmax = 4;
+}
+
+message ChecksumStrongProto{
+  required uint32 offset = 1;
+  required uint32 length = 2;
+  required uint32 index = 3;
+  required bytes md5 = 4;
+}
+
+message OpChunksAdaptive ChecksumResponseProto{
+  required uint32 bytesPerCrc = 1;
+  required uint64 crcPerBlock = 2;
+  required uint64 chunksInBlock = 3;
+  repeated ChecksumStrongProto checksums = 4;
+  required bytes md5 = 5;
+  optional ChecksumTypeProto crcType = 6;
 }
