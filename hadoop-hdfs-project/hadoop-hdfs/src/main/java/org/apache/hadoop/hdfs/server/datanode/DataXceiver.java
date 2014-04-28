@@ -71,10 +71,12 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Receiver;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumStrongProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientReadStatusProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.DNTransferAckProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksAdaptiveChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ReadOpChecksumInfoProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto;
@@ -810,6 +812,148 @@ class DataXceiver extends Receiver implements Runnable {
 		datanode.metrics.addBlockChecksumOp(elapsed());
 	}
 
+	@Override
+	public void chunksAdaptiveChecksum(final ExtendedBlock block,
+			final Token<BlockTokenIdentifier> blockToken,
+			int bytesPerChunk,
+			int bmin,
+			int bmax) throws IOException {
+		class StrongChecksum{
+			public int index;
+			public int offset;
+			public int length;
+			public byte[] md5;
+			StrongChecksum(int index,int offset,int length,byte[] md5){
+				this.index = index;
+				this.offset = offset;
+				this.length = length;
+				this.md5 = md5;
+			}
+		}
+		final DataOutputStream out = new DataOutputStream(getOutputStream());
+		checkAccess(out, true, block, blockToken, Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM,
+				BlockTokenSecretManager.AccessMode.READ);
+		updateCurrentThreadName("Reading metadata for block " + block);
+		final LengthInputStream metadataIn = datanode.data
+				.getMetaDataInputStream(block);
+		final DataInputStream checksumIn = new DataInputStream(
+				new BufferedInputStream(metadataIn,
+						HdfsConstants.IO_FILE_BUFFER_SIZE));
+
+		updateCurrentThreadName("Getting adaptive checksums for block " + block);
+		InputStream blockIn = null;
+		try {
+			// read metadata file
+			final BlockMetadataHeader header = BlockMetadataHeader
+					.readHeader(checksumIn);
+			final DataChecksum checksum = header.getChecksum();
+			final int bytesPerCRC = checksum.getBytesPerChecksum();
+			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
+					.getHeaderSize()) / checksum.getChecksumSize();
+
+			//generate checksum, chunk = 1MB = 1 * 2^20 B
+			byte[] buf = new byte[(int) block.getNumBytes()];
+			blockIn = datanode.data.getBlockInputStream(block, 0);
+			blockIn.read(buf);
+			blockIn.close();
+			Adler32 cs = new Adler32();
+			MessageDigest mdInst = null;
+			try{
+				mdInst = MessageDigest.getInstance("MD5");
+			}catch(NoSuchAlgorithmException e){
+				LOG.warn("no such algorithm : "+e); 
+			}
+			
+			int bufOffset = 0;
+			int bufChecksumOffset = 0;
+			List<ChecksumStrongProto> checksums = new LinkedList<ChecksumStrongProto>();
+			long[] checksumVector = new long[bmax-bmin+1];
+			int index = 0;
+			int maxIndex = 0;
+			int checksumOffset = 0;
+			int checksumEnd = 0;
+			bufOffset = bmin-bytesPerChunk;
+			while(buf.length - bufOffset >= bytesPerChunk){
+				cs.reset();
+				cs.update(buf,bufOffset,bytesPerChunk);
+				bufOffset++;
+				checksumVector[checksumOffset] = cs.getValue();
+				if(checksumVector[checksumOffset] > checksumVector[maxIndex]) 
+					maxIndex = checksumOffset;
+				checksumOffset++;
+				
+				if(checksumOffset == checksumVector.length) checksumOffset = 0;
+				if(checksumOffset == checksumEnd){
+					int absLen = 0;
+					if(checksumEnd <= maxIndex){
+						absLen = maxIndex - checksumEnd;
+					}else{
+						absLen = checksumVector.length-checksumEnd+maxIndex+1;
+					}
+					mdInst.update(buf, bufChecksumOffset, absLen);
+					checksums.add(ChecksumStrongProto.newBuilder()
+							.setIndex(index)
+							.setLength(absLen)
+							.setOffset(bufChecksumOffset)
+							.setMd5(mdInst.digest()));
+					index++;
+					bufChecksumOffset = bufOffset;
+					bufOffset += (bmin-bytesPerChunk);
+					checksumOffset = checksumEnd;
+					checksumEnd = maxIndex;
+					
+					checksumVector[checksumEnd] = -1;
+					maxIndex = checksumEnd;
+					if(checksumOffset > checksumEnd){
+						for(int i = checksumEnd+1 ; i < checksumOffset ; i++){
+							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
+						}
+					}else{
+						for(int i = checksumEnd+1 ; i < checksumVector.length ; i++){
+							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
+						}
+						for(int i = 0 ; i < checksumOffset ; i++){
+							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
+						}
+					}
+				}
+			}
+			
+			// compute block checksum
+			final MD5Hash md5 = MD5Hash.digest(checksumIn);
+
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("block=" + block + ", bytesPerCRC=" + bytesPerCRC
+						+ ", crcPerBlock=" + crcPerBlock + ", md5=" + md5);
+			}
+			
+			LOG.warn("total length "+metadataIn.getLength());
+			LOG.warn("header length "+BlockMetadataHeader.getHeaderSize());
+			LOG.warn("bytesPerChunk "+bytesPerChunk);
+			
+			// write reply
+			BlockOpResponseProto.newBuilder().setStatus(SUCCESS)
+					.setChunksAdaptiveChecksumResponse(OpChunksAdaptiveChecksumResponseProto
+							.newBuilder().setBytesPerCrc(bytesPerCRC)
+							.setCrcPerBlock(crcPerBlock)
+							.addAllChecksums(checksums)
+							.setMd5(ByteString.copyFrom(md5.getDigest()))
+							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
+							)
+					.build()
+					.writeDelimitedTo(out);
+			out.flush();
+		} finally {
+			IOUtils.closeStream(out);
+			IOUtils.closeStream(checksumIn);
+			IOUtils.closeStream(metadataIn);
+			IOUtils.closeStream(blockIn);
+		}
+
+		// update metrics
+		datanode.metrics.addBlockChecksumOp(elapsed());
+	}
+	
 	@Override
 	public void calculateSegments(final ExtendedBlock blk,
 		      final Token<BlockTokenIdentifier> blockToken,

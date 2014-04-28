@@ -33,6 +33,7 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ClientOperationHeaderProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksAdaptiveChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
@@ -220,6 +221,23 @@ public class Sender implements DataTransferProtocol {
 				.setHeader(
 						DataTransferProtoUtil.buildBaseHeader(blk, blockToken))
 				.setBytesPerChunk(bytesPerChunk)
+				.build();
+		send(out, Op.RSYNC_CHUNKS_CHECKSUM, proto);
+	}
+	
+	@Override
+	public void chunksAdaptiveChecksum(final ExtendedBlock blk,
+			final Token<BlockTokenIdentifier> blockToken,
+			int bytesPerChunk,
+			int bmin,
+			int bmax) throws IOException {
+		OpChunksAdaptiveChecksumProto proto = OpChunksAdaptiveChecksumProto
+				.newBuilder()
+				.setHeader(
+						DataTransferProtoUtil.buildBaseHeader(blk, blockToken))
+				.setBytesPerChunk(bytesPerChunk)
+				.setBmin(bmin)
+				.setBmax(bmax)
 				.build();
 		send(out, Op.RSYNC_CHUNKS_CHECKSUM, proto);
 	}

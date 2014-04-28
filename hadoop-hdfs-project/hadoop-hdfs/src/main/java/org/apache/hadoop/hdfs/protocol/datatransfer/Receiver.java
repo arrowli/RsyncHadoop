@@ -31,6 +31,7 @@ import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsProto;  
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksAdaptiveChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCopyBlockProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpInflateBlockProto;
@@ -99,6 +100,9 @@ public abstract class Receiver implements DataTransferProtocol {
 			break;
 		case RSYNC_UPDATE_BLOCK:
 			opUpdateBlock(in);
+			break;
+		case RSYNC_CHUNKS_ADAPTIVE_CHECKSUM:
+			opChunksAdaptiveChecksum(in);
 			break;
 		case TRANSFER_BLOCK:
 			opTransferBlock(in);
@@ -210,6 +214,18 @@ public abstract class Receiver implements DataTransferProtocol {
 		chunksChecksum(PBHelper.convert(proto.getHeader().getBlock()),
 				PBHelper.convert(proto.getHeader().getToken()),
 				proto.getBytesPerChunk());
+	}
+	
+	/** Receive OP_RSYNC_CHUNKS_ADAPTIVE_CHECKSUM **/
+	private void opChunksAdaptiveChecksum(DataInputStream in) throws IOException {
+		OpChunksAdaptiveChecksumProto proto = OpChunksAdaptiveChecksumProto
+				.parseFrom(vintPrefixed(in));
+
+		chunksAdaptiveChecksum(PBHelper.convert(proto.getHeader().getBlock()),
+				PBHelper.convert(proto.getHeader().getToken()),
+				proto.getBytesPerChunk(),
+				proto.getBmin(),
+				proto.getBmax());
 	}
 	
 	/** Receive OP_INFLATE_BLOCK */

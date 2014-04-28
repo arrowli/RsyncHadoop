@@ -235,4 +235,20 @@ public interface DataTransferProtocol {
    */
   public void updateBlock(final ExtendedBlock blk,
       final Token<BlockTokenIdentifier> blockToken) throws IOException;
+  
+  /**
+   * Get adaptive chunks checksum (MD5).
+   * 
+   * @param blk a block.
+   * @param blockToken security token for accessing the block.
+   * @param bytesPerChunk chunk size
+   * @param bmin
+   * @param bmax
+   * @throws IOException
+   */
+  public void chunksAdaptiveChecksum(final ExtendedBlock blk,
+      final Token<BlockTokenIdentifier> blockToken,
+      int bytesPerChunk,
+      int bmin,
+      int bmax) throws IOException;
 }
