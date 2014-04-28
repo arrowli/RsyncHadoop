@@ -97,8 +97,10 @@ import org.apache.hadoop.hdfs.protocol.datatransfer.Op;
 import org.apache.hadoop.hdfs.protocol.datatransfer.Sender;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.BlockOpResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumPairProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.ChecksumStrongProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpBlockChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpCalculateSegmentsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksAdaptiveChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.OpChunksChecksumResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
@@ -478,6 +480,9 @@ public class RsyncCopy {
 					srcNamenodeProtocolProxy, socketFactory, socketTimeout);
 			getFileChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
 					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
+			
+			getFileAdaptiveChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
+					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
 		}
 		
 		/**
@@ -502,8 +507,8 @@ public class RsyncCopy {
 			long crcPerBlock = 0;
 
 			// get block checksum for each block
-			for (int i = 0; i < srcFileInfo.getBlocks().size(); i++) {
-				LocatedBlock lb = srcFileInfo.getBlocks().get(i).locatedBlock;
+			for (int i = 0; i < fileInfo.getBlocks().size(); i++) {
+				LocatedBlock lb = fileInfo.getBlocks().get(i).locatedBlock;
 				final ExtendedBlock block = lb.getBlock();
 				final DatanodeInfo[] datanodes = lb.getLocations();
 
@@ -528,7 +533,7 @@ public class RsyncCopy {
 									+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
 						}
 						// get block MD5
-						int bytesPerBlock = 1024*1024; // 1MB
+						int bytesPerBlock = 128*1024; // 1MB
 						new Sender(out).chunksChecksum(block, lb.getBlockToken(),bytesPerBlock);
 
 						final BlockOpResponseProto reply = BlockOpResponseProto
@@ -575,6 +580,169 @@ public class RsyncCopy {
 									" ; MD5 CS : "+md5s);
 							fileInfo.getBlocks().get(i).getChecksums().add(
 									new ChecksumPair(cs.getSimple(),md5s.getDigest()));
+						}
+						
+						// read md5
+						final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
+								.toByteArray());
+						md5.write(md5out);
+						LOG.warn("Block CS : "+md5);
+						// read crc-type
+						final DataChecksum.Type ct;
+						if (checksumData.hasCrcType()) {
+							ct = PBHelper.convert(checksumData.getCrcType());
+						} else {
+							LOG.debug("Retrieving checksum from an earlier-version DataNode: "
+									+ "inferring checksum by reading first byte");
+							ct = inferChecksumTypeByReading(clientName,
+									socketFactory, socketTimeout, lb, datanodes[j],
+									encryptionKey, connectToDnViaHostname);
+						}
+
+						if (i == 0) { // first block
+							crcType = ct;
+						} else if (crcType != DataChecksum.Type.MIXED
+								&& crcType != ct) {
+							// if crc types are mixed in a file
+							crcType = DataChecksum.Type.MIXED;
+						}
+
+						done = true;
+
+						if (LOG.isDebugEnabled()) {
+							if (i == 0) {
+								LOG.debug("set bytesPerCRC=" + bytesPerCRC
+										+ ", crcPerBlock=" + crcPerBlock);
+							}
+							LOG.debug("got reply from " + datanodes[j] + ": md5="
+									+ md5);
+						}
+					} catch (InvalidBlockTokenException ibte) {
+						if (i > lastRetriedIndex) {
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("Got access token error in response to OP_BLOCK_CHECKSUM "
+										+ "for file "
+										+ fileInfo.getFilepath()
+										+ " for block "
+										+ block
+										+ " from datanode "
+										+ datanodes[j]
+										+ ". Will retry the block once.");
+							}
+							lastRetriedIndex = i;
+							done = true; // actually it's not done; but we'll retry
+							i--; // repeat at i-th block
+							refetchBlocks = true;
+							break;
+						}
+					} catch (IOException ie) {
+						LOG.warn("src=" + fileInfo.getFilepath() + ", datanodes[" + j + "]="
+								+ datanodes[j], ie);
+					} finally {
+						IOUtils.closeStream(in);
+						IOUtils.closeStream(out);
+					}
+				}
+
+				if (!done) {
+					throw new IOException("Fail to get block MD5 for " + block);
+				}
+			}
+		}
+		
+		/**
+		 * Get the checksum of a file.
+		 * 
+		 * @param src
+		 *            The file path
+		 * @return The checksum
+		 */
+		public void getFileAdaptiveChecksum(int dataTransferVersion, FileInfo fileInfo,
+				ClientProtocol namenode,
+				ProtocolProxy<ClientProtocol> namenodeProxy,
+				SocketFactory socketFactory, int socketTimeout) throws IOException {
+			LOG.warn("getFileAdaptiveChecksum start");
+			final DataOutputBuffer md5out = new DataOutputBuffer();
+			int namespaceId = 0;
+			boolean refetchBlocks = false;
+			int lastRetriedIndex = -1;
+			dataTransferVersion = DataTransferProtocol.DATA_TRANSFER_VERSION;
+			int bytesPerCRC = -1;
+			DataChecksum.Type crcType = DataChecksum.Type.DEFAULT;
+			long crcPerBlock = 0;
+
+			// get block checksum for each block
+			for (int i = 0; i < fileInfo.getBlocks().size(); i++) {
+				LocatedBlock lb = fileInfo.getBlocks().get(i).locatedBlock;
+				final ExtendedBlock block = lb.getBlock();
+				final DatanodeInfo[] datanodes = lb.getLocations();
+
+				// try each datanode location of the block
+				final int timeout = 3000 * datanodes.length + socketTimeout;
+				boolean done = false;
+				for (int j = 0; !done && j < datanodes.length; j++) {
+					DataOutputStream out = null;
+					DataInputStream in = null;
+
+					try {
+						// connect to a datanode
+						IOStreamPair pair = connectToDN(socketFactory,
+								connectToDnViaHostname, getDataEncryptionKey(),
+								datanodes[j], timeout);
+						out = new DataOutputStream(new BufferedOutputStream(
+								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+						in = new DataInputStream(pair.in);
+						
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("write to " + datanodes[j] + ": "
+									+ Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM + ", block=" + block);
+						}
+						// get block MD5
+						int bytesPerChunk = 128*1024; // 1MB
+						int bmin = 4*bytesPerChunk;
+						int bmax = 32*bytesPerChunk;
+						new Sender(out).chunksAdaptiveChecksum(block, lb.getBlockToken(), bytesPerChunk, bmin, bmax);
+
+						final BlockOpResponseProto reply = BlockOpResponseProto
+								.parseFrom(PBHelper.vintPrefixed(in));
+
+						if (reply.getStatus() != Status.SUCCESS) {
+							if (reply.getStatus() == Status.ERROR_ACCESS_TOKEN) {
+								throw new InvalidBlockTokenException();
+							} else {
+								throw new IOException("Bad response " + reply
+										+ " for block " + block + " from datanode "
+										+ datanodes[j]);
+							}
+						}
+
+						OpChunksAdaptiveChecksumResponseProto checksumData = reply
+								.getChunksAdaptiveChecksumResponse();
+
+						// read byte-per-checksum
+						final int bpc = checksumData.getBytesPerCrc();
+						if (i == 0) { // first block
+							bytesPerCRC = bpc;
+						} else if (bpc != bytesPerCRC) {
+							throw new IOException(
+									"Byte-per-checksum not matched: bpc=" + bpc
+											+ " but bytesPerCRC=" + bytesPerCRC);
+						}
+
+						// read crc-per-block
+						final long cpb = checksumData.getCrcPerBlock();
+						if (srcFileInfo.getBlocks().size() > 1 && i == 0) {
+							crcPerBlock = cpb;
+						}
+
+						final List<ChecksumStrongProto> checksums = checksumData.getChecksumsList();
+						
+						//LOG.warn("checksum size : "+checksumData.getBytesPerChunk());
+						//LOG.warn("checksum counts : "+checksumData.getChunksPerBlock());
+						LOG.warn("checksum list:");
+						for(ChecksumStrongProto cs : checksums){
+							final MD5Hash md5s = new MD5Hash(cs.getMd5().toByteArray());
+							LOG.warn("MD5 CS : "+md5s);
 						}
 						
 						// read md5
