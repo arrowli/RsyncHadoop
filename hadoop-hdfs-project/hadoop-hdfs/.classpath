@@ -11,7 +11,6 @@
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="/hadoop-annotations"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jdk1.7.0_10/lib/tools.jar"/>
 	<classpathentry kind="src" path="/hadoop-auth"/>
 	<classpathentry kind="var" path="M2_REPO/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.4/commons-codec-1.4.jar"/>
@@ -64,7 +63,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-daemon/commons-daemon/1.0.13/commons-daemon-1.0.13.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.8.5/mockito-all-1.8.5.jar"/>
-	<classpathentry kind="lib" path="D:/ryneli/eclipse/git/lib/commons-cli-2.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="D:/ryneli/eclipse/git/lib/add/apache-commons-logging.jar"/>
+	<classpathentry kind="lib" path="C:/software/jar_lib/apache-commons-logging.jar"/>
+	<classpathentry kind="lib" path="C:/software/jar_lib/org.apache.commons.cli-1.2.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

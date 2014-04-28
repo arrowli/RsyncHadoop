@@ -528,7 +528,8 @@ public class RsyncCopy {
 									+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
 						}
 						// get block MD5
-						new Sender(out).chunksChecksum(block, lb.getBlockToken());
+						int bytesPerBlock = 1024*1024; // 1MB
+						new Sender(out).chunksChecksum(block, lb.getBlockToken(),bytesPerBlock);
 
 						final BlockOpResponseProto reply = BlockOpResponseProto
 								.parseFrom(PBHelper.vintPrefixed(in));

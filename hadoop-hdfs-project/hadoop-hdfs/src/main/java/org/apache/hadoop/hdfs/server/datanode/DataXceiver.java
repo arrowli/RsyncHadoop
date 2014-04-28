@@ -730,7 +730,8 @@ class DataXceiver extends Receiver implements Runnable {
 
 	@Override
 	public void chunksChecksum(final ExtendedBlock block,
-			final Token<BlockTokenIdentifier> blockToken) throws IOException {
+			final Token<BlockTokenIdentifier> blockToken,
+			int bytesPerChunk) throws IOException {
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_CHUNKS_CHECKSUM,
 				BlockTokenSecretManager.AccessMode.READ);
@@ -751,9 +752,6 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = 1024*1024;
-			final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
-					.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			
 			final List<ChecksumPairProto> checksums = new LinkedList<ChecksumPairProto>();
 
@@ -787,7 +785,6 @@ class DataXceiver extends Receiver implements Runnable {
 			
 			LOG.warn("total length "+metadataIn.getLength());
 			LOG.warn("header length "+BlockMetadataHeader.getHeaderSize());
-			LOG.warn("chunkPerBlock "+chunksPerBlock);
 			LOG.warn("bytesPerChunk "+bytesPerChunk);
 			
 			// write reply
@@ -795,8 +792,6 @@ class DataXceiver extends Receiver implements Runnable {
 					.setChunksChecksumResponse(OpChunksChecksumResponseProto
 							.newBuilder().setBytesPerCrc(bytesPerCRC)
 							.setCrcPerBlock(crcPerBlock)
-							.setBytesPerChunk(bytesPerChunk)
-							.setChunksPerBlock(chunksPerBlock)
 							.addAllChecksums(checksums)
 							.setMd5(ByteString.copyFrom(md5.getDigest()))
 							.setCrcType(PBHelper.convert(checksum.getChecksumType()))

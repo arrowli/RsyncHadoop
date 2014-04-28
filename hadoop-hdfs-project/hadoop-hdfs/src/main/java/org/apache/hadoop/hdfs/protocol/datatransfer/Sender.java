@@ -213,11 +213,13 @@ public class Sender implements DataTransferProtocol {
 
 	@Override
 	public void chunksChecksum(final ExtendedBlock blk,
-			final Token<BlockTokenIdentifier> blockToken) throws IOException {
+			final Token<BlockTokenIdentifier> blockToken,
+			int bytesPerChunk) throws IOException {
 		OpChunksChecksumProto proto = OpChunksChecksumProto
 				.newBuilder()
 				.setHeader(
 						DataTransferProtoUtil.buildBaseHeader(blk, blockToken))
+				.setBytesPerChunk(bytesPerChunk)
 				.build();
 		send(out, Op.RSYNC_CHUNKS_CHECKSUM, proto);
 	}

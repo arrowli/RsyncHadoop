@@ -180,10 +180,12 @@ public interface DataTransferProtocol {
    * 
    * @param blk a block.
    * @param blockToken security token for accessing the block.
+   * @param bytesPerChunk chunk size
    * @throws IOException
    */
   public void chunksChecksum(final ExtendedBlock blk,
-      final Token<BlockTokenIdentifier> blockToken) throws IOException;
+      final Token<BlockTokenIdentifier> blockToken,
+      int bytesPerChunk) throws IOException;
   
   /**
    * Calculate src file block difference from dst file ,return segments information.

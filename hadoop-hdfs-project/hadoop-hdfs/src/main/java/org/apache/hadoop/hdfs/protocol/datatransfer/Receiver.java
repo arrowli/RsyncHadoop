@@ -208,7 +208,8 @@ public abstract class Receiver implements DataTransferProtocol {
 				.parseFrom(vintPrefixed(in));
 
 		chunksChecksum(PBHelper.convert(proto.getHeader().getBlock()),
-				PBHelper.convert(proto.getHeader().getToken()));
+				PBHelper.convert(proto.getHeader().getToken())
+				proto.getBytesPerChunk());
 	}
 	
 	/** Receive OP_INFLATE_BLOCK */
