@@ -961,7 +961,8 @@ class DataXceiver extends Receiver implements Runnable {
 		      final Token<BlockTokenIdentifier> blockToken,
 		      final String clientname,
 		      final List<Integer> simples,
-		      final List<byte[]> md5s) throws IOException{
+		      final List<byte[]> md5s,
+		      int bytesPerChunk) throws IOException{
 		LOG.warn("CalculateSegments is called.");
 		LOG.warn("Client name : "+clientname);
 		LOG.warn("Chunk checksum list size : "+simples.size());
@@ -988,7 +989,7 @@ class DataXceiver extends Receiver implements Runnable {
 			final int bytesPerCRC = checksum.getBytesPerChecksum();
 			final long crcPerBlock = (metadataIn.getLength() - BlockMetadataHeader
 					.getHeaderSize()) / checksum.getChecksumSize();
-			final int bytesPerChunk = 1024*1024;
+			//final int bytesPerChunk = 1024*1024;
 			//final long chunksPerBlock = (datanode.getConf().getLong("dfs.blocksize", 128*1024*1024) - BlockMetadataHeader
 			//		.getHeaderSize() + bytesPerChunk - 1) / bytesPerChunk;
 			
@@ -1139,6 +1140,7 @@ class DataXceiver extends Receiver implements Runnable {
 		//TODO:try-catch-finally的逻辑还是有问题的，
 		//修改的内容：finally中在出现异常时需要释放的资源统一释放
 		if(isClient){
+			LOG.warn("source datanode");
 			boolean finished = false;
 			for(DatanodeInfo target : targets){
 				try {
@@ -1200,6 +1202,7 @@ class DataXceiver extends Receiver implements Runnable {
 			IOUtils.closeStream(out);
 			if(sock != null)IOUtils.closeSocket(sock);
 		}else{
+			LOG.warn("destination datanode");
 			out = new DataOutputStream(getOutputStream());
 			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
 			if(dfsDataPath == null){

@@ -200,7 +200,8 @@ public interface DataTransferProtocol {
       final Token<BlockTokenIdentifier> blockToken,
       final String clientname,
       final List<Integer> simples,
-      final List<byte[]> md5s) throws IOException;
+      final List<byte[]> md5s,
+      int bytesPerChunk) throws IOException;
   
   /**
    * Send segment from srcDN to dstDN , call by ControlNode.

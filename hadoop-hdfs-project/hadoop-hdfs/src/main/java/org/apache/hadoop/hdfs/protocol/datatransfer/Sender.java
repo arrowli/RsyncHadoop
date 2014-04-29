@@ -262,14 +262,14 @@ public class Sender implements DataTransferProtocol {
 	@Override
 	public void calculateSegments(final ExtendedBlock block,
 			final Token<BlockTokenIdentifier> blockToken,
-			final String clientname,final List<Integer> simples,List<byte[]> md5s) throws IOException {
+			final String clientname,final List<Integer> simples,List<byte[]> md5s,int bytesPerChunk) throws IOException {
 		ClientOperationHeaderProto header = DataTransferProtoUtil
 				.buildClientHeader(block, clientname, blockToken);
 		
 		OpCalculateSegmentsProto.Builder proto = OpCalculateSegmentsProto.newBuilder()
 				.setHeader(header)
-				.setBytesPerChunk(10*1024*1024)
-				.setChunksPerBlock(block.getNumBytes()/(10*1024*1024));
+				.setBytesPerChunk(bytesPerChunk)
+				.setChunksPerBlock(block.getNumBytes()/bytesPerChunk);
 		for(int i = 0 ; i < simples.size() ; i++){/* 这段代码可以移到PBHelper中，建立新的convert函数 */
 			proto.addChecksums(
 					ChecksumPairProto.newBuilder()

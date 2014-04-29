@@ -260,7 +260,8 @@ public abstract class Receiver implements DataTransferProtocol {
 				PBHelper.convert(proto.getHeader().getBaseHeader().getToken()),
 				proto.getHeader().getClientName(),
 				simples,
-				md5s);
+				md5s,
+				proto.getBytesPerChunk());
 	}
 	
 	/** Receive OP_RSYNC_SEND_SEGMENT */

@@ -533,7 +533,7 @@ public class RsyncCopy {
 									+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
 						}
 						// get block MD5
-						int bytesPerBlock = 128*1024; // 1MB
+						int bytesPerBlock = 128*1024; 
 						new Sender(out).chunksChecksum(block, lb.getBlockToken(),bytesPerBlock);
 
 						final BlockOpResponseProto reply = BlockOpResponseProto
@@ -846,10 +846,11 @@ public class RsyncCopy {
 						in = new DataInputStream(pair.in);
 
 						// call calculateSegments
+						int bytesPerChunk = 128*1024;
 						new Sender(out).calculateSegments(
 								bi.getLocatedBlock().getBlock(), 
 								bi.getLocatedBlock().getBlockToken(), 
-								clientName, simples, md5s);
+								clientName, simples, md5s,bytesPerChunk);
 
 						//read reply
 						final BlockOpResponseProto reply = BlockOpResponseProto

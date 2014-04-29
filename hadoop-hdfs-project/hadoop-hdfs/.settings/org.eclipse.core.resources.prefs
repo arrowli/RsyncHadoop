@@ -1,2 +1,3 @@
 eclipse.preferences.version=1
+encoding//src/main/java/org/apache/hadoop/hdfs/protocol/datatransfer/Sender.java=UTF-8
 encoding//src/main/java/org/apache/hadoop/hdfs/server/datanode/DataXceiver.java=UTF-8
