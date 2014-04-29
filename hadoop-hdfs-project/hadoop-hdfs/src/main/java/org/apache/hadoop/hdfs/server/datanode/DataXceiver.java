@@ -733,9 +733,9 @@ class DataXceiver extends Receiver implements Runnable {
 	//https://github.com/wen866595/jrsync/tree/master/src/bruce/rsync
 	//网上找的adler32算法java版
 	public final static int MOD_ADLER = 65521;
-	public static long adler32(byte[] buf, int offset, int length) {
+	public static int adler32(byte[] buf, int offset, int length) {
 		int i;
-		long s1,s2;
+		int s1,s2;
 		s1 = s2 = 0;
 		for(i = offset ; i < length + offset ; i++){
 			s1 = (s1+(int)(buf[i]&0xff))%MOD_ADLER;
@@ -744,8 +744,8 @@ class DataXceiver extends Receiver implements Runnable {
 		
 		return ((s1&0xffff)+(s2<<16))&0xffffffff;
 	}
-	public static long nextAdler32(long oldAdler32, byte preByte, byte nextByte, int chunkSize) {
-		long s1,s2;
+	public static int nextAdler32(int oldAdler32, byte preByte, byte nextByte, int chunkSize) {
+		int s1,s2;
 		s1 = oldAdler32 & 0xffff;
 		s2 = (oldAdler32 >> 16)& 0xffff;
 		s1 = (s1-(int)(preByte&0xff) + (int)(nextByte&0xff) + MOD_ADLER)%MOD_ADLER;
