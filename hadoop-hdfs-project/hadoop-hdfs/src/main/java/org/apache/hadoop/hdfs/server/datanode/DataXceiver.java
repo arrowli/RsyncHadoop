@@ -1100,7 +1100,10 @@ class DataXceiver extends Receiver implements Runnable {
 				}
 				
 				//simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
-				simple = nextAdler32(simple,buf[nowOffset-bytesPerChunk-1],buf[nowOffset-1],bytesPerChunk);
+				if(found == false)
+					simple = nextAdler32(simple,buf[nowOffset-bytesPerChunk-1],buf[nowOffset-1],bytesPerChunk);
+				else
+					simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
 				if(nowOffset%(1024*1024) == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
 				if(steps < 1) LOG.warn("steps is "+steps+"; nowOffset "+nowOffset+"; startOffset "+startOffset);
 				loopTimes++;
