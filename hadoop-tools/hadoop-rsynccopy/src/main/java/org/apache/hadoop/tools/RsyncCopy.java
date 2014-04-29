@@ -426,7 +426,7 @@ public class RsyncCopy {
 			this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 					HdfsServerConstants.READ_TIMEOUT);
 			this.namenodeRPCSocketTimeout = 60 * 1000;
-			this.chunkSize = 1024*1024;
+			this.chunkSize = 128*1024;
 		}
 		/**
 		 * Get the source file blocks information from NN
@@ -533,7 +533,7 @@ public class RsyncCopy {
 									+ Op.RSYNC_CHUNKS_CHECKSUM + ", block=" + block);
 						}
 						// get block MD5
-						int bytesPerBlock = 128*1024; 
+						int bytesPerBlock = chunkSize; 
 						new Sender(out).chunksChecksum(block, lb.getBlockToken(),bytesPerBlock);
 
 						final BlockOpResponseProto reply = BlockOpResponseProto
@@ -846,7 +846,7 @@ public class RsyncCopy {
 						in = new DataInputStream(pair.in);
 
 						// call calculateSegments
-						int bytesPerChunk = 128*1024;
+						int bytesPerChunk = chunkSize;
 						new Sender(out).calculateSegments(
 								bi.getLocatedBlock().getBlock(), 
 								bi.getLocatedBlock().getBlockToken(), 
