@@ -426,7 +426,7 @@ public class RsyncCopy {
 			this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 					HdfsServerConstants.READ_TIMEOUT);
 			this.namenodeRPCSocketTimeout = 60 * 1000;
-			this.chunkSize = 128*1024;
+			this.chunkSize = 1024*1024;
 		}
 		/**
 		 * Get the source file blocks information from NN
