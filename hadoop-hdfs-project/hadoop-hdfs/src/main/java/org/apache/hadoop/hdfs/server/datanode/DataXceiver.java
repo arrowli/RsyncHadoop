@@ -733,33 +733,24 @@ class DataXceiver extends Receiver implements Runnable {
 	//https://github.com/wen866595/jrsync/tree/master/src/bruce/rsync
 	//网上找的adler32算法java版
 	public final static int MOD_ADLER = 65521;
-	public static int adler32(byte[] data, int offset, int length) {
-		int a = 0;
-		int b = 0;
-
-		for (int i = offset, limit = i + length; i < limit; i++) {
-			a += data[i] & 0xff;
-			if (a >= MOD_ADLER) {
-				a -= MOD_ADLER;
-			}
-
-			b += a;
-			if (b >= MOD_ADLER) {
-				b -= MOD_ADLER;
-			}
+	public static int adler32(byte[] buf, int offset, int length) {
+		int i;
+		int s1,s2;
+		s1 = s2 = 0;
+		for(i = offset ; i < length + offset ; i++){
+			s1 = (s1+(int)(buf[i]&0xff))%MOD_ADLER;
+			s2 = (s1+s2)%MOD_ADLER;
 		}
-
-		return b << 16 | a;
+		
+		return (s1&0xffff)+(s2<<16);
 	}
 	public static int nextAdler32(int oldAdler32, byte preByte, byte nextByte, int chunkSize) {
-		int a = oldAdler32 & 0xffff;
-		int b = (oldAdler32 >>> 16) & 0xffff;
-
-		int an = a - preByte + nextByte;
-
-		int bn = b - (preByte) * chunkSize + an;
-
-		return (bn << 16) + (an & 0xffff);
+		int s1,s2;
+		s1 = oldAdler32 & 0xffff;
+		s2 = (oldAdler32 >> 16)& 0xffff;
+		s1 = (s1-(int)(preByte&0xff) + (int)(nextByte&0xff))%MOD_ADLER;
+		s2 = (s2+s1-(chunkSize*(int)(preByte&0xff))%MOD_ADLER)%MOD_ADLER;
+		return (s1&0xffff)+(s2<<16);
 	}
 	
 	@Override
@@ -1108,7 +1099,7 @@ class DataXceiver extends Receiver implements Runnable {
 				if(nowOffset%(1024*1024) == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
 				if(steps < 1) LOG.warn("steps is "+steps+"; nowOffset "+nowOffset+"; startOffset "+startOffset);
 				loopTimes++;
-			}while((nowOffset <= blockSize) && (loopTimes < loopEnd));
+			}while((nowOffset < blockSize) && (loopTimes < loopEnd));
 			
 			if(nowOffset-startOffset > 0){
 				segments.add(SegmentProto
