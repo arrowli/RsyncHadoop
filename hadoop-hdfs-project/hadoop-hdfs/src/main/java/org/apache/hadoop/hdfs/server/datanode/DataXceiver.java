@@ -1037,8 +1037,8 @@ class DataXceiver extends Receiver implements Runnable {
 					cs.update(buf, 0, bufOffset+1);
 				}
 				
+				boolean found = false;
 				if(checksumMap.containsKey((int)cs.getValue())){
-					boolean found = false;
 					for(ChecksumPair cp : checksumMap.get((int)cs.getValue())){
 						
 						if(bufOffset == buf.length) mdInst.update(buf);
@@ -1085,6 +1085,14 @@ class DataXceiver extends Receiver implements Runnable {
 						readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
 						nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
 					}
+				}else{
+					if(bufOffset == buf.length){
+						bufOffset = 1;
+					}else{
+						bufOffset++;
+					}
+					readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
+					nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
 				}
 			}while((readBytesOneTime == 1)||(readBytesOneTime == buf.length));
 			
