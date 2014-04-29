@@ -1049,6 +1049,7 @@ class DataXceiver extends Receiver implements Runnable {
 
 			//read src file block checksum to generate segments info
 			long blockSize = blk.getNumBytes();
+			LOG.warn("Buffer block size " + blockSize);
 			byte[] buf = new byte[(int) blockSize];
 			InputStream blockIn = datanode.data.getBlockInputStream(blk, 0);
 			//Adler32 cs = new Adler32();
@@ -1084,16 +1085,20 @@ class DataXceiver extends Receiver implements Runnable {
 									.setLength(bytesPerChunk)
 									.build());
 							startOffset = nowOffset;
-							nowOffset += blockSize - nowOffset > bytesPerChunk ? bytesPerChunk : blockSize - nowOffset;
+							
+							long steps = blockSize - nowOffset > bytesPerChunk ? bytesPerChunk : blockSize - nowOffset;
+							nowOffset += steps;
 							break;
 						}
 					}
 					
 					if(found == false){
-						nowOffset += blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+						long steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+						nowOffset += steps;
 					}
 				}else{
-					nowOffset += blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+					long steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+					nowOffset += steps;
 				}
 				
 				if(nowOffset%1024 == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
