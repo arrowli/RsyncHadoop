@@ -481,8 +481,8 @@ public class RsyncCopy {
 			getFileChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
 					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
 			
-			getFileAdaptiveChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
-					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
+			//getFileAdaptiveChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
+			//		dstNamenodeProtocolProxy, socketFactory, socketTimeout);
 		}
 		
 		/**
@@ -1326,7 +1326,7 @@ public class RsyncCopy {
 		if (args.length < 2) {
 			printUsage();
 		}
-		RsyncCopy rc = new RsyncCopy("/test","/test");
+		RsyncCopy rc = new RsyncCopy("/test","/test2");
 		rc.run();
 		System.exit(0);
 	}

@@ -830,6 +830,7 @@ class DataXceiver extends Receiver implements Runnable {
 				this.md5 = md5;
 			}
 		}
+		LOG.warn("chunksAdaptiveChecksum is called.");
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM,
 				BlockTokenSecretManager.AccessMode.READ);
