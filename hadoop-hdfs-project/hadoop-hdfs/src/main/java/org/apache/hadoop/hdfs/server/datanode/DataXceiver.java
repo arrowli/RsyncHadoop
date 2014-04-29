@@ -998,6 +998,7 @@ class DataXceiver extends Receiver implements Runnable {
 		LOG.warn("CalculateSegments is called.");
 		LOG.warn("Client name : "+clientname);
 		LOG.warn("Chunk checksum list size : "+simples.size());
+		LOG.warn("BytesPerChunk " + bytesPerChunk);
 		MessageDigest mdInst = null;
 		try{
 			mdInst = MessageDigest.getInstance("MD5");
@@ -1060,6 +1061,7 @@ class DataXceiver extends Receiver implements Runnable {
 			int simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
 			
 			do{
+				long steps = 0;
 				boolean found = false;
 				if(checksumMap.containsKey(simple)){
 					mdInst.update(buf,nowOffset-bytesPerChunk,bytesPerChunk);
@@ -1086,22 +1088,23 @@ class DataXceiver extends Receiver implements Runnable {
 									.build());
 							startOffset = nowOffset;
 							
-							long steps = blockSize - nowOffset > bytesPerChunk ? bytesPerChunk : blockSize - nowOffset;
+							steps = blockSize - nowOffset > bytesPerChunk ? bytesPerChunk : blockSize - nowOffset;
 							nowOffset += steps;
 							break;
 						}
 					}
 					
 					if(found == false){
-						long steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+						steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
 						nowOffset += steps;
 					}
 				}else{
-					long steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
+					steps = blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
 					nowOffset += steps;
 				}
 				
-				if(nowOffset%1024 == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
+				if(nowOffset%(1024*1024) == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
+				if(steps < 1) LOG.warn("steps is "+steps+"; nowOffset "+nowOffset+"; startOffset "+startOffset);
 			}while(nowOffset <= blockSize);
 			
 			if(nowOffset-startOffset > 0){
