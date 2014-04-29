@@ -785,12 +785,13 @@ class DataXceiver extends Receiver implements Runnable {
 			blockIn = datanode.data.getBlockInputStream(block, 0);
 			//Adler32 cs = new Adler32();
 			
-			while(blockIn.read(buf) != -1){
+			int bytesRead = 0;
+			while((bytesRead=blockIn.read(buf)) != -1){
 				//cs.reset();
 				//cs.update(buf);
 				//checksums.add((int)cs.getValue());
-				int simple = adler32(buf,0,buf.length);
-				MD5Hash md5s = MD5Hash.digest(buf);
+				int simple = adler32(buf,0,bytesRead);
+				MD5Hash md5s = MD5Hash.digest(buf,0,bytesRead);
 				//md5Checksums.add(ByteString.copyFrom(md5s.getDigest()));
 				checksums.add(
 						ChecksumPairProto.newBuilder()
@@ -1044,6 +1045,8 @@ class DataXceiver extends Receiver implements Runnable {
 			LOG.warn("Buffer block size " + blockSize);
 			byte[] buf = new byte[(int) blockSize];
 			InputStream blockIn = datanode.data.getBlockInputStream(blk, 0);
+			blockIn.read(buf);
+			blockIn.close();
 			//Adler32 cs = new Adler32();
 			
 			List<SegmentProto> segments = new LinkedList<SegmentProto>();
@@ -1096,6 +1099,8 @@ class DataXceiver extends Receiver implements Runnable {
 					nowOffset += steps;
 				}
 				
+				//simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
+				simple = nextAdler32(simple,buf[nowOffset-bytesPerChunk-1],buf[nowOffset-1],bytesPerChunk);
 				if(nowOffset%(1024*1024) == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
 				if(steps < 1) LOG.warn("steps is "+steps+"; nowOffset "+nowOffset+"; startOffset "+startOffset);
 				loopTimes++;
@@ -1109,8 +1114,6 @@ class DataXceiver extends Receiver implements Runnable {
 						.setIndex(-1)
 						.build());
 			}
-			
-			blockIn.close();
 			
 			// compute block checksum
 			final MD5Hash md5 = MD5Hash.digest(checksumIn);
