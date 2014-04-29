@@ -730,6 +730,38 @@ class DataXceiver extends Receiver implements Runnable {
 		}
 	}
 
+	//https://github.com/wen866595/jrsync/tree/master/src/bruce/rsync
+	//网上找的adler32算法java版
+	public final static int MOD_ADLER = 65521;
+	public static int adler32(byte[] data, int offset, int length) {
+		int a = 0;
+		int b = 0;
+
+		for (int i = offset, limit = i + length; i < limit; i++) {
+			a += data[i] & 0xff;
+			if (a >= MOD_ADLER) {
+				a -= MOD_ADLER;
+			}
+
+			b += a;
+			if (b >= MOD_ADLER) {
+				b -= MOD_ADLER;
+			}
+		}
+
+		return b << 16 | a;
+	}
+	public static int nextAdler32(int oldAdler32, byte preByte, byte nextByte, int chunkSize) {
+		int a = oldAdler32 & 0xffff;
+		int b = (oldAdler32 >>> 16) & 0xffff;
+
+		int an = a - preByte + nextByte;
+
+		int bn = b - (preByte) * chunkSize + an;
+
+		return (bn << 16) + (an & 0xffff);
+	}
+	
 	@Override
 	public void chunksChecksum(final ExtendedBlock block,
 			final Token<BlockTokenIdentifier> blockToken,
@@ -760,18 +792,18 @@ class DataXceiver extends Receiver implements Runnable {
 			//generate checksum, chunk = 1MB = 1 * 2^20 B
 			byte[] buf = new byte[bytesPerChunk];
 			blockIn = datanode.data.getBlockInputStream(block, 0);
-			Adler32 cs = new Adler32();
+			//Adler32 cs = new Adler32();
 			
 			while(blockIn.read(buf) != -1){
-				cs.reset();
-				cs.update(buf);
+				//cs.reset();
+				//cs.update(buf);
 				//checksums.add((int)cs.getValue());
-				
+				int simple = adler32(buf,0,buf.length);
 				MD5Hash md5s = MD5Hash.digest(buf);
 				//md5Checksums.add(ByteString.copyFrom(md5s.getDigest()));
 				checksums.add(
 						ChecksumPairProto.newBuilder()
-							.setSimple((int)cs.getValue())
+							.setSimple(simple)
 							.setMd5(ByteString.copyFrom(md5s.getDigest()))
 							.build());
 			}
@@ -857,7 +889,7 @@ class DataXceiver extends Receiver implements Runnable {
 			blockIn = datanode.data.getBlockInputStream(block, 0);
 			blockIn.read(buf);
 			blockIn.close();
-			Adler32 cs = new Adler32();
+			//Adler32 cs = new Adler32();
 			MessageDigest mdInst = null;
 			try{
 				mdInst = MessageDigest.getInstance("MD5");
@@ -875,10 +907,10 @@ class DataXceiver extends Receiver implements Runnable {
 			int checksumEnd = 0;
 			bufOffset = bmin-bytesPerChunk;
 			while(buf.length - bufOffset >= bytesPerChunk){
-				cs.reset();
-				cs.update(buf,bufOffset,bytesPerChunk);
+				//cs.reset();
+				int simple = adler32(buf,bufOffset,bytesPerChunk);
 				bufOffset++;
-				checksumVector[checksumOffset] = cs.getValue();
+				checksumVector[checksumOffset] = simple;
 				if(checksumVector[checksumOffset] > checksumVector[maxIndex]) 
 					maxIndex = checksumOffset;
 				checksumOffset++;
@@ -1016,42 +1048,25 @@ class DataXceiver extends Receiver implements Runnable {
 			}
 
 			//read src file block checksum to generate segments info
-			byte[] buf = new byte[bytesPerChunk];
+			long blockSize = blk.getNumBytes();
+			byte[] buf = new byte[(int) blockSize];
 			InputStream blockIn = datanode.data.getBlockInputStream(blk, 0);
-			Adler32 cs = new Adler32();
+			//Adler32 cs = new Adler32();
 			
 			List<SegmentProto> segments = new LinkedList<SegmentProto>();
-			
-			long blockSize = blk.getNumBytes();
 			int startOffset = 0;//上次segment保存的偏移
-			int nowOffset = 0;//目前读到的偏移
-			int bufOffset = buf.length;//buf需要循环利用
-			int readBytesOneTime = blockIn.read(buf);
-			nowOffset += readBytesOneTime;
-			 
+			int nowOffset = bytesPerChunk;//目前读到的偏移
+			int simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
+			
 			do{
-				LOG.warn("read "+bufOffset);
-				cs.reset();
-				if(bufOffset == buf.length) cs.update(buf);
-				else{
-					cs.update(buf, bufOffset+1, buf.length - (bufOffset+1));
-					cs.update(buf, 0, bufOffset+1);
-				}
-				
 				boolean found = false;
-				if(checksumMap.containsKey((int)cs.getValue())){
-					for(ChecksumPair cp : checksumMap.get((int)cs.getValue())){
-						
-						if(bufOffset == buf.length) mdInst.update(buf);
-						else{
-							mdInst.update(buf, bufOffset+1, buf.length - (bufOffset+1));
-							mdInst.update(buf, 0, bufOffset+1);
-						}
-						
+				if(checksumMap.containsKey(simple)){
+					mdInst.update(buf,nowOffset-bytesPerChunk,bytesPerChunk);
+					byte[] md5 = mdInst.digest();
+					for(ChecksumPair cp : checksumMap.get(simple)){
 						//find a match chunk
-						if(MessageDigest.isEqual(mdInst.digest(), cp.md5)){
+						if(MessageDigest.isEqual(md5, cp.md5)){
 							found = true;
-							
 							if(nowOffset-startOffset > bytesPerChunk){
 								segments.add(SegmentProto
 										.newBuilder()
@@ -1068,34 +1083,21 @@ class DataXceiver extends Receiver implements Runnable {
 									.setIndex(cp.index)
 									.setLength(bytesPerChunk)
 									.build());
-							
-							readBytesOneTime = blockIn.read(buf);
 							startOffset = nowOffset;
-							nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
-							bufOffset = buf.length;
+							nowOffset += blockSize - nowOffset > bytesPerChunk ? bytesPerChunk : blockSize - nowOffset;
 							break;
 						}
 					}
 					
 					if(found == false){
-						if(bufOffset == buf.length){
-							bufOffset = 1;
-						}else{
-							bufOffset++;
-						}
-						readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
-						nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
+						nowOffset += blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
 					}
 				}else{
-					if(bufOffset == buf.length){
-						bufOffset = 1;
-					}else{
-						bufOffset++;
-					}
-					readBytesOneTime = blockIn.read(buf, bufOffset-1, 1);
-					nowOffset += readBytesOneTime > 0 ? readBytesOneTime : 0;
+					nowOffset += blockSize - nowOffset > 1 ? 1 : blockSize - nowOffset;
 				}
-			}while((readBytesOneTime == 1)||(readBytesOneTime == buf.length));
+				
+				if(nowOffset%1024 == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
+			}while(nowOffset <= blockSize);
 			
 			if(nowOffset-startOffset > 0){
 				segments.add(SegmentProto
