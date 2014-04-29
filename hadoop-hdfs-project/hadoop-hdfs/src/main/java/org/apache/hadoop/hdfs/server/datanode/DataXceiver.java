@@ -1060,6 +1060,8 @@ class DataXceiver extends Receiver implements Runnable {
 			int nowOffset = bytesPerChunk;//目前读到的偏移
 			int simple = adler32(buf,nowOffset-bytesPerChunk,bytesPerChunk);
 			
+			int loopTimes = 0;
+			int loopEnd = (int) blockSize;
 			do{
 				long steps = 0;
 				boolean found = false;
@@ -1105,7 +1107,8 @@ class DataXceiver extends Receiver implements Runnable {
 				
 				if(nowOffset%(1024*1024) == 0) LOG.warn("Calculate "+nowOffset+" bytes now.");
 				if(steps < 1) LOG.warn("steps is "+steps+"; nowOffset "+nowOffset+"; startOffset "+startOffset);
-			}while(nowOffset <= blockSize);
+				loopTimes++;
+			}while((nowOffset <= blockSize) && (loopTimes < loopEnd));
 			
 			if(nowOffset-startOffset > 0){
 				segments.add(SegmentProto
