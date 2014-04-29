@@ -1030,6 +1030,7 @@ class DataXceiver extends Receiver implements Runnable {
 			nowOffset += readBytesOneTime;
 			 
 			do{
+				LOG.warn("read "+bufOffset);
 				cs.reset();
 				if(bufOffset == buf.length) cs.update(buf);
 				else{
