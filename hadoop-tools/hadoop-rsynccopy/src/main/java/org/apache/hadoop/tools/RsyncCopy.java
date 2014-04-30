@@ -1190,9 +1190,6 @@ public class RsyncCopy {
 			try {
 				sock = socketFactory.createSocket();
 				String dnAddr = dn.getXferAddr(connectToDnViaHostname);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("Connecting to datanode " + dnAddr);
-				}
 				NetUtils.connect(sock, NetUtils.createSocketAddr(dnAddr), timeout);
 				sock.setSoTimeout(timeout);
 
