@@ -942,6 +942,7 @@ class DataXceiver extends Receiver implements Runnable {
 							.addAllChecksums(checksums)
 							.setMd5(ByteString.copyFrom(md5.getDigest()))
 							.setCrcType(PBHelper.convert(checksum.getChecksumType()))
+							.setChunksInBlock(index)
 							)
 					.build()
 					.writeDelimitedTo(out);
