@@ -65,5 +65,6 @@
 	<classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.8.5/mockito-all-1.8.5.jar"/>
 	<classpathentry kind="lib" path="C:/software/jar_lib/apache-commons-logging.jar"/>
 	<classpathentry kind="lib" path="C:/software/jar_lib/org.apache.commons.cli-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/software/jar_lib/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

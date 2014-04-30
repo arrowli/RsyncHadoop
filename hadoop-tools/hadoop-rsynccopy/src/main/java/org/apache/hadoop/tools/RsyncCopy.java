@@ -106,6 +106,8 @@ import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.SegmentProto;
 import org.apache.hadoop.hdfs.protocol.proto.DataTransferProtos.Status;
 import org.apache.hadoop.hdfs.protocolPB.PBHelper;
 
+import com.google.protobuf.ByteString;
+
 /**
  * rsynccopy复制一个文件的工作过程如下 :
  * 
@@ -289,7 +291,6 @@ public class RsyncCopy {
 		private volatile FsServerDefaults serverDefaults;
 		private volatile long serverDefaultsLastUpdate;
 		private boolean connectToDnViaHostname;
-		private int chunkSize;
 		
 		private class ChecksumPair{
 			private Integer simple;
@@ -315,6 +316,7 @@ public class RsyncCopy {
 		private class BlockInfo{
 			private LocatedBlock locatedBlock;
 			private LinkedList<ChecksumPair> checksums;
+			private List<ChecksumStrongProto> checksumsAdaptive;
 			private LinkedList<SegmentProto> segments;
 			public BlockInfo(LocatedBlock locatedBlock){
 				this.locatedBlock = locatedBlock;
@@ -346,6 +348,12 @@ public class RsyncCopy {
 			}
 			public void setSegments(LinkedList<SegmentProto> segments) {
 				this.segments = segments;
+			}
+			public List<ChecksumStrongProto> getChecksumsAdaptive() {
+				return checksumsAdaptive;
+			}
+			public void setChecksumsAdaptive(List<ChecksumStrongProto> list) {
+				this.checksumsAdaptive = list;
 			}
 		}
 		
@@ -426,7 +434,6 @@ public class RsyncCopy {
 			this.socketTimeout = conf.getInt("dfs.client.socket-timeout",
 					HdfsServerConstants.READ_TIMEOUT);
 			this.namenodeRPCSocketTimeout = 60 * 1000;
-			this.chunkSize = 1024*1024;
 		}
 		/**
 		 * Get the source file blocks information from NN
@@ -474,12 +481,12 @@ public class RsyncCopy {
 		 * @return The checksum
 		 * @see DistributedFileSystem#getFileChecksum(Path)
 		 */
-		void getSDFileChecksum() throws IOException {
+		void getSDFileChecksum(int chunkSize) throws IOException {
 			checkOpen();
 			getFileChecksum(dataTransferVersion, srcFileInfo, srcNamenode,
-					srcNamenodeProtocolProxy, socketFactory, socketTimeout);
+					srcNamenodeProtocolProxy, socketFactory, socketTimeout,chunkSize);
 			getFileChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
-					dstNamenodeProtocolProxy, socketFactory, socketTimeout);
+					dstNamenodeProtocolProxy, socketFactory, socketTimeout,chunkSize);
 			
 			//getFileAdaptiveChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
 			//		dstNamenodeProtocolProxy, socketFactory, socketTimeout);
@@ -495,7 +502,8 @@ public class RsyncCopy {
 		public void getFileChecksum(int dataTransferVersion, FileInfo fileInfo,
 				ClientProtocol namenode,
 				ProtocolProxy<ClientProtocol> namenodeProxy,
-				SocketFactory socketFactory, int socketTimeout) throws IOException {
+				SocketFactory socketFactory, int socketTimeout,
+				int chunkSize) throws IOException {
 			LOG.warn("getFileShecksum start");
 			final DataOutputBuffer md5out = new DataOutputBuffer();
 			int namespaceId = 0;
@@ -660,7 +668,10 @@ public class RsyncCopy {
 		public void getFileAdaptiveChecksum(int dataTransferVersion, FileInfo fileInfo,
 				ClientProtocol namenode,
 				ProtocolProxy<ClientProtocol> namenodeProxy,
-				SocketFactory socketFactory, int socketTimeout) throws IOException {
+				SocketFactory socketFactory, int socketTimeout,
+				int chunkSize,
+				int bminRatio,
+				int bmaxRatio) throws IOException {
 			LOG.warn("getFileAdaptiveChecksum start");
 			final DataOutputBuffer md5out = new DataOutputBuffer();
 			int namespaceId = 0;
@@ -698,9 +709,9 @@ public class RsyncCopy {
 									+ Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM + ", block=" + block);
 						}
 						// get block MD5
-						int bytesPerChunk = 128*1024; // 1MB
-						int bmin = 4*bytesPerChunk;
-						int bmax = 32*bytesPerChunk;
+						int bytesPerChunk = chunkSize; // 1MB
+						int bmin = bminRatio*bytesPerChunk;
+						int bmax = bmaxRatio*bytesPerChunk;
 						new Sender(out).chunksAdaptiveChecksum(block, lb.getBlockToken(), bytesPerChunk, bmin, bmax);
 
 						final BlockOpResponseProto reply = BlockOpResponseProto
@@ -719,6 +730,8 @@ public class RsyncCopy {
 						OpChunksAdaptiveChecksumResponseProto checksumData = reply
 								.getChunksAdaptiveChecksumResponse();
 
+						fileInfo.getBlocks().get(i).setChecksumsAdaptive(checksumData.getChecksumsList());
+						
 						// read byte-per-checksum
 						final int bpc = checksumData.getBytesPerCrc();
 						if (i == 0) { // first block
@@ -813,7 +826,47 @@ public class RsyncCopy {
 			}
 		}
 		
-		private void calculateSegments(){
+		private void calculateAdaptiveSegments(int chunkSize,int bminRatio,int bmaxRatio) throws IOException{
+			LOG.warn("calculateAdaptiveSegments start");
+			getFileAdaptiveChecksum(dataTransferVersion, dstFileInfo, dstNamenode,
+					dstNamenodeProtocolProxy, socketFactory, socketTimeout,chunkSize,bminRatio,bmaxRatio);
+			getFileAdaptiveChecksum(dataTransferVersion, srcFileInfo, srcNamenode,
+					srcNamenodeProtocolProxy, socketFactory, socketTimeout,chunkSize,bminRatio,bmaxRatio);
+			HashMap<ByteString,ChecksumStrongProto> dstChecksums = new HashMap<ByteString,ChecksumStrongProto>();
+			int dstBlockIndex = 0;
+			for(BlockInfo bi:dstFileInfo.getBlocks()){
+				for(ChecksumStrongProto csp :bi.getChecksumsAdaptive()){
+					dstChecksums.put(csp.getMd5(), ChecksumStrongProto.newBuilder()
+							.setIndex(dstBlockIndex)
+							.setOffset(csp.getOffset())
+							.setLength(csp.getLength())
+							.setMd5(csp.getMd5())
+							.build());
+				}
+				dstBlockIndex++;
+			}
+			
+			for(BlockInfo bi:srcFileInfo.getBlocks()){
+				for(ChecksumStrongProto csp : bi.getChecksumsAdaptive()){
+					if(!dstChecksums.containsKey(csp.getMd5())){
+						bi.segments.add(SegmentProto.newBuilder()
+								.setIndex(-1)
+								.setLength(csp.getLength())
+								.setOffset(csp.getOffset())
+								.build());
+					}else{
+						ChecksumStrongProto dstCsp = dstChecksums.get(csp.getMd5());
+						bi.segments.add(SegmentProto.newBuilder()
+								.setIndex(dstCsp.getIndex())
+								.setOffset(dstCsp.getOffset())
+								.setLength(dstCsp.getLength())
+								.build());
+					}
+				}
+			}
+		}
+		
+		private void calculateSegments(int chunkSize){
 			LOG.warn("calculateSegments start");
 			List<Integer> simples = new LinkedList<Integer>();
 			List<byte[]> md5s = new LinkedList<byte[]>();
@@ -896,7 +949,7 @@ public class RsyncCopy {
 		 * @throws UnresolvedLinkException
 		 * @throws IOException
 		 */
-		private void sendSegments(BlockInfo blockInfo,LocatedBlock addedBlock) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
+		private void sendSegments(BlockInfo blockInfo,LocatedBlock addedBlock,int chunkSize) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
 			LOG.warn("sendSegments for block "+blockInfo.getLocatedBlock().getBlock()+" start.");
 
 			long blockSize = dstNamenode.getFileInfo(dstFileInfo.getFilepath()).getBlockSize();
@@ -967,6 +1020,117 @@ public class RsyncCopy {
 								clientName, 
 								segment.getOffset(), 
 								segment.getLength(), true, true,
+								segmentName,
+								blockDirName,
+								dstDatanodes);
+
+						//read reply
+						final BlockOpResponseProto reply = BlockOpResponseProto
+								.parseFrom(PBHelper.vintPrefixed(in));
+
+						if (reply.getStatus() != Status.SUCCESS) {
+							LOG.warn("Bad response " + reply
+										+ " for block " + blockInfo.getLocatedBlock().getBlock() + " from datanode "
+										+ srcDatanodes[k]);
+						}else{
+							break;
+						}
+						
+					} catch (InvalidBlockTokenException ibte) {
+						
+					} catch (IOException ie) {
+						
+					}finally {
+						IOUtils.closeStream(in);
+						IOUtils.closeStream(out);
+					}
+				}
+				
+			}//for segment
+		}
+		
+		/**
+		 * 传送一个block所需的segments，与updateBlock配合使用
+		 * @param blockInfo	所需要传送的block信息
+		 * @param addedBlock 所传送的block在目标文件中对应的block
+		 * @throws AccessControlException
+		 * @throws FileNotFoundException
+		 * @throws UnresolvedLinkException
+		 * @throws IOException
+		 */
+		private void sendAdaptiveSegments(BlockInfo blockInfo,LocatedBlock addedBlock) throws AccessControlException, FileNotFoundException, UnresolvedLinkException, IOException{
+			LOG.warn("sendAdaptiveSegments for block "+blockInfo.getLocatedBlock().getBlock()+" start.");
+
+			long dstOffset = 0;
+			long blockSize = dstNamenode.getFileInfo(dstFileInfo.getFilepath()).getBlockSize();
+			//long chunksPerBlock = blockSize/chunkSize;
+			if(dstFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
+				throw new IOException("newFileInfo size not match srcFileInfo.");
+			}
+
+			for(int j = 0 ; j < blockInfo.getSegments().size() ; j++){
+				SegmentProto segment = blockInfo.getSegments().get(j);
+				DatanodeInfo[] srcDatanodes = null;
+				DatanodeInfo[] dstDatanodes = null;
+				LocatedBlock block = null;
+				String segmentName = null;
+				String blockDirName = addedBlock.getBlock().getBlockId()
+						+"_"+addedBlock.getBlock().getGenerationStamp();
+				long offset = 0;
+				long length = 0;
+				//如果dstFile中没有这个segment
+				if(segment.getIndex() == -1){
+					srcDatanodes = blockInfo.getLocatedBlock().getLocations();
+					block = blockInfo.getLocatedBlock();
+					offset = segment.getOffset();
+					length = segment.getLength();
+					segmentName = String.format("%064d", offset)+"_"+String.format("%064d", length);
+					dstDatanodes = addedBlock.getLocations();
+					dstOffset += length;
+					LOG.warn("SendSegment from srcFile "+
+							"index : "+segment.getIndex()+
+							"; offset : "+segment.getOffset()+
+							"; length : "+segment.getLength());
+				}else{
+					srcDatanodes = dstFileInfo.getBlocks()
+							.get((int)segment.getIndex())
+							.getLocatedBlock().getLocations();
+					block = dstFileInfo.getBlocks()
+							.get((int)segment.getIndex())
+							.getLocatedBlock();
+					offset = segment.getOffset();
+					length = segment.getLength();
+					segmentName = String.format("%064d", dstOffset)+"_"+
+							String.format("%064d", segment.getLength());
+					dstOffset += segment.getLength();
+					dstDatanodes = addedBlock.getLocations();
+					LOG.warn("SendSegment from dstFile "+
+							"index : "+segment.getIndex()+
+							"; offset : "+segment.getOffset()+
+							"; length : "+segment.getLength());
+				}
+				
+				final int timeout = 3000 + socketTimeout;
+				
+				for (int k = 0; k < srcDatanodes.length; k++) {
+					DataOutputStream out = null;
+					DataInputStream in = null;
+					
+					try {
+						// connect to a datanode
+						IOStreamPair pair = connectToDN(socketFactory,
+								connectToDnViaHostname, getDataEncryptionKey(),
+								srcDatanodes[k], timeout);
+						out = new DataOutputStream(new BufferedOutputStream(
+								pair.out, HdfsConstants.SMALL_BUFFER_SIZE));
+						in = new DataInputStream(pair.in);
+
+						// call sendSegment
+						new Sender(out).sendSegment(block.getBlock(), 
+								block.getBlockToken(), 
+								clientName, 
+								offset, 
+								length, true, true,
 								segmentName,
 								blockDirName,
 								dstDatanodes);
@@ -1160,7 +1324,7 @@ public class RsyncCopy {
 		 * TODO:应该让重建的所有block尽量存放在dstFile对应block所在datanode上
 		 * @throws InterruptedException 
 		 */
-		private void updateDstFile() throws IOException, InterruptedException {
+		private void updateDstFile(int chunkSize) throws IOException, InterruptedException {
 			String tmpFilePath = dstFileInfo.getFilepath()+".rsync";
 			//dstDfs.create(new Path(tmpFilePath)).close();
 			short replication = Short.parseShort(conf.get("dfs.replication","1"));
@@ -1191,7 +1355,65 @@ public class RsyncCopy {
 				LOG.warn("Add new block "+currentBlock.getBlock());
 
 				//sendSegments and updateBlock
-				sendSegments(srcFileInfo.getBlocks().get(i),currentBlock);
+				sendSegments(srcFileInfo.getBlocks().get(i),currentBlock,chunkSize);
+				updateBlock(currentBlock);
+				currentBlock.getBlock().setNumBytes(
+						srcFileInfo.getBlocks().get(i).getLocatedBlock().getBlock().getNumBytes());
+				lastBlock = currentBlock.getBlock();
+				LOG.warn("lastBlock "+lastBlock.getBlockName()+" size "+lastBlock.getNumBytes());
+			}
+			
+			int count = 0;
+			boolean completed = false;
+			while((completed = dstNamenode.complete(tmpFilePath, clientName, lastBlock, fileId)) != true
+					&& count < 10){
+				LOG.warn("File "+tmpFilePath+" can not complete");
+				count++;
+				Thread.sleep(1000);
+			}
+			LOG.warn("File "+tmpFilePath+" complete "+completed);
+		}
+		
+		/**
+		 * 新建一个临时文件，文件名为dstFilePath+".rsync"，在这个文件中恢复新的文件内容，再用这个文件替代原有文件
+		 * @param filePath
+		 * @param src
+		 * @throws IOException
+		 * TODO:应该让重建的所有block尽量存放在dstFile对应block所在datanode上
+		 * @throws InterruptedException 
+		 */
+		private void updateAdaptiveDstFile() throws IOException, InterruptedException {
+			String tmpFilePath = dstFileInfo.getFilepath()+".rsync";
+			//dstDfs.create(new Path(tmpFilePath)).close();
+			short replication = Short.parseShort(conf.get("dfs.replication","1"));
+			long blockSize = Long.parseLong(conf.get("dfs.blocksize","134217728"));
+			EnumSetWritable<CreateFlag> flag = new EnumSetWritable<CreateFlag>(EnumSet.of(CreateFlag.CREATE,CreateFlag.OVERWRITE));
+			HdfsFileStatus status = dstNamenode.create(
+					tmpFilePath, 
+					FsPermission.getFileDefault(), 
+					clientName, 
+					flag, 
+					true/*createParent*/, 
+					replication, 
+					blockSize);
+
+			long fileId = status.getFileId();
+			//TODO:用一次append操作只是为了能够得到lease
+			//LocatedBlock lastBlock = srcNamenode.append(tmpFilePath, clientName);//文件没有内容的时候，append操作返回的是null！！
+			//if(lastBlock != null) LOG.warn("append empty file return " + lastBlock.getBlock());
+			//else LOG.warn("append empty file return null");
+			ExtendedBlock lastBlock = null;
+			for(int i = 0 ; i < srcFileInfo.getBlocks().size() ; i++){
+				LocatedBlock currentBlock = dstNamenode.addBlock(tmpFilePath, 
+						clientName, 
+						lastBlock, 
+						(DatanodeInfo[])null, 
+						fileId, 
+						(String[])null);
+				LOG.warn("Add new block "+currentBlock.getBlock());
+
+				//sendSegments and updateBlock
+				sendAdaptiveSegments(srcFileInfo.getBlocks().get(i),currentBlock);
 				updateBlock(currentBlock);
 				currentBlock.getBlock().setNumBytes(
 						srcFileInfo.getBlocks().get(i).getLocatedBlock().getBlock().getNumBytes());
@@ -1269,13 +1491,19 @@ public class RsyncCopy {
 			}
 		}
 		
-		public void run() throws IOException, InterruptedException {
-			getSDFileInfo();
-			getSDFileChecksum();
-			calculateSegments();
-			//printFileInfo(srcFileInfo);
-			//printFileInfo(dstFileInfo);
-			updateDstFile();
+		public void run(int method,int chunkSize,int bminRatio,int bmaxRatio) throws IOException, InterruptedException {
+			if(method == 1){
+				getSDFileInfo();
+				getSDFileChecksum(chunkSize);
+				calculateSegments(chunkSize);
+				updateDstFile(chunkSize);
+			}else if(method == 2){
+				getSDFileInfo();
+				calculateAdaptiveSegments(chunkSize,bminRatio,bmaxRatio);
+				updateAdaptiveDstFile();
+			}else{
+				System.out.println("Unrecognized method "+method);
+			}
 		}
 		
 	}
@@ -1301,7 +1529,7 @@ public class RsyncCopy {
 	private static void printUsage() {
 		HelpFormatter formatter = new HelpFormatter();
 		Options options = new Options();
-		formatter.printHelp("Usage : RsyncCopy [options] <srcs....> <dst>",
+		formatter.printHelp("Usage : RsyncCopy method[1/2] chunkSize bmin bmax <srcs....> <dst>",
 				options);
 	}
 
@@ -1313,22 +1541,33 @@ public class RsyncCopy {
 	}
 
 	
-	public void run() throws IOException, InterruptedException {
+	public void run(int method,int chunkSize,int bminRatio,int bmaxRatio) throws IOException, InterruptedException {
 		getNameNode();
 		long uniqueId = 0;
 		RsyncCopyFile testCopyFile = new RsyncCopyFile(
 				srcNamenode,srcNamenodeProtocolProxy,srcPath,
 				dstNamenode,dstNamenodeProtocolProxy,dstPath,
 				conf,stats,uniqueId );
-		testCopyFile.run();
+		testCopyFile.run(method,chunkSize,bminRatio,bmaxRatio);
 	}
 	
 	public static void main(String args[]) throws Exception {
-		if (args.length < 2) {
+		if (args.length < 6) {
 			printUsage();
 		}
-		RsyncCopy rc = new RsyncCopy("/test","/test2");
-		rc.run();
+		/*
+		 	this.chunkSize = 1024*1024;
+			this.bminRatio = 8;
+			this.bmaxRatio = 64;
+		 */
+		int method = Integer.parseInt(args[0]);
+		int chunkSize = Integer.parseInt(args[1]);
+		int bminRatio = Integer.parseInt(args[2]);
+		int bmaxRatio = Integer.parseInt(args[3]);
+		String srcPath = args[4];
+		String dstPath = args[5];
+		RsyncCopy rc = new RsyncCopy(srcPath,dstPath);
+		rc.run(method,chunkSize,bminRatio,bmaxRatio);
 		System.exit(0);
 	}
 }

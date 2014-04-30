@@ -892,58 +892,44 @@ class DataXceiver extends Receiver implements Runnable {
 			int bufOffset = 0;
 			int bufChecksumOffset = 0;
 			List<ChecksumStrongProto> checksums = new LinkedList<ChecksumStrongProto>();
-			long[] checksumVector = new long[bmax-bmin+1];
-			int index = 0;
-			int maxIndex = 0;
-			int checksumOffset = 0;
-			int checksumEnd = 0;
-			bufOffset = bmin-bytesPerChunk;
-			while(buf.length - bufOffset >= bytesPerChunk){
-				//cs.reset();
-				int simple = adler32(buf,bufOffset,bytesPerChunk);
-				bufOffset++;
-				checksumVector[checksumOffset] = simple;
-				if(checksumVector[checksumOffset] > checksumVector[maxIndex]) 
-					maxIndex = checksumOffset;
-				checksumOffset++;
-				
-				if(checksumOffset == checksumVector.length) checksumOffset = 0;
-				if(checksumOffset == checksumEnd){
-					int absLen = 0;
-					if(checksumEnd <= maxIndex){
-						absLen = maxIndex - checksumEnd;
-					}else{
-						absLen = checksumVector.length-checksumEnd+maxIndex+1;
-					}
-					mdInst.update(buf, bufChecksumOffset, absLen);
-					checksums.add(ChecksumStrongProto.newBuilder()
-							.setIndex(index)
-							.setLength(absLen)
-							.setOffset(bufChecksumOffset)
-							.setMd5(ByteString.copyFrom(mdInst.digest()))
-							.build());
-					index++;
-					bufChecksumOffset = bufOffset;
-					bufOffset += (bmin-bytesPerChunk);
-					checksumOffset = checksumEnd;
-					checksumEnd = maxIndex;
-					
-					checksumVector[checksumEnd] = -1;
-					maxIndex = checksumEnd;
-					if(checksumOffset > checksumEnd){
-						for(int i = checksumEnd+1 ; i < checksumOffset ; i++){
-							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
-						}
-					}else{
-						for(int i = checksumEnd+1 ; i < checksumVector.length ; i++){
-							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
-						}
-						for(int i = 0 ; i < checksumOffset ; i++){
-							if(checksumVector[maxIndex] < checksumVector[i]) maxIndex = i;
-						}
+			
+			List<Integer> indice = new LinkedList<Integer>();
+			for(int i = 0 ; i < buf.length/bmax ; i++){
+				int start = i*bmax+bmin;
+				int end = (i+1)*bmax-bytesPerChunk;
+				int simple = adler32(buf, start, bytesPerChunk);
+				int maxIndex = start;
+				int maxSimple = simple;
+				for(int j = start+1 ; j < end ; j++){
+					simple = nextAdler32(simple, buf[j-1],buf[j+bytesPerChunk-1],bytesPerChunk);
+					if(simple > maxSimple){
+						maxIndex = j;
+						maxSimple = simple;
 					}
 				}
+				indice.add(maxIndex);
 			}
+			
+			int offset = 0;
+			int index = 1;
+			for(int nextOffset : indice){
+				mdInst.update(buf, offset, nextOffset-offset);
+				checksums.add(ChecksumStrongProto.newBuilder()
+						.setIndex(index)
+						.setLength(nextOffset-offset)
+						.setOffset(offset)
+						.setMd5(ByteString.copyFrom(mdInst.digest()))
+						.build());
+				index++;
+				offset = nextOffset;
+			}
+			mdInst.update(buf, offset, buf.length-offset);
+			checksums.add(ChecksumStrongProto.newBuilder()
+					.setIndex(index)
+					.setLength(buf.length-offset)
+					.setOffset(offset)
+					.setMd5(ByteString.copyFrom(mdInst.digest()))
+					.build());
 			
 			// compute block checksum
 			final MD5Hash md5 = MD5Hash.digest(checksumIn);
