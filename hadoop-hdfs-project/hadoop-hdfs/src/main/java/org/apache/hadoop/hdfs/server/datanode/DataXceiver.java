@@ -842,18 +842,6 @@ class DataXceiver extends Receiver implements Runnable {
 			int bytesPerChunk,
 			int bmin,
 			int bmax) throws IOException {
-		class StrongChecksum{
-			public int index;
-			public int offset;
-			public int length;
-			public byte[] md5;
-			StrongChecksum(int index,int offset,int length,byte[] md5){
-				this.index = index;
-				this.offset = offset;
-				this.length = length;
-				this.md5 = md5;
-			}
-		}
 		LOG.warn("chunksAdaptiveChecksum is called.");
 		final DataOutputStream out = new DataOutputStream(getOutputStream());
 		checkAccess(out, true, block, blockToken, Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM,
@@ -888,9 +876,7 @@ class DataXceiver extends Receiver implements Runnable {
 			}catch(NoSuchAlgorithmException e){
 				LOG.warn("no such algorithm : "+e); 
 			}
-			
-			int bufOffset = 0;
-			int bufChecksumOffset = 0;
+
 			List<ChecksumStrongProto> checksums = new LinkedList<ChecksumStrongProto>();
 			
 			List<Integer> indice = new LinkedList<Integer>();
@@ -930,7 +916,12 @@ class DataXceiver extends Receiver implements Runnable {
 					.setOffset(offset)
 					.setMd5(ByteString.copyFrom(mdInst.digest()))
 					.build());
-			
+			LOG.warn("checksums size "+checksums.size());
+			for(int i = 0 ; i < checksums.size() ; i++){
+				LOG.warn("Index "+checksums.get(i).getIndex()+
+						" offset "+checksums.get(i).getOffset()+
+						" length "+checksums.get(i).getLength());
+			}
 			// compute block checksum
 			final MD5Hash md5 = MD5Hash.digest(checksumIn);
 

@@ -239,7 +239,7 @@ public class Sender implements DataTransferProtocol {
 				.setBmin(bmin)
 				.setBmax(bmax)
 				.build();
-		send(out, Op.RSYNC_CHUNKS_CHECKSUM, proto);
+		send(out, Op.RSYNC_CHUNKS_ADAPTIVE_CHECKSUM, proto);
 	}
 	
 	@Override
