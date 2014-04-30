@@ -573,7 +573,11 @@ public class RsyncCopy {
 						}
 
 						final List<ChecksumPairProto> checksums = checksumData.getChecksumsList();
-						
+						for(ChecksumPairProto cs : checksums){
+							 final MD5Hash md5s = new MD5Hash(cs.getMd5().toByteArray());
+							 fileInfo.getBlocks().get(i).getChecksums().add(
+							 	new ChecksumPair(cs.getSimple(),md5s.getDigest()));
+						}
 						// read md5
 						final MD5Hash md5 = new MD5Hash(checksumData.getMd5()
 								.toByteArray());
@@ -826,8 +830,10 @@ public class RsyncCopy {
 			}
 			
 			//去掉最后一个chunk的checksum，防止其未达到chunksize
-			simples.remove(simples.size()-1);
-			md5s.remove(md5s.size()-1);
+			if(simples.size() > 0){
+				simples.remove(simples.size()-1);
+				md5s.remove(md5s.size()-1);
+			}
 			
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
