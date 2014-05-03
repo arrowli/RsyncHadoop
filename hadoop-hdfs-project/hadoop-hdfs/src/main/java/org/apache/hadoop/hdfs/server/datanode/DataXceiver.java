@@ -55,8 +55,6 @@ import java.util.List;
 import java.util.zip.Adler32;
 import java.util.zip.Checksum;
 
-import my.function.LocalMaxima.StrongChecksum;
-
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.net.Peer;
