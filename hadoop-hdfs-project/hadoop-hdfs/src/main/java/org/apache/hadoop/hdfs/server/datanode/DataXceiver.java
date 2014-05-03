@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.zip.Adler32;
 import java.util.zip.Checksum;
 
+import my.function.LocalMaxima.StrongChecksum;
+
 import org.apache.commons.logging.Log;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.net.Peer;
@@ -879,35 +881,93 @@ class DataXceiver extends Receiver implements Runnable {
 
 			List<ChecksumStrongProto> checksums = new LinkedList<ChecksumStrongProto>();
 			
-			List<Integer> indice = new LinkedList<Integer>();
-			for(int i = 0 ; i < buf.length/bmax ; i++){
-				int start = i*bmax+bmin;
-				int end = (i+1)*bmax-bytesPerChunk;
-				int simple = adler32(buf, start, bytesPerChunk);
-				int maxIndex = start;
-				int maxSimple = simple;
-				for(int j = start+1 ; j < end ; j++){
-					simple = nextAdler32(simple, buf[j-1],buf[j+bytesPerChunk-1],bytesPerChunk);
-					if(simple > maxSimple){
-						maxIndex = j;
-						maxSimple = simple;
-					}
+			class idxCS{
+				public int index;
+				public int checksum;
+				public idxCS pre;
+				public idxCS next;
+				idxCS(int index,int checksum){
+					this.index = index;
+					this.checksum = checksum;
+					this.pre = null;
+					this.next = null;
 				}
-				indice.add(maxIndex);
+			}
+			//List<StrongChecksum> checksums = new LinkedList<StrongChecksum>();
+			idxCS head = new idxCS(0,Integer.MAX_VALUE);
+			idxCS tail = new idxCS(buf.length,Integer.MAX_VALUE);
+			head.next = tail;
+			tail.pre = head;
+			idxCS cur = head;
+			
+			int preCS = adler32(buf, 0, bytesPerChunk);
+			int cs = nextAdler32(preCS, buf[0], buf[bytesPerChunk], bytesPerChunk);
+			for(int i = 2 ; i < buf.length-bytesPerChunk ; i++){
+				int nextCS = nextAdler32(cs, buf[i], buf[i+bytesPerChunk], bytesPerChunk);
+				if((cs > preCS)&&(cs > nextCS)){
+					idxCS newNode = new idxCS(i,cs);
+					newNode.pre = cur;
+					newNode.next = cur.next;
+					cur.next.pre = newNode;
+					cur.next = newNode;
+					cur = cur.next;
+				}
+				preCS = cs;
+				cs = nextCS;
+			}
+			
+			boolean remove = true;
+			
+			while((head.next != tail)&&(remove == true)){
+				remove = false;
+				cur = head.next;
+				while(cur != tail){
+					boolean change = false;
+					if(cur.index - cur.pre.index < bmin){
+						if(cur.checksum > cur.pre.checksum){
+							//remove cur的前一个元素
+							cur.pre = cur.pre.pre;
+							cur.pre.next = cur;
+						}else{
+							//remove cur
+							cur.pre.next = cur.next;
+							cur.next.pre = cur.pre;
+							cur = cur.next;
+						}
+						remove = true;
+						change = true;
+					}
+					if(cur.next.index - cur.index < bmin){
+						if(cur.checksum > cur.next.checksum){
+							cur.next = cur.next.next;
+							cur.next.pre = cur;
+						}else{
+							cur.next.pre = cur.pre;
+							cur.pre.next = cur.next;
+							cur = cur.next;
+						}
+						remove = true;
+						change = true;
+					}
+					
+					if(change == false) cur = cur.next;
+				}
 			}
 			
 			int offset = 0;
 			int index = 1;
-			for(int nextOffset : indice){
-				mdInst.update(buf, offset, nextOffset-offset);
+			idxCS nextOffset = head.next;
+			while(nextOffset != tail){
+				mdInst.update(buf, offset, nextOffset.index-offset);
 				checksums.add(ChecksumStrongProto.newBuilder()
 						.setIndex(index)
-						.setLength(nextOffset-offset)
+						.setLength(nextOffset.index-offset)
 						.setOffset(offset)
 						.setMd5(ByteString.copyFrom(mdInst.digest()))
 						.build());
 				index++;
-				offset = nextOffset;
+				offset = nextOffset.index;
+				nextOffset = nextOffset.next;
 			}
 			mdInst.update(buf, offset, buf.length-offset);
 			checksums.add(ChecksumStrongProto.newBuilder()
