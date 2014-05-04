@@ -1249,7 +1249,12 @@ class DataXceiver extends Receiver implements Runnable {
 		}else{
 			LOG.warn("destination datanode");
 			out = new DataOutputStream(getOutputStream());
-			String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+			String dfsDataPath = null;
+			if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1){
+				dfsDataPath = "C:/tmp";
+			}else{
+				dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+			}
 			if(dfsDataPath == null){
 				LOG.warn("dfs.datanode.data.dir is not set");
 				return;
@@ -1382,7 +1387,13 @@ class DataXceiver extends Receiver implements Runnable {
 		OutputStream dout = streams.getDataOut();
 		
 		//get segments file path
-		String dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+		String dfsDataPath = null;
+		if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1){
+			dfsDataPath = "C:/tmp";
+		}else{
+			dfsDataPath = datanode.getConf().get("dfs.datanode.data.dir",null);
+		}
+		
 		if(dfsDataPath == null){
 			LOG.warn("dfs.datanode.data.dir is not set");
 			return;
