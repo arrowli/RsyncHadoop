@@ -905,9 +905,6 @@ public class RsyncCopy {
 
 			long blockSize = dstNamenode.getFileInfo(dstFileInfo.getFilepath()).getBlockSize();
 			long chunksPerBlock = blockSize/chunkSize;
-			if(dstFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
-				throw new IOException("newFileInfo size not match srcFileInfo.");
-			}
 
 			for(int j = 0 ; j < blockInfo.getSegments().size() ; j++){
 				SegmentProto segment = blockInfo.getSegments().get(j);
@@ -1014,11 +1011,6 @@ public class RsyncCopy {
 			LOG.warn("sendAdaptiveSegments for block "+blockInfo.getLocatedBlock().getBlock()+" start.");
 
 			long dstOffset = 0;
-			long blockSize = dstNamenode.getFileInfo(dstFileInfo.getFilepath()).getBlockSize();
-			//long chunksPerBlock = blockSize/chunkSize;
-			if(dstFileInfo.getBlocks().size() != srcFileInfo.getBlocks().size()){
-				throw new IOException("newFileInfo size not match srcFileInfo.");
-			}
 
 			for(int j = 0 ; j < blockInfo.getSegments().size() ; j++){
 				SegmentProto segment = blockInfo.getSegments().get(j);
