@@ -797,6 +797,7 @@ public class RsyncCopy {
 				dstBlockIndex++;
 			}
 			
+			int index = 0;
 			for(BlockInfo bi:srcFileInfo.getBlocks()){
 				for(ChecksumStrongProto csp : bi.getChecksumsAdaptive()){
 					if(!dstChecksums.containsKey(csp.getMd5())){
@@ -807,6 +808,9 @@ public class RsyncCopy {
 								.build());
 					}else{
 						ChecksumStrongProto dstCsp = dstChecksums.get(csp.getMd5());
+						LOG.info("[Found] block "+index+
+								" segment "+csp.getIndex()+" offset "+csp.getOffset()+
+								" length "+csp.getLength());
 						bi.segments.add(SegmentProto.newBuilder()
 								.setIndex(dstCsp.getIndex())
 								.setOffset(dstCsp.getOffset())
@@ -814,6 +818,7 @@ public class RsyncCopy {
 								.build());
 					}
 				}
+				index++;
 			}
 		}
 		
@@ -835,6 +840,7 @@ public class RsyncCopy {
 				md5s.remove(md5s.size()-1);
 			}
 			
+			int index = 0;
 			for(BlockInfo bi : srcFileInfo.getBlocks()){
 				DatanodeInfo[] datanodes = bi.getLocatedBlock().getLocations();
 				final int timeout = 3000 * datanodes.length + socketTimeout;
@@ -888,6 +894,17 @@ public class RsyncCopy {
 						IOUtils.closeStream(out);
 					}
 				}
+				
+				int offset = 0;
+				for(SegmentProto sp : bi.getSegments()){
+					if(sp.getIndex() != -1){
+						LOG.info("[Found] block "+index+
+								" segment "+offset+" offset "+offset*chunkSize+
+								" length "+chunkSize);
+					}
+					offset++;
+				}
+				index++;
 			}
 		}
 		
@@ -1441,11 +1458,11 @@ public class RsyncCopy {
 				getSDFileInfo();
 				getSDFileChecksum(chunkSize);
 				calculateSegments(chunkSize);
-				updateDstFile(chunkSize);
+				//updateDstFile(chunkSize);
 			}else if(method == 2){
 				getSDFileInfo();
 				calculateAdaptiveSegments(chunkSize,bminRatio,bmaxRatio);
-				updateAdaptiveDstFile();
+				//updateAdaptiveDstFile();
 			}else{
 				System.out.println("Unrecognized method "+method);
 			}
