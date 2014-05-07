@@ -21,9 +21,13 @@ import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_CLIENT_USE_DN_HOSTNAME;
 import static org.apache.hadoop.hdfs.DFSConfigKeys.DFS_CLIENT_USE_DN_HOSTNAME_DEFAULT;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,7 +40,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import javax.net.SocketFactory;
+
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.logging.Log;
@@ -1524,19 +1530,23 @@ public class RsyncCopy {
 		String dstPath = args[5];
 		RsyncCopy rc = new RsyncCopy(srcPath,dstPath);
 		*/
-		RsyncCopy rc = new RsyncCopy("/test","/test2");
-		int[] chunkSizes = {2,8,32,128,256,512,1024,2048,4096};
-		int[] bminRatios = {2,8,32,128,1024};
-		for(int i = 0 ; i < chunkSizes.length ; i++){
-			for(int j = 0 ; j < bminRatios.length ; j++){
-				if(chunkSizes[i] >= 128){
-					LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]*16+" BMIN "+bminRatios[j]);
-					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
-				}
-				if(chunkSizes[i]*bminRatios[j] < 64*1024){
-					LOG.info("[TEST]"+" METHOD 2 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
-					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
-				}
+		File input = new File(args[0]);
+		if(!input.canRead()){
+			LOG.error("File "+args[0]+" cannot read.");
+		}else{
+			BufferedReader reader = new BufferedReader(new FileReader(input));
+			String command = null;
+			while((command = reader.readLine())!=null){
+				String[] paras = command.split(" ");
+				int method = Integer.parseInt(paras[0]);
+				int chunkSize = Integer.parseInt(paras[1]);
+				int bminRatio = Integer.parseInt(paras[2]);
+				int bmaxRatio = Integer.parseInt(paras[3]);
+				String srcPath = paras[4];
+				String dstPath = paras[5];
+				RsyncCopy rc = new RsyncCopy(srcPath,dstPath);
+				LOG.info("[TEST]"+" METHOD "+method+" CHUNKSIZE "+chunkSize+" BMIN "+bminRatio+" srcPath "+srcPath+" dstPath "+dstPath);
+				rc.run(method,chunkSize,bminRatio,bmaxRatio);
 			}
 		}
 		System.exit(0);
