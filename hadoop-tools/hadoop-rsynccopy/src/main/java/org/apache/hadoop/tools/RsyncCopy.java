@@ -1529,10 +1529,12 @@ public class RsyncCopy {
 		int[] bminRatios = {2,8,32,128,1024};
 		for(int i = 0 ; i < chunkSizes.length ; i++){
 			for(int j = 0 ; j < bminRatios.length ; j++){
-				LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
-				rc.run(1,chunkSizes[i],bminRatios[j],1024*1024/*not used*/);
-				LOG.info("[TEST]"+" METHOD 2 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
-				rc.run(1,chunkSizes[i],bminRatios[j],1024*1024/*not used*/);
+				if(chunkSizes[i]*bminRatios[j] < 64*1024){
+					LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
+					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
+					LOG.info("[TEST]"+" METHOD 2 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
+					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
+				}
 			}
 		}
 		System.exit(0);
