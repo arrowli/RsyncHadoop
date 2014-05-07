@@ -820,6 +820,13 @@ public class RsyncCopy {
 				}
 				index++;
 			}
+			
+			int cSegments = 0;
+			for(BlockInfo bi : srcFileInfo.getBlocks()){
+				cSegments += bi.getSegments().size();
+			}
+			
+			LOG.info("File Segments Number : "+cSegments);
 		}
 		
 		private void calculateSegments(int chunkSize){
@@ -906,6 +913,13 @@ public class RsyncCopy {
 				}
 				index++;
 			}
+			
+			int cSegments = 0;
+			for(BlockInfo bi : srcFileInfo.getBlocks()){
+				cSegments += bi.getSegments().size();
+			}
+			
+			LOG.info("File Segments Number : "+cSegments);
 		}
 		
 		/**
@@ -1515,14 +1529,10 @@ public class RsyncCopy {
 	}
 	
 	public static void main(String args[]) throws Exception {
+		/*
 		if (args.length < 6) {
 			printUsage();
 		}
-		/*
-		 	this.chunkSize = 1024*1024;
-			this.bminRatio = 8;
-			this.bmaxRatio = 64;
-		 */
 		int method = Integer.parseInt(args[0]);
 		int chunkSize = Integer.parseInt(args[1]);
 		int bminRatio = Integer.parseInt(args[2]);
@@ -1530,7 +1540,18 @@ public class RsyncCopy {
 		String srcPath = args[4];
 		String dstPath = args[5];
 		RsyncCopy rc = new RsyncCopy(srcPath,dstPath);
-		rc.run(method,chunkSize,bminRatio,bmaxRatio);
+		*/
+		RsyncCopy rc = new RsyncCopy("/test","/test2");
+		int[] chunkSizes = {2,8,32,128,1024};
+		int[] bminRatios = {2,8,32,128,1024};
+		for(int i = 0 ; i < chunkSizes.length ; i++){
+			for(int j = 0 ; j < bminRatios.length ; j++){
+				LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
+				rc.run(1,chunkSizes[i],bminRatios[j],1024*1024/*not used*/);
+				LOG.info("[TEST]"+" METHOD 2 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
+				rc.run(1,chunkSizes[i],bminRatios[j],1024*1024/*not used*/);
+			}
+		}
 		System.exit(0);
 	}
 }
