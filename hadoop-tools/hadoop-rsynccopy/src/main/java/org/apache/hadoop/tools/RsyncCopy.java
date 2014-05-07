@@ -1525,13 +1525,15 @@ public class RsyncCopy {
 		RsyncCopy rc = new RsyncCopy(srcPath,dstPath);
 		*/
 		RsyncCopy rc = new RsyncCopy("/test","/test2");
-		int[] chunkSizes = {2,8,32,128,1024};
+		int[] chunkSizes = {2,8,32,128,256,512,1024,2048,4096};
 		int[] bminRatios = {2,8,32,128,1024};
 		for(int i = 0 ; i < chunkSizes.length ; i++){
 			for(int j = 0 ; j < bminRatios.length ; j++){
-				if(chunkSizes[i]*bminRatios[j] < 64*1024){
-					LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
+				if(chunkSizes[i] >= 128){
+					LOG.info("[TEST]"+" METHOD 1 CHUNKSIZE "+chunkSizes[i]*16+" BMIN "+bminRatios[j]);
 					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
+				}
+				if(chunkSizes[i]*bminRatios[j] < 64*1024){
 					LOG.info("[TEST]"+" METHOD 2 CHUNKSIZE "+chunkSizes[i]+" BMIN "+bminRatios[j]);
 					rc.run(1,chunkSizes[i]*1024,bminRatios[j],1024*1024/*not used*/);
 				}
