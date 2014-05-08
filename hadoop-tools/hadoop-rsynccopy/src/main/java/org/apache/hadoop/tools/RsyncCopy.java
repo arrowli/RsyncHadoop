@@ -1461,11 +1461,11 @@ public class RsyncCopy {
 				getSDFileInfo();
 				getSDFileChecksum(chunkSize);
 				calculateSegments(chunkSize);
-				//updateDstFile(chunkSize);
+				updateDstFile(chunkSize);
 			}else if(method == 2){
 				getSDFileInfo();
 				calculateAdaptiveSegments(chunkSize,bminRatio,bmaxRatio);
-				//updateAdaptiveDstFile();
+				updateAdaptiveDstFile();
 			}else{
 				System.out.println("Unrecognized method "+method);
 			}
