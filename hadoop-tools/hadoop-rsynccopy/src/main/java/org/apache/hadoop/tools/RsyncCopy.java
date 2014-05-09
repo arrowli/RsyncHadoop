@@ -431,7 +431,7 @@ public class RsyncCopy {
 		 */
 		void getSDFileInfo() throws IOException {
 			LocatedBlocks srcLocatedBlocks = callGetBlockLocations(
-					srcNamenode,srcPath.toString(),0,Long.MAX_VALUE,
+					srcNamenode,srcPath.toUri().getPath(),0,Long.MAX_VALUE,
 					isMetaInfoSupported(srcNamenodeProtocolProxy));
 			if (srcLocatedBlocks == null) {
 				throw new IOException(
@@ -439,7 +439,7 @@ public class RsyncCopy {
 								+ srcPath.toString());
 			}
 			LocatedBlocks dstLocatedBlocks = callGetBlockLocations(
-					dstNamenode,dstPath.toString(),0,Long.MAX_VALUE,
+					dstNamenode,dstPath.toUri().getPath(),0,Long.MAX_VALUE,
 					isMetaInfoSupported(dstNamenodeProtocolProxy));
 			if (dstLocatedBlocks == null) {
 				throw new IOException(
@@ -447,8 +447,8 @@ public class RsyncCopy {
 								+ dstPath.toString());
 			}
 
-			this.srcFileInfo = new FileInfo(srcPath.toString());
-			this.dstFileInfo = new FileInfo(dstPath.toString());
+			this.srcFileInfo = new FileInfo(srcPath.toUri().getPath());
+			this.dstFileInfo = new FileInfo(srcPath.toUri().getPath());
 			
 			this.srcFileInfo.setFileSize(srcLocatedBlocks.getFileLength());
 			this.dstFileInfo.setFileSize(dstLocatedBlocks.getFileLength());
