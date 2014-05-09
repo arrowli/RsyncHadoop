@@ -448,7 +448,7 @@ public class RsyncCopy {
 			}
 
 			this.srcFileInfo = new FileInfo(srcPath.toUri().getPath());
-			this.dstFileInfo = new FileInfo(srcPath.toUri().getPath());
+			this.dstFileInfo = new FileInfo(dstPath.toUri().getPath());
 			
 			this.srcFileInfo.setFileSize(srcLocatedBlocks.getFileLength());
 			this.dstFileInfo.setFileSize(dstLocatedBlocks.getFileLength());
