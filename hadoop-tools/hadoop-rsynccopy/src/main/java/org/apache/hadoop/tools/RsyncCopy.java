@@ -1385,25 +1385,27 @@ public class RsyncCopy {
 			long WAIT_SLEEP_TIME = 1000;
 			for (int i = 0; i < srcFileInfo.getBlocks().size(); i++) {
 				LocatedBlock currentBlock = null;
-				try {
-					currentBlock = dstNamenode.addBlock(tmpFilePath,
-							clientName, lastBlock, (DatanodeInfo[]) null,
-							fileId, (String[]) null);
-				} catch (RemoteException re) {
-					if (re.unwrapRemoteException() instanceof NotReplicatedYetException) {
-						if (System.currentTimeMillis() - startTime > BLK_WAIT_TIME) {
+				do{
+					try {
+						currentBlock = dstNamenode.addBlock(tmpFilePath,
+								clientName, lastBlock, (DatanodeInfo[]) null,
+								fileId, (String[]) null);
+					} catch (RemoteException re) {
+						if (re.unwrapRemoteException() instanceof NotReplicatedYetException) {
+							if (System.currentTimeMillis() - startTime > BLK_WAIT_TIME) {
+								throw re;
+							}
+							LOG.warn("File not replicated yet : " + dstFileInfo.getFilepath()
+									+ " will retry in " + WAIT_SLEEP_TIME / 1000
+									+ " seconds");
+							sleepFor(WAIT_SLEEP_TIME);
+							continue;
+						} else {
+							LOG.warn(re);
 							throw re;
 						}
-						LOG.warn("File not replicated yet : " + dstFileInfo.getFilepath()
-								+ " will retry in " + WAIT_SLEEP_TIME / 1000
-								+ " seconds");
-						sleepFor(WAIT_SLEEP_TIME);
-						continue;
-					} else {
-						LOG.warn(re);
-						throw re;
 					}
-				}
+				}while(currentBlock == null);
 
 				LOG.info("Add new block " + currentBlock.getBlock());
 
@@ -1467,25 +1469,27 @@ public class RsyncCopy {
 			long WAIT_SLEEP_TIME = 1000;
 			for (int i = 0; i < srcFileInfo.getBlocks().size(); i++) {
 				LocatedBlock currentBlock = null;
-				try {
-					currentBlock = dstNamenode.addBlock(tmpFilePath,
-							clientName, lastBlock, (DatanodeInfo[]) null,
-							fileId, (String[]) null);
-				} catch (RemoteException re) {
-					if (re.unwrapRemoteException() instanceof NotReplicatedYetException) {
-						if (System.currentTimeMillis() - startTime > BLK_WAIT_TIME) {
+				do{
+					try {
+						currentBlock = dstNamenode.addBlock(tmpFilePath,
+								clientName, lastBlock, (DatanodeInfo[]) null,
+								fileId, (String[]) null);
+					} catch (RemoteException re) {
+						if (re.unwrapRemoteException() instanceof NotReplicatedYetException) {
+							if (System.currentTimeMillis() - startTime > BLK_WAIT_TIME) {
+								throw re;
+							}
+							LOG.warn("File not replicated yet : " + dstFileInfo.getFilepath()
+									+ " will retry in " + WAIT_SLEEP_TIME / 1000
+									+ " seconds");
+							sleepFor(WAIT_SLEEP_TIME);
+							continue;
+						} else {
+							LOG.warn(re);
 							throw re;
 						}
-						LOG.warn("File not replicated yet : " + dstFileInfo.getFilepath()
-								+ " will retry in " + WAIT_SLEEP_TIME / 1000
-								+ " seconds");
-						sleepFor(WAIT_SLEEP_TIME);
-						continue;
-					} else {
-						LOG.warn(re);
-						throw re;
 					}
-				}
+				}while(currentBlock == null);
 				
 				LOG.info("Add new block " + currentBlock.getBlock());
 
