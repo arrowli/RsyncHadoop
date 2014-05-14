@@ -1464,6 +1464,7 @@ class DataXceiver extends Receiver implements Runnable {
 					blockLength += dataBuf.capacity();
 				}
 			}while(bytesLeft > 0);
+			segmentIn.close();
 		}
 		
 		if(startOffset > 0){
