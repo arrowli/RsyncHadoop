@@ -1579,7 +1579,7 @@ public class RsyncCopy {
 					System.out.println("Unrecognized method " + method);
 				}
 			}catch(IOException e){
-				LOG.info("File "+srcFileInfo.filepath+" not exist.");
+				LOG.info("File not exist.");
 			}
 		}
 
