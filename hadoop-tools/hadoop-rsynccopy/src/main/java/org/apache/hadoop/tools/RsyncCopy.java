@@ -1422,14 +1422,7 @@ public class RsyncCopy {
 			}
 
 			int count = 0;
-			boolean completed = false;
-			while ((completed = dstNamenode.complete(tmpFilePath, clientName,
-					lastBlock, fileId)) != true && count < 10) {
-				LOG.info("File " + tmpFilePath + " can not complete");
-				count++;
-				Thread.sleep(1000);
-			}
-			LOG.info("File " + tmpFilePath + " complete " + completed);
+			LOG.info("File " + tmpFilePath + " complete");
 		}
 
 		/**
