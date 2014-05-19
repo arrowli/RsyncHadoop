@@ -1653,13 +1653,37 @@ public class RsyncCopy {
 			BufferedReader reader = new BufferedReader(new FileReader(input));
 			String command = null;
 			while ((command = reader.readLine()) != null) {
-				String[] paras = command.split(" ");
-				int method = Integer.parseInt(paras[0]);
-				int chunkSize = Integer.parseInt(paras[1]);
-				int bminRatio = Integer.parseInt(paras[2]);
-				int bmaxRatio = Integer.parseInt(paras[3]);
-				String srcPath = paras[4];
-				String dstPath = paras[5];
+				int curIndex = command.indexOf(" ");
+				String cmdS = command.substring(0, curIndex);
+				int nextIndex = command.indexOf(" ",curIndex+1);
+				String subcmdS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				nextIndex = command.indexOf(" ",curIndex+1);
+				String methodS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				nextIndex = command.indexOf(" ",curIndex+1);
+				String chunkSizeS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				nextIndex = command.indexOf(" ",curIndex+1);
+				String bminRatioS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				nextIndex = command.indexOf(" ",curIndex+1);
+				String bmaxRatioS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				curIndex = command.indexOf("\"",curIndex+1);
+				nextIndex = command.indexOf("\"",curIndex+1);
+				String srcPathS = command.substring(curIndex+1,nextIndex);
+				curIndex = nextIndex;
+				curIndex = command.indexOf("\"",curIndex+1);
+				nextIndex = command.indexOf("\"",curIndex+1);
+				String dstPathS = command.substring(curIndex+1,nextIndex);
+				
+				int method = Integer.parseInt(methodS);
+				int chunkSize = Integer.parseInt(chunkSizeS);
+				int bminRatio = Integer.parseInt(bminRatioS);
+				int bmaxRatio = Integer.parseInt(bmaxRatioS);
+				String srcPath = srcPathS;
+				String dstPath = dstPathS;
 				RsyncCopy rc = new RsyncCopy(srcPath, dstPath);
 				LOG.info("[TEST]" + " METHOD " + method + " CHUNKSIZE "
 						+ chunkSize + " BMIN " + bminRatio + " srcPath "
