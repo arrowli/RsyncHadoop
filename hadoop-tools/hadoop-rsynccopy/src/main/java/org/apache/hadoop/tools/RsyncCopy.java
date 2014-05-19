@@ -1506,7 +1506,7 @@ public class RsyncCopy {
 			}
 
 			int count = 0;
-			LOG.info("File " + tmpFilePath + " complete " + completed);
+			LOG.info("File " + tmpFilePath + " complete");
 		}
 
 		/**
