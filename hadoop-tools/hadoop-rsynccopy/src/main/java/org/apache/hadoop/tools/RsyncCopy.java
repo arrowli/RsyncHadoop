@@ -1565,17 +1565,21 @@ public class RsyncCopy {
 
 		public void run(int method, int chunkSize, int bminRatio, int bmaxRatio)
 				throws IOException, InterruptedException {
-			if (method == 1) {
-				getSDFileInfo();
-				getSDFileChecksum(chunkSize);
-				calculateSegments(chunkSize);
-				updateDstFile(chunkSize);
-			} else if (method == 2) {
-				getSDFileInfo();
-				calculateAdaptiveSegments(chunkSize, bminRatio, bmaxRatio);
-				updateAdaptiveDstFile();
-			} else {
-				System.out.println("Unrecognized method " + method);
+			try{
+				if (method == 1) {
+					getSDFileInfo();
+					getSDFileChecksum(chunkSize);
+					calculateSegments(chunkSize);
+					updateDstFile(chunkSize);
+				} else if (method == 2) {
+					getSDFileInfo();
+					calculateAdaptiveSegments(chunkSize, bminRatio, bmaxRatio);
+					updateAdaptiveDstFile();
+				} else {
+					System.out.println("Unrecognized method " + method);
+				}
+			}catch(IOException e){
+				LOG.info("File "+srcFileInfo.filepath+" not exist.");
 			}
 		}
 
